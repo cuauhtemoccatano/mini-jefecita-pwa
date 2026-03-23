@@ -1,0 +1,9 @@
+{
+  "name": "mini-jefecita-pwa",
+  "version": "1.1.0",
+  "private": true,
+  "description": "Smart Personal Companion PWA for Jade",
+  "scripts": {
+    "start": "python3 -m http.server 8080"
+  }
+}

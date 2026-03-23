@@ -325,6 +325,7 @@ async function initReminders() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Mini Jefecita PWA v1.1.0 starting...');
     updateGreeting();
     initTabs();
     initExercise();
