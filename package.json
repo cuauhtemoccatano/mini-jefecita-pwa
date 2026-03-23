@@ -1,8 +1,8 @@
 {
   "name": "mini-jefecita-pwa",
-  "version": "2.2.1",
+  "version": "2.5.1",
   "private": true,
-  "description": "Smart Personal Companion PWA - Selector & Sidebar Fix (v2.2.1)",
+  "description": "Smart Personal Companion PWA - Fixed Persistence (v2.5.1)",
   "scripts": {
     "start": "python3 -m http.server 8080"
   }

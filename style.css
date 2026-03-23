@@ -752,8 +752,55 @@ input[type="number"]:focus {
 }
 
 
+/* Toast de Actualización */
+.update-toast {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    background: rgba(0, 196, 180, 0.95);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 12px 24px;
+    border-radius: 100px;
+    z-index: 5000;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    box-shadow: 0 10px 30px rgba(0, 196, 180, 0.3);
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.update-toast.hidden {
+    transform: translateX(-50%) translateY(-150%);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.update-toast span {
+    font-size: 14px;
+    font-weight: 600;
+    color: white;
+}
+
+#btn-update-now {
+    background: white;
+    color: var(--primary);
+    border: none;
+    padding: 6px 16px;
+    border-radius: 50px;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+#btn-update-now:hover {
+    transform: scale(1.05);
+}
+
 /* ============================================================
-   ESTÁNDARES DE RESPONSIVIDAD MAESTROS (v2.2.1)
+   ESTÁNDARES DE RESPONSIVIDAD MAESTROS (v2.3.0)
    ============================================================ */
 
 /* IPAD & TABLETS */
