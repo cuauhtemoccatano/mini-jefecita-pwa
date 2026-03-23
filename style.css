@@ -92,12 +92,75 @@ body {
 }
 
 #app {
+    width: 100%;
+    max-width: 1200px; /* Expandimos para Mac */
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 20px;
+    padding-bottom: 100px;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    max-width: 500px;
-    margin: 0 auto;
-    position: relative;
+}
+
+/* --- Layout Responsivo Pro --- */
+
+@media (min-width: 768px) {
+    #app {
+        display: grid;
+        grid-template-columns: 240px 1fr; /* Barra lateral en iPad/Mac */
+        grid-template-areas: "nav content";
+        gap: 30px;
+        padding-top: 40px;
+        height: auto;
+        overflow: visible;
+    }
+    
+    body { overflow-y: auto; }
+
+    .tab-bar {
+        position: sticky;
+        top: 40px;
+        height: calc(100vh - 80px);
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        flex-direction: column;
+        padding: 20px;
+        grid-area: nav;
+        bottom: auto;
+    }
+
+    .tab-btn {
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 16px;
+        gap: 15px;
+        width: 100%;
+        border-radius: 12px;
+    }
+
+    .tab-btn i { font-size: 20px; }
+    .tab-btn span { display: inline !important; font-size: 15px; opacity: 0.7; }
+    .tab-btn.active span { opacity: 1; }
+
+    .view-container {
+        grid-area: content;
+        padding-bottom: 40px;
+    }
+
+    /* Grid de tarjetas en Inicio */
+    .activity-grid {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+}
+
+@media (min-width: 1200px) {
+    #app {
+        grid-template-columns: 260px 1fr 300px; /* 3 Columnas en Mac M2 */
+        grid-template-areas: "nav content side";
+    }
 }
 
 #content {

@@ -332,6 +332,7 @@ if ('serviceWorker' in navigator) {
 
 // Global Init
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('Mini Jefecita PWA v2.0.0 (Cloud Prep Edition)');
     applyPersonalization();
     updateGreeting();
     initTabs();
