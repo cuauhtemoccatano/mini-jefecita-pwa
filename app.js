@@ -12,6 +12,80 @@ function updateGreeting() {
     greetingElement.textContent = text;
 }
 
+// Health Kit Integration (Shortcuts Bridge)
+let healthData = JSON.parse(localStorage.getItem('health_data') || '{"steps": 0, "cals": 0, "lastUpdate": null}');
+
+function saveHealthData() {
+    localStorage.setItem('health_data', JSON.stringify(healthData));
+    updateHealthUI();
+}
+
+function updateHealthUI() {
+    const stepsEl = document.getElementById('health-steps');
+    const calsEl = document.getElementById('health-cals');
+    
+    if (stepsEl) stepsEl.textContent = healthData.steps.toLocaleString();
+    if (calsEl) calsEl.textContent = healthData.cals;
+}
+
+function checkHealthDeepLink() {
+    const params = new URLSearchParams(window.location.search);
+    const steps = params.get('steps');
+    const cals = params.get('cals');
+
+    if (steps || cals) {
+        if (steps) healthData.steps = parseInt(steps);
+        if (cals) healthData.cals = parseInt(cals);
+        healthData.lastUpdate = new Date().toISOString();
+        saveHealthData();
+        logEvent('health_sync', { steps, cals });
+        
+        // Limpiar la URL para evitar recargas infinitas
+        window.history.replaceState({}, document.title, "/");
+        alert("¡Salud sincronizada! 👟✨");
+    }
+}
+
+// Invisible AI: Self-Evolution Engine
+let brainEvents = JSON.parse(localStorage.getItem('brain_events') || '[]');
+let behaviorRules = JSON.parse(localStorage.getItem('behavior_rules') || '{"vibe": "normal", "focus": "balance"}');
+
+function logEvent(type, data = {}) {
+    brainEvents.push({ type, data, timestamp: new Date().toISOString() });
+    // Mantener solo los últimos 50 eventos para no saturar
+    if (brainEvents.length > 50) brainEvents.shift();
+    localStorage.setItem('brain_events', JSON.stringify(brainEvents));
+}
+
+async function synthesizeLearnings() {
+    if (!generator || brainEvents.length < 5) return;
+
+    console.log('Synthesizing learned behavior...');
+    const recentEvents = JSON.stringify(brainEvents.slice(-10));
+    const system = `Eres el subconsciente de la app de Jade. Analiza sus eventos recientes y responde ÚNICAMENTE con un JSON: {"vibe": "zen/energetic/focused", "focus": "exercise/reminders/chat"}`;
+    
+    try {
+        const result = await generateLocalAI(`Eventos: ${recentEvents}`, system);
+        const newRules = JSON.parse(result.match(/{.*?}/s)[0]);
+        behaviorRules = { ...behaviorRules, ...newRules };
+        localStorage.setItem('behavior_rules', JSON.stringify(behaviorRules));
+        applyBehavioralUI();
+    } catch (e) {
+        console.warn('Synthesis skipped', e);
+    }
+}
+
+function applyBehavioralUI() {
+    const root = document.documentElement;
+    if (behaviorRules.vibe === 'zen') {
+        root.style.setProperty('--primary', '#81D4FA'); // Azul tranquilo
+    } else if (behaviorRules.vibe === 'energetic') {
+        root.style.setProperty('--primary', '#FF7043'); // Naranja energía
+    } else {
+        root.style.setProperty('--primary', '#00C4B4'); // Teal original
+    }
+}
+
 // AI Engine (Local)
 let generator = null;
 
@@ -93,7 +167,7 @@ async function updateMotivationalInsight() {
     const textElement = document.getElementById('motivational-text');
     if (!textElement || !generator) return;
 
-    const system = `Eres el coach de Jade. Genera UNA frase corta (máx 15 palabras) con 💚 de inspiración. Contexto: Racha ${calculateStreak()} días.`;
+    const system = `Eres el coach de Jade. Genera UNA frase corta (máx 15 palabras) con 💚 de inspiración. Contexto: Racha ${calculateStreak()} días. Vibe: ${behaviorRules.vibe}.`;
     const insight = await generateLocalAI("Dame una frase de hoy", system);
     
     if (insight) textElement.textContent = insight;
@@ -234,6 +308,7 @@ function initExercise() {
             if (!alreadyLogged) {
                 exercises.push({ date: today, duration: parseInt(duration) });
                 saveExercises();
+                logEvent('exercise_logged', { duration: parseInt(duration) });
                 if (durationInput) durationInput.value = '';
                 alert('¡Entrenamiento registrado! 🔥');
             } else {
@@ -277,8 +352,9 @@ async function initChat() {
             return;
         }
 
-        const system = `Eres el asistente de Jade en su app "Mini Jefecita". Sé breve, elegante y usa 💚. Racha actual: ${calculateStreak()} días.`;
+        const system = `Eres el asistente de Jade en su app "Mini Jefecita". Sé breve, elegante y usa 💚. Racha actual: ${calculateStreak()} días. Estado mental detectado: ${behaviorRules.vibe}.`;
         const reply = await generateLocalAI(text, system);
+        logEvent('chat_sent', { text });
         addMessage(reply || "Jade, me quedé pensando... ¿Me repites eso? 💚", 'ai');
     };
 
@@ -348,6 +424,7 @@ async function initReminders() {
             if (data.title) {
                 reminders.push({ id: Date.now(), ...data });
                 saveReminders();
+                logEvent('reminder_created', { title: data.title });
                 input.value = '';
             }
         } catch (e) {
@@ -371,13 +448,18 @@ async function initReminders() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Mini Jefecita PWA v1.2.2 starting (Local AI)');
+    console.log('Mini Jefecita PWA v1.4.0 starting (Invisible AI)');
     updateGreeting();
     initTabs();
     initExercise();
     initChat();
     initReminders();
+    checkHealthDeepLink();
+    updateHealthUI();
     await initAI();
     updateMotivationalInsight();
     registerSW();
+
+    // Cron job invisible: sintetizar aprendizajes cada 5 minutos si la app está abierta
+    setInterval(() => synthesizeLearnings(), 1000 * 60 * 5);
 });

@@ -1,8 +1,8 @@
 {
   "name": "mini-jefecita-pwa",
-  "version": "1.2.2",
+  "version": "1.4.0",
   "private": true,
-  "description": "Smart Personal Companion PWA for Jade",
+  "description": "Smart Personal Companion PWA - Phase: Invisible AI",
   "scripts": {
     "start": "python3 -m http.server 8080"
   }
