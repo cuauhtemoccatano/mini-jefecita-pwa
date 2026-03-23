@@ -5,7 +5,8 @@ Este documento define las reglas de operación para los agentes de IA que trabaj
 ## 🛠 Skills & Herramientas
 - **💎 quality-guide**: localiza en `.agent/skills/quality-guide/`. Úsalo para validar CUALQUIER cambio visual.
 - **👁️ ui-visual-validator**: Skill de sistema para validación de responsividad y glassmorphism.
-- **🚀 browser_subagent**: Herramienta indispensable para validación QA local (`localhost:8080`).
+- **�️ verification-before-completion**: PROTOCOLO OBLIGATORIO. Prohibido reportar éxito sin pruebas reales.
+- **�🚀 browser_subagent**: Herramienta indispensable para validación QA local (`localhost:8080`).
 
 ## 📐 Estándares de Plataforma (v2.0.0)
 - **Multi-Layout**:
@@ -24,6 +25,7 @@ Este documento define las reglas de operación para los agentes de IA que trabaj
 1. Levantar servidor local: `python3 -m http.server 8080`.
 2. Validar con `browser_subagent`.
 3. **Limpieza de Caché**: Ejecutar limpieza de `localStorage` y `caches` antes de certificar una versión.
+4. **Cero Suposiciones**: Siguiendo `verification-before-completion`, no se acepta un "creo que funciona". Se requiere evidencia visual o de consola.
 
 ---
 *Última actualización: 23-03-2026 | Versión: v2.0.0 (Cloud Prep Edition)*
