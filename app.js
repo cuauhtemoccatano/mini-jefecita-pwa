@@ -111,12 +111,30 @@ function initTabs() {
 // Service Worker Registration
 async function registerSW() {
     if ('serviceWorker' in navigator) {
-        try {
-            await navigator.serviceWorker.register('sw.js');
-            console.log('SW registered');
-        } catch (e) {
-            console.error('SW registration failed', e);
-        }
+        navigator.serviceWorker.register('sw.js')
+            .then(reg => {
+                console.log('SW Registered v1.2.1');
+                // Detect update
+                reg.onupdatefound = () => {
+                    const newSW = reg.installing;
+                    newSW.onstatechange = () => {
+                        if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                            console.log('New SW found, reloading...');
+                            location.reload();
+                        }
+                    };
+                };
+            })
+            .catch(err => console.log('SW Error:', err));
+
+        // Ensure new SW takes control
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (!refreshing) {
+                window.location.reload();
+                refreshing = true;
+            }
+        });
     }
 }
 
@@ -335,7 +353,7 @@ async function initReminders() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Mini Jefecita PWA v1.2.0 starting (Local AI)');
+    console.log('Mini Jefecita PWA v1.2.1 starting (Local AI)');
     updateGreeting();
     initTabs();
     initExercise();
