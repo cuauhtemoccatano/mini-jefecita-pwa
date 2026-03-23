@@ -115,7 +115,7 @@ function getDevicePowerLevel() {
 }
 
 // User Settings
-let userData = JSON.parse(localStorage.getItem('user_settings') || '{"name": "Jade", "color": "#00C4B4", "vibe": "💚"}');
+let userData = JSON.parse(localStorage.getItem('user_settings') || '{"name": "Jade", "color": "#00C4B4", "vibe": "💚", "brain": "AUTO"}');
 
 function applyPersonalization() {
     document.querySelectorAll('.user-name-label').forEach(el => el.textContent = userData.name);
@@ -134,6 +134,7 @@ function initSettings() {
     
     const inputName = document.getElementById('set-name');
     const inputVibe = document.getElementById('set-vibe');
+    const inputBrain = document.getElementById('set-brain-level');
     const colorDots = document.querySelectorAll('.color-dot');
 
     let selectedColor = userData.color;
@@ -141,6 +142,7 @@ function initSettings() {
     if (btnOpen) btnOpen.addEventListener('click', () => {
         inputName.value = userData.name;
         inputVibe.value = userData.vibe;
+        if (inputBrain) inputBrain.value = userData.brain === 'AUTO' ? getDevicePowerLevel() : userData.brain;
         modal.style.display = 'flex';
     });
 
@@ -155,13 +157,21 @@ function initSettings() {
     });
 
     if (btnSave) btnSave.addEventListener('click', () => {
+        const oldBrain = userData.brain;
         userData.name = inputName.value.trim() || "Jefecita";
         userData.vibe = inputVibe.value.trim() || "💚";
         userData.color = selectedColor;
+        userData.brain = inputBrain ? inputBrain.value : 'AUTO';
         
         localStorage.setItem('user_settings', JSON.stringify(userData));
         applyPersonalization();
         modal.style.display = 'none';
+
+        // Si cambió el nivel de IA, reiniciar para cargar el nuevo cerebro
+        if (oldBrain !== userData.brain) {
+            alert("Cambiando cerebro... La app se reiniciará. 🧠");
+            location.reload();
+        }
     });
 
     const btnCopy = document.getElementById('btn-copy-shortcut');
@@ -187,11 +197,14 @@ async function initAI() {
     const progressBar = document.getElementById('progress-bar');
     const loaderDetails = document.getElementById('loader-details');
     
-    const powerLevel = getDevicePowerLevel();
+    // Priorizamos selección manual si existe
+    let powerLevel = userData.brain === 'AUTO' || !userData.brain ? getDevicePowerLevel() : userData.brain;
+    console.log("Selected Power Level:", powerLevel);
+
     const modelConfig = {
-        'MASTER': { name: 'Xenova/Qwen1.5-0.5B-Chat', label: 'Cerebro Maestro (0.5B)' },
+        'MASTER': { name: 'Xenova/Qwen1.5-1.8B-Chat', label: 'Cerebro Maestro (1.8B)' },
         'ULTRA': { name: 'Xenova/SmolLM2-360M-Instruct', label: 'Cerebro Ultra (360M)' },
-        'PRO': { name: 'Xenova/SmolLM2-135M-Instruct', label: 'Cerebro Pro (135M)' },
+        'PRO': { name: 'Xenova/Qwen1.5-0.5B-Chat', label: 'Cerebro Pro (0.5B)' },
         'NORMAL': { name: 'Xenova/SmolLM2-135M-Instruct', label: 'Cerebro Lite (135M)' }
     };
 
@@ -665,7 +678,7 @@ function initJournal() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Mini Jefecita PWA v1.8.3 starting (Stability Edition)');
+    console.log('Mini Jefecita PWA v1.9.0 starting (Choice AI Edition)');
     applyPersonalization();
     updateGreeting();
     initTabs();
