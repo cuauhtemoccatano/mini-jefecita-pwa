@@ -38,7 +38,15 @@ Esta skill debe ser consultada ANTES de realizar cualquier cambio visual o funci
 - **Tokens Dinámicos**: Usar siempre la variable `userData.name` en diálogos de IA.
 - **Vibe**: El emoji de racha y el color principal deben ser síncronos con el panel de Ajustes.
 
-## 7. Checklist Pre-Commit
+## 8. Verificación Obligatoria del Agente
+- **Prueba en Vivo**: Tras cada despliegue, el Agente DEBE usar el `browser_subagent` para abrir la URL de producción.
+- **Checklist de UX**:
+  1. Verificar que el saludo sea dinámico (`userData.name`).
+  2. Comprobar que el Diario pida Face ID (no entrar directo).
+  3. Validar que los botones de Ajustes abran el modal correctamente.
+- **Evidencia**: El Agente debe proporcionar un reporte de visualización al usuario.
+
+## 9. Checklist Pre-Commit
 - [ ] ¿Se ha actualizado el número de versión en los 4 sitios clave (v1.9.0+)?
 - [ ] ¿El nuevo código respeta el bloqueo `isDownloadingAI`?
 - [ ] ¿Se han mantenido las transparencias (Glassmorphism)?
