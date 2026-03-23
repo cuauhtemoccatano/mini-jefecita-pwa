@@ -31,13 +31,21 @@ body {
     right: 0;
     bottom: 0;
     background-color: var(--background);
-    z-index: 2000;
+    z-index: 9999;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     padding: 40px;
-    transition: opacity 0.5s ease-out, visibility 0.5s;
+    transition: all 0.5s ease-out;
+    pointer-events: all;
+}
+
+.loader-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    display: none !important;
 }
 
 .loader-content {
