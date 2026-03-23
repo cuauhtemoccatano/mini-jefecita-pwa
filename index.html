@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mini Jefecita</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00C4B4">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+<body>
+    <div id="app">
+        <!-- Main Content -->
+        <main id="content">
+            <!-- Home View (Inicio) -->
+            <section id="view-inicio" class="view active">
+                <header class="home-header">
+                    <p id="greeting" class="caption">Cargando...</p>
+                    <h1>Jade 💚</h1>
+                </header>
+
+                <div class="motivational-card">
+                    <p id="motivational-text">Preparando tu inspiración... ✨</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="icon">🔥</span>
+                            <span id="home-streak-val" class="stat-value">0</span>
+                        </div>
+                        <p class="stat-label">/ días racha</p>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-header">
+                            <span class="icon">🔔</span>
+                            <span class="stat-value">3</span>
+                        </div>
+                        <p class="stat-label">/ Pendientes</p>
+                    </div>
+                </div>
+
+                <div class="reminders-section">
+                    <h2>Próximos recordatorios</h2>
+                    <div class="reminder-list">
+                        <div class="reminder-row">
+                            <span class="dot"></span>
+                            <span class="reminder-text">Beber agua</span>
+                            <span class="reminder-time">10:00 AM</span>
+                        </div>
+                        <div class="reminder-row">
+                            <span class="dot"></span>
+                            <span class="reminder-text">Rutina de skincare</span>
+                            <span class="reminder-time">09:00 PM</span>
+                        </div>
+                        <div class="reminder-row">
+                            <span class="dot"></span>
+                            <span class="reminder-text">Tomar vitaminas</span>
+                            <span class="reminder-time">08:30 AM</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Exercise View (Ejercicio) -->
+            <section id="view-ejercicio" class="view">
+                <header class="view-header">
+                    <h1>Ejercicio 🏃</h1>
+                    <p class="caption">Tu progreso físico</p>
+                </header>
+
+                <div class="exercise-streak-card">
+                    <div class="streak-icon">🔥</div>
+                    <div class="streak-details">
+                        <span id="exercise-streak-val" class="streak-number">7</span>
+                        <span class="streak-text">días seguidos</span>
+                    </div>
+                </div>
+
+                <div class="log-exercise-card">
+                    <h2>¿Entrenaste hoy?</h2>
+                    <p class="card-subtitle">Registra tu actividad para mantener la racha.</p>
+                    <div class="exercise-inputs">
+                        <input type="number" id="exercise-duration" placeholder="Minutos" min="1">
+                        <button id="btn-log-exercise" class="btn-primary">Registrar Sesión</button>
+                    </div>
+                </div>
+
+                <div class="exercise-history">
+                    <h2>Historial reciente</h2>
+                    <div id="exercise-list" class="history-list">
+                        <!-- Se llenará dinámicamente con JS -->
+                        <p class="empty-state">No hay registros nuevos.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Reminders View (Avisos) -->
+            <section id="view-avisos" class="view">
+                <header class="view-header">
+                    <h1>Avisos 🔔</h1>
+                    <p class="caption">Organiza tu día</p>
+                </header>
+
+                <div class="smart-input-card">
+                    <h2>Entrada Mágica ✨</h2>
+                    <p class="card-subtitle">Escribe algo como "cita médico lunes 10am" </p>
+                    <div class="reminder-input-area">
+                        <input type="text" id="reminder-magic-input" placeholder="¿Qué debo recordarte?">
+                        <button id="btn-parse-reminder" class="btn-primary">Añadir</button>
+                    </div>
+                </div>
+
+                <div class="active-reminders-section">
+                    <h2>Tus avisos</h2>
+                    <div id="reminder-list-active" class="history-list">
+                        <!-- Dinámico con JS -->
+                        <p class="empty-state">No hay avisos programados.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Messages View (Mensajes) -->
+            <section id="view-mensajes" class="view">
+                <header class="view-header">
+                    <h1>Jefecita AI 🤖</h1>
+                    <p class="caption">Tu asistente personal</p>
+                </header>
+
+                <div id="chat-container">
+                    <div id="chat-messages">
+                        <div class="message ai">
+                            ¡Hola Jade! 💚 Soy tu asistente. Puedo ayudarte con tus entrenamientos, recordatorios o simplemente motivarte. ¿En qué piensas hoy?
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Escribe un mensaje..." autocomplete="off">
+                    <button id="btn-send-chat" class="btn-primary">Enviar</button>
+                </div>
+            </section>
+        </main>
+
+        <!-- Tab Bar -->
+        <nav id="tab-bar">
+            <button class="tab-item active" data-view="inicio">
+                <span class="icon">❤️</span>
+                <span class="label">Inicio</span>
+            </button>
+            <button class="tab-item" data-view="ejercicio">
+                <span class="icon">🏃</span>
+                <span class="label">Ejercicio</span>
+            </button>
+            <button class="tab-item" data-view="avisos">
+                <span class="icon">🔔</span>
+                <span class="label">Avisos</span>
+            </button>
+            <button class="tab-item" data-view="mensajes">
+                <span class="icon">💬</span>
+                <span class="label">Mensajes</span>
+            </button>
+        </nav>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

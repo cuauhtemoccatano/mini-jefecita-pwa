@@ -1,0 +1,12 @@
+{
+  "name": "mini-jefecita-pwa",
+  "version": "1.0.0",
+  "description": "Personal Companion PWA for Jade",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8080"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0"
+  }
+}
