@@ -189,14 +189,22 @@ async function initAI() {
     
     const powerLevel = getDevicePowerLevel();
     const modelConfig = {
-        'MASTER': { name: 'Xenova/Qwen1.5-1.8B-Chat', label: 'Cerebro Maestro (1.8B)' },
-        'ULTRA': { name: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0', label: 'Cerebro Ultra (1.1B)' },
-        'PRO': { name: 'Xenova/Qwen1.5-0.5B-Chat', label: 'Cerebro Pro (0.5B)' },
+        'MASTER': { name: 'Xenova/Qwen1.5-0.5B-Chat', label: 'Cerebro Maestro (0.5B)' },
+        'ULTRA': { name: 'Xenova/SmolLM2-360M-Instruct', label: 'Cerebro Ultra (360M)' },
+        'PRO': { name: 'Xenova/SmolLM2-135M-Instruct', label: 'Cerebro Pro (135M)' },
         'NORMAL': { name: 'Xenova/SmolLM2-135M-Instruct', label: 'Cerebro Lite (135M)' }
     };
 
     const targetModel = modelConfig[powerLevel];
-    const isModelCached = localStorage.getItem('ai_model_name') === targetModel.name;
+    
+    // Si venimos de un modelo que crasheaba (v1.7/v1.8), forzamos limpieza si el nombre no coincide
+    const lastModel = localStorage.getItem('ai_model_name');
+    if (lastModel && lastModel !== targetModel.name) {
+        console.log("Detectado cambio de modelo por estabilidad. Limpiando...");
+        localStorage.removeItem('ai_model_ready');
+    }
+
+    const isModelCached = localStorage.getItem('ai_model_ready') === 'true' && localStorage.getItem('ai_model_name') === targetModel.name;
     let loaderShown = false;
 
     try {
@@ -657,7 +665,7 @@ function initJournal() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Mini Jefecita PWA v1.8.0 starting (Master Desktop Edition)');
+    console.log('Mini Jefecita PWA v1.8.3 starting (Stability Edition)');
     applyPersonalization();
     updateGreeting();
     initTabs();
