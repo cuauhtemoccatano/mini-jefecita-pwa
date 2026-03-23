@@ -178,6 +178,10 @@ function initSettings() {
     }
 }
 
+// AI Engine (Local)
+let generator = null;
+let isDownloadingAI = false;
+
 async function initAI() {
     const loader = document.getElementById('ai-loader');
     const progressBar = document.getElementById('progress-bar');
@@ -208,6 +212,7 @@ async function initAI() {
         }, 300);
 
         console.log(`Loading ${targetModel.label} for Jade...`);
+        isDownloadingAI = true;
 
         // Upgrade al cerebro de alta gama
         generator = await pipeline('text-generation', targetModel.name, {
@@ -223,6 +228,7 @@ async function initAI() {
         clearTimeout(showLoaderTimeout);
         localStorage.setItem('ai_model_name', targetModel.name);
         localStorage.setItem('ai_model_ready', 'true');
+        isDownloadingAI = false;
         
         if (loader && loaderShown) {
             loader.style.opacity = '0';
@@ -339,7 +345,9 @@ async function registerSW() {
         // Ensure new SW takes control
         let refreshing = false;
         navigator.serviceWorker.addEventListener('controllerchange', () => {
-            if (!refreshing) {
+            // Solo reiniciamos si NO estamos descargando el cerebro
+            if (!refreshing && !isDownloadingAI) {
+                console.log('Update detected, reloading safely...');
                 window.location.reload();
                 refreshing = true;
             }
