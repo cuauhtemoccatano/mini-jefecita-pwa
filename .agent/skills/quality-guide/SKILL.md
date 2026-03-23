@@ -24,12 +24,22 @@ Esta skill debe ser consultada ANTES de realizar cualquier cambio visual o funci
 - **LocalStorage**: Nunca sobreescribir objetos completos sin hacer un `JSON.parse` previo para mantener datos existentes (ej: racha de Jade).
 - **Face ID**: La sección de Diario DEBE estar bloqueada por defecto (`isDiarioUnlocked = false`).
 
-## 4. Rendimiento de IA (Invisible AI)
-- **Escalado**: No asignar modelos de más de 2B parámetros para evitar cierres inesperados en Safari iOS.
-- **Contexto**: El `systemMsg` en `generateLocalAI` debe mantenerse bajo los 200 tokens para que el iPhone responda rápido.
+## 4. Rendimiento de IA (Potencia Variable)
+- **Escalado**: El modelo por defecto en móviles DEBE ser `135M` (Esencial) para evitar crashes por RAM (Jetsam).
+- **Selector Manual**: Cualquier cambio de modelo DEBE forzar un `location.reload()` para asegurar que se libere la memoria anterior.
+- **Contexto**: El `systemMsg` en `generateLocalAI` debe mantenerse bajo los 200 tokens.
 
-## 5. Checklist Pre-Commit
-- [ ] ¿Se ha actualizado el número de versión en los 4 sitios clave (package, index, sw, app)?
-- [ ] ¿La interfaz se ve bien en un iPhone 14 Pro vertical (Safe Areas)?
-- [ ] ¿El nuevo código respeta la "IA Invisible" (logEvent)?
+## 5. Integración de Salud (Apple Health)
+- **Privacidad**: Los datos de salud (pasos/calorías) solo se guardan en `localStorage`. Nunca se transmiten.
+- **Formato**: Los parámetros de entrada esperados son `?steps=X&cals=Y`.
+- **Limpieza**: Tras recibir datos de salud, la URL DEBE limpiarse con `history.replaceState` para evitar alertas redundantes.
+
+## 6. Personalización de Usuario
+- **Tokens Dinámicos**: Usar siempre la variable `userData.name` en diálogos de IA.
+- **Vibe**: El emoji de racha y el color principal deben ser síncronos con el panel de Ajustes.
+
+## 7. Checklist Pre-Commit
+- [ ] ¿Se ha actualizado el número de versión en los 4 sitios clave (v1.9.0+)?
+- [ ] ¿El nuevo código respeta el bloqueo `isDownloadingAI`?
 - [ ] ¿Se han mantenido las transparencias (Glassmorphism)?
+- [ ] ¿Funciona el selector de cerebros sin crashear Safari?
