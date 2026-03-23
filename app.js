@@ -19,13 +19,24 @@ async function initAI() {
     const loader = document.getElementById('ai-loader');
     const progressBar = document.getElementById('progress-bar');
     const loaderDetails = document.getElementById('loader-details');
+    
+    // Si ya sabemos que está cargado, no mostrar el loader inmediatamente
+    const isModelCached = localStorage.getItem('ai_model_ready') === 'true';
+    let loaderShown = false;
 
     try {
-        // Configurar para usar wasm si webgpu falla
         env.allowLocalModels = false;
         env.useBrowserCache = true;
         
-        // Cambio a modelo confirmado público y ligero (~280MB)
+        // Timeout para mostrar el loader solo si tarda más de 300ms (descarga real)
+        const showLoaderTimeout = setTimeout(() => {
+            if (loader && !generator) {
+                loader.style.visibility = 'visible';
+                loader.style.opacity = '1';
+                loaderShown = true;
+            }
+        }, 300);
+
         generator = await pipeline('text2text-generation', 'Xenova/LaMini-Flan-T5-77M', {
             progress_callback: (data) => {
                 if (data.status === 'progress') {
@@ -36,11 +47,18 @@ async function initAI() {
             }
         });
         
-        if (loader) {
+        clearTimeout(showLoaderTimeout);
+        localStorage.setItem('ai_model_ready', 'true');
+        
+        if (loader && loaderShown) {
             loader.style.opacity = '0';
             setTimeout(() => loader.style.visibility = 'hidden', 500);
+        } else if (loader) {
+            loader.style.visibility = 'hidden';
+            loader.style.opacity = '0';
         }
     } catch (e) {
+        // ... (resto del catch se mantiene igual o similar)
         console.error('Detailed Error:', e);
         if (loader) {
             loader.innerHTML = `
@@ -113,7 +131,7 @@ async function registerSW() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js')
             .then(reg => {
-                console.log('SW Registered v1.2.1');
+                console.log('SW Registered v1.2.2');
                 // Detect update
                 reg.onupdatefound = () => {
                     const newSW = reg.installing;
@@ -353,7 +371,7 @@ async function initReminders() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Mini Jefecita PWA v1.2.1 starting (Local AI)');
+    console.log('Mini Jefecita PWA v1.2.2 starting (Local AI)');
     updateGreeting();
     initTabs();
     initExercise();

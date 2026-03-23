@@ -1,5 +1,4 @@
-```javascript
-const CACHE_NAME = 'mini-jefecita-v1.2.1';
+const CACHE_NAME = 'mini-jefecita-v1.2.2';
 const ASSETS = [
   '/',
   '/index.html',
@@ -35,10 +34,10 @@ self.addEventListener('activate', event => {
     ])
   );
 });
+
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
       .then((response) => response || fetch(event.request))
   );
 });
-```
