@@ -696,3 +696,41 @@ input[type="number"]:focus {
     gap: 12px;
     margin-top: 24px;
 }
+
+/* Settings Sections */
+.set-section {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.set-desc {
+    font-size: 12px;
+    opacity: 0.6;
+    margin-bottom: 12px;
+}
+
+.shortcut-steps {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+}
+
+.shortcut-steps .step {
+    font-size: 11px;
+    margin-bottom: 6px;
+    opacity: 0.8;
+}
+
+.btn-secondary-full {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}

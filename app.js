@@ -163,6 +163,19 @@ function initSettings() {
         applyPersonalization();
         modal.style.display = 'none';
     });
+
+    const btnCopy = document.getElementById('btn-copy-shortcut');
+    if (btnCopy) {
+        btnCopy.addEventListener('click', () => {
+            const baseUrl = window.location.origin;
+            const shortcutUrl = `${baseUrl}/?steps=RESULTADO`;
+            navigator.clipboard.writeText(shortcutUrl).then(() => {
+                const originalText = btnCopy.textContent;
+                btnCopy.textContent = "¡Copiado! ✅";
+                setTimeout(() => btnCopy.textContent = originalText, 2000);
+            });
+        });
+    }
 }
 
 async function initAI() {
