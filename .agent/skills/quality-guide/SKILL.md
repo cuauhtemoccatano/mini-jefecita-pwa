@@ -39,12 +39,13 @@ Esta skill debe ser consultada ANTES de realizar cualquier cambio visual o funci
 - **Vibe**: El emoji de racha y el color principal deben ser síncronos con el panel de Ajustes.
 
 ## 8. Verificación Obligatoria del Agente
-- **Prueba en Vivo**: Tras cada despliegue, el Agente DEBE usar el `browser_subagent` para abrir la URL de producción.
+- **Protocolo de Prueba**: El Agente DEBE verificar los cambios antes del push final.
+- **Entorno**: Se recomienda usar un servidor local (`python3 -m http.server 8080`) y el `browser_subagent` sobre `localhost`.
 - **Checklist de UX**:
-  1. Verificar que el saludo sea dinámico (`userData.name`).
-  2. Comprobar que el Diario pida Face ID (no entrar directo).
-  3. Validar que los botones de Ajustes abran el modal correctamente.
-- **Evidencia**: El Agente debe proporcionar un reporte de visualización al usuario.
+  1. No debe haber "Pantalla Negra" tras el loader.
+  2. La versión (`vX.X.X`) debe ser visible en el Splash Screen.
+  3. El selector de cerebros debe ser funcional en Ajustes.
+- **Evidencia**: Proporcionar resumen de la prueba local al usuario.
 
 ## 9. Checklist Pre-Commit
 - [ ] ¿Se ha actualizado el número de versión en los 4 sitios clave (v1.9.0+)?

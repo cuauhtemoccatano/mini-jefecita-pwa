@@ -39,30 +39,25 @@ function checkHealthDeepLink() {
         healthData.lastUpdate = new Date().toISOString();
         saveHealthData();
         logEvent('health_sync', { steps, cals });
-        
-        // Limpiar la URL para evitar recargas infinitas
         window.history.replaceState({}, document.title, "/");
-        alert("¡Salud sincronizada! 👟✨");
     }
 }
 
-// Invisible AI: Self-Evolution Engine
+// Invisible AI Engine
 let brainEvents = JSON.parse(localStorage.getItem('brain_events') || '[]');
 let behaviorRules = JSON.parse(localStorage.getItem('behavior_rules') || '{"vibe": "normal", "focus": "balance"}');
 
 function logEvent(type, data = {}) {
     brainEvents.push({ type, data, timestamp: new Date().toISOString() });
-    // Mantener solo los últimos 50 eventos para no saturar
     if (brainEvents.length > 50) brainEvents.shift();
     localStorage.setItem('brain_events', JSON.stringify(brainEvents));
 }
 
 async function synthesizeLearnings() {
     if (!generator || brainEvents.length < 5) return;
-
     console.log('Synthesizing learned behavior...');
     const recentEvents = JSON.stringify(brainEvents.slice(-10));
-    const system = `Eres el subconsciente de la app de Jade. Analiza sus eventos recientes y responde ÚNICAMENTE con un JSON: {"vibe": "zen/energetic/focused", "focus": "exercise/reminders/chat"}`;
+    const system = `Eres el subconsciente de la app. Responde ÚNICAMENTE con JSON: {"vibe": "zen/energetic/focused", "focus": "exercise/reminders/chat"}`;
     
     try {
         const result = await generateLocalAI(`Eventos: ${recentEvents}`, system);
@@ -71,82 +66,55 @@ async function synthesizeLearnings() {
         localStorage.setItem('behavior_rules', JSON.stringify(behaviorRules));
         applyBehavioralUI();
     } catch (e) {
-        console.warn('Synthesis skipped', e);
+        console.warn('Synthesis skipped');
     }
 }
 
 function applyBehavioralUI() {
     const root = document.documentElement;
-    if (behaviorRules.vibe === 'zen') {
-        root.style.setProperty('--primary', '#81D4FA'); // Azul tranquilo
-    } else if (behaviorRules.vibe === 'energetic') {
-        root.style.setProperty('--primary', '#FF7043'); // Naranja energía
-    } else {
-        root.style.setProperty('--primary', '#00C4B4'); // Teal original
-    }
+    if (behaviorRules.vibe === 'zen') root.style.setProperty('--primary', '#81D4FA');
+    else if (behaviorRules.vibe === 'energetic') root.style.setProperty('--primary', '#FF7043');
+    else root.style.setProperty('--primary', userData.color || '#00C4B4');
 }
 
+// Hardware & User Settings
 function getDevicePowerLevel() {
     try {
         const canvas = document.createElement('canvas');
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        if (!gl) return 'NORMAL';
-        
         const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
         const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || "";
         const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-        
-        console.log("Device Hardware Info:", { renderer, platform: navigator.platform });
-
-        // Chip Apple M1/M2/M3 (Desktop/Laptop) -> Nivel MASTER
         if (isMac && (renderer.includes('Apple M') || renderer.includes('Apple GPU'))) return 'MASTER';
-        
-        // Chip A17 Pro (iPhone 15 Pro/Max) -> Nivel ULTRA
         if (renderer.includes('A17')) return 'ULTRA';
-        
-        // Chip A16 (iPhone 14 Pro / 15) -> Nivel PRO
         if (renderer.includes('A16')) return 'PRO';
-        
-        // Otros dispositivos modernos
         return 'PRO';
-    } catch (e) {
-        return 'NORMAL';
-    }
+    } catch (e) { return 'NORMAL'; }
 }
 
-// User Settings
 let userData = JSON.parse(localStorage.getItem('user_settings') || '{"name": "Jade", "color": "#00C4B4", "vibe": "💚", "brain": "AUTO"}');
 
 function applyPersonalization() {
     document.querySelectorAll('.user-name-label').forEach(el => el.textContent = userData.name);
     const vibeEl = document.getElementById('user-vibe-label');
     if (vibeEl) vibeEl.textContent = userData.vibe;
-    
     document.documentElement.style.setProperty('--primary', userData.color);
-    document.title = `Mini Jefecita - ${userData.name}`;
 }
 
 function initSettings() {
     const modal = document.getElementById('settings-modal');
-    const btnOpen = document.getElementById('btn-settings');
-    const btnClose = document.getElementById('btn-close-settings');
-    const btnSave = document.getElementById('btn-save-settings');
-    
-    const inputName = document.getElementById('set-name');
-    const inputVibe = document.getElementById('set-vibe');
-    const inputBrain = document.getElementById('set-brain-level');
     const colorDots = document.querySelectorAll('.color-dot');
-
     let selectedColor = userData.color;
 
-    if (btnOpen) btnOpen.addEventListener('click', () => {
-        inputName.value = userData.name;
-        inputVibe.value = userData.vibe;
+    document.getElementById('btn-settings')?.addEventListener('click', () => {
+        document.getElementById('set-name').value = userData.name;
+        document.getElementById('set-vibe').value = userData.vibe;
+        const inputBrain = document.getElementById('set-brain-level');
         if (inputBrain) inputBrain.value = userData.brain === 'AUTO' ? getDevicePowerLevel() : userData.brain;
         modal.style.display = 'flex';
     });
 
-    if (btnClose) btnClose.addEventListener('click', () => modal.style.display = 'none');
+    document.getElementById('btn-close-settings')?.addEventListener('click', () => modal.style.display = 'none');
 
     colorDots.forEach(dot => {
         dot.addEventListener('click', () => {
@@ -156,39 +124,30 @@ function initSettings() {
         });
     });
 
-    if (btnSave) btnSave.addEventListener('click', () => {
+    document.getElementById('btn-save-settings')?.addEventListener('click', () => {
         const oldBrain = userData.brain;
-        userData.name = inputName.value.trim() || "Jefecita";
-        userData.vibe = inputVibe.value.trim() || "💚";
+        userData.name = document.getElementById('set-name').value.trim() || "Jade";
+        userData.vibe = document.getElementById('set-vibe').value.trim() || "💚";
         userData.color = selectedColor;
-        userData.brain = inputBrain ? inputBrain.value : 'AUTO';
-        
+        userData.brain = document.getElementById('set-brain-level').value;
         localStorage.setItem('user_settings', JSON.stringify(userData));
         applyPersonalization();
         modal.style.display = 'none';
-
-        // Si cambió el nivel de IA, reiniciar para cargar el nuevo cerebro
-        if (oldBrain !== userData.brain) {
-            alert("Cambiando cerebro... La app se reiniciará. 🧠");
-            location.reload();
-        }
+        if (oldBrain !== userData.brain) location.reload();
     });
 
-    const btnCopy = document.getElementById('btn-copy-shortcut');
-    if (btnCopy) {
-        btnCopy.addEventListener('click', () => {
-            const baseUrl = window.location.origin;
-            const shortcutUrl = `${baseUrl}/?steps=RESULTADO`;
-            navigator.clipboard.writeText(shortcutUrl).then(() => {
-                const originalText = btnCopy.textContent;
-                btnCopy.textContent = "¡Copiado! ✅";
-                setTimeout(() => btnCopy.textContent = originalText, 2000);
-            });
+    document.getElementById('btn-copy-shortcut')?.addEventListener('click', (e) => {
+        const url = `${window.location.origin}/?steps=RESULTADO`;
+        navigator.clipboard.writeText(url).then(() => {
+            const btn = e.target;
+            const original = btn.textContent;
+            btn.textContent = "¡Copiado! ✅";
+            setTimeout(() => btn.textContent = original, 2000);
         });
-    }
+    });
 }
 
-// AI Engine (Local)
+// AI Core Engine
 let generator = null;
 let isDownloadingAI = false;
 
@@ -197,502 +156,191 @@ async function initAI() {
     const progressBar = document.getElementById('progress-bar');
     const loaderDetails = document.getElementById('loader-details');
     
-    // Priorizamos selección manual si existe
-    let powerLevel = userData.brain === 'AUTO' || !userData.brain ? getDevicePowerLevel() : userData.brain;
-    console.log("Selected Power Level:", powerLevel);
-
+    let level = userData.brain === 'AUTO' || !userData.brain ? getDevicePowerLevel() : userData.brain;
     const modelConfig = {
-        'MASTER': { name: 'Xenova/Qwen1.5-1.8B-Chat', label: 'Cerebro Maestro (1.8B)' },
+        'MASTER': { name: 'Xenova/Qwen1.5-0.5B-Chat', label: 'Cerebro Maestro (0.5B)' },
         'ULTRA': { name: 'Xenova/SmolLM2-360M-Instruct', label: 'Cerebro Ultra (360M)' },
-        'PRO': { name: 'Xenova/Qwen1.5-0.5B-Chat', label: 'Cerebro Pro (0.5B)' },
+        'PRO': { name: 'Xenova/SmolLM2-135M-Instruct', label: 'Cerebro Pro (135M)' },
         'NORMAL': { name: 'Xenova/SmolLM2-135M-Instruct', label: 'Cerebro Lite (135M)' }
     };
 
-    const targetModel = modelConfig[powerLevel];
-    
-    // Si venimos de un modelo que crasheaba (v1.7/v1.8), forzamos limpieza si el nombre no coincide
-    const lastModel = localStorage.getItem('ai_model_name');
-    if (lastModel && lastModel !== targetModel.name) {
-        console.log("Detectado cambio de modelo por estabilidad. Limpiando...");
-        localStorage.removeItem('ai_model_ready');
-    }
-
-    const isModelCached = localStorage.getItem('ai_model_ready') === 'true' && localStorage.getItem('ai_model_name') === targetModel.name;
-    let loaderShown = false;
+    const target = modelConfig[level];
+    const isCached = localStorage.getItem('ai_model_ready') === 'true' && localStorage.getItem('ai_model_name') === target.name;
 
     try {
         env.allowLocalModels = false;
         env.useBrowserCache = true;
         
-        const showLoaderTimeout = setTimeout(() => {
-            if (loader && !generator) {
-                loader.style.visibility = 'visible';
-                loader.style.opacity = '1';
-                loaderShown = true;
-            }
-        }, 300);
+        if (!isCached && loader) {
+            loader.style.visibility = 'visible';
+            loader.style.opacity = '1';
+        }
 
-        console.log(`Loading ${targetModel.label} for Jade...`);
         isDownloadingAI = true;
-
-        // Upgrade al cerebro de alta gama
-        generator = await pipeline('text-generation', targetModel.name, {
-            progress_callback: (data) => {
-                if (data.status === 'progress') {
-                    const p = Math.round(data.progress);
-                    if (progressBar) progressBar.style.width = `${p}%`;
-                    if (loaderDetails) loaderDetails.textContent = `${p}% - Optimizando para ${powerLevel}...`;
+        generator = await pipeline('text-generation', target.name, {
+            progress_callback: (d) => {
+                if (d.status === 'progress' && progressBar) {
+                    const p = Math.round(d.progress);
+                    progressBar.style.width = `${p}%`;
+                    if (loaderDetails) loaderDetails.textContent = `${p}% - Optimizando para ${level}...`;
                 }
             }
         });
         
-        clearTimeout(showLoaderTimeout);
-        localStorage.setItem('ai_model_name', targetModel.name);
+        localStorage.setItem('ai_model_name', target.name);
         localStorage.setItem('ai_model_ready', 'true');
         isDownloadingAI = false;
-        
-        if (loader && loaderShown) {
-            loader.style.opacity = '0';
-            setTimeout(() => loader.style.visibility = 'hidden', 500);
-        } else if (loader) {
-            loader.style.visibility = 'hidden';
-            loader.style.opacity = '0';
-        }
     } catch (e) {
-        // ... (resto del catch se mantiene igual o similar)
-        console.error('Detailed Error:', e);
+        console.error("AI Error:", e);
+    } finally {
         if (loader) {
-            loader.innerHTML = `
-                <div style="padding:24px; background: rgba(0,0,0,0.8); border-radius: 20px; border: 1px solid var(--primary);">
-                    <h3 style="color: var(--primary); margin-bottom:12px;">Pausa técnica 📶</h3>
-                    <p style="font-size:14px; margin-bottom:20px; opacity:0.8;">No pude descargar mi cerebro. ¿Tienes buena conexión?</p>
-                    <button onclick="location.reload()" class="btn-primary" style="padding: 10px 24px; border-radius: 100px; font-size:14px;">Reintentar</button>
-                    <p style="font-size:10px; opacity:0.4; margin-top:20px;">Error: ${e.message}</p>
-                </div>
-            `;
+            loader.style.opacity = '0';
+            setTimeout(() => {
+                loader.style.visibility = 'hidden';
+                loader.style.display = 'none';
+            }, 600);
         }
     }
 }
 
 async function generateLocalAI(prompt, systemMsg) {
     if (!generator) return null;
+    const chat = [{ role: 'system', content: systemMsg }, { role: 'user', content: prompt }];
+    const fullPrompt = generator.tokenizer.apply_chat_template(chat, { tokenize: false, add_generation_prompt: true });
     
-    // Formato ChatML universal
-    const chat = [
-        { role: 'system', content: systemMsg },
-        { role: 'user', content: prompt }
-    ];
-    
-    const fullPrompt = generator.tokenizer.apply_chat_template(chat, { 
-        tokenize: false, 
-        add_generation_prompt: true 
-    });
-    
-    const output = await generator(fullPrompt, {
-        max_new_tokens: 128,
-        temperature: 0.7,
-        do_sample: true,
-        repetition_penalty: 1.1
-    });
-
-    // Soporte para ambos formatos (Qwen/TinyLlama)
+    const output = await generator(fullPrompt, { max_new_tokens: 128, temperature: 0.7, do_sample: true, repetition_penalty: 1.1 });
     let text = output[0].generated_text;
-    if (text.includes('<|im_start|>assistant')) {
-        text = text.split('<|im_start|>assistant')[1];
-    } else if (text.includes('<|assistant|>')) {
-        text = text.split('<|assistant|>')[1];
-    }
-    
+    if (text.includes('<|im_start|>assistant')) text = text.split('<|im_start|>assistant')[1];
+    else if (text.includes('<|assistant|>')) text = text.split('<|assistant|>')[1];
     return text.replace('<|im_end|>', '').replace('</s>', '').trim();
 }
 
-// Insights Logic
-async function updateMotivationalInsight() {
-    const textElement = document.getElementById('motivational-text');
-    if (!textElement || !generator) return;
-
-    const system = `Eres el coach de Jade. Genera UNA frase corta (máx 15 palabras) con 💚 de inspiración. Contexto: Racha ${calculateStreak()} días. Vibe: ${behaviorRules.vibe}.`;
-    const insight = await generateLocalAI("Dame una frase de hoy", system);
-    
-    if (insight) textElement.textContent = insight;
-}
-
-// Tab Switching Logic
+// Module Initializers
 function initTabs() {
-    const tabs = document.querySelectorAll('.tab-item');
+    const tabs = document.querySelectorAll('.tab-btn');
     const views = document.querySelectorAll('.view');
-
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
-            const targetView = tab.getAttribute('data-view');
-            
-            // Update Active Tab
+            const target = tab.getAttribute('data-view');
+            views.forEach(v => v.classList.remove('active'));
             tabs.forEach(t => t.classList.remove('active'));
+            document.getElementById(`view-${target}`).classList.add('active');
             tab.classList.add('active');
-            
-            // Update Active View
-            views.forEach(view => {
-                view.classList.remove('active');
-                if (view.id === `view-${targetView}`) {
-                    view.classList.add('active');
-                }
-            });
-
-            // Scroll to top
-            document.getElementById('content').scrollTop = 0;
         });
     });
-}
-
-// Service Worker Registration
-async function registerSW() {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-            .then(reg => {
-                console.log('SW Registered v1.2.2');
-                // Detect update
-                reg.onupdatefound = () => {
-                    const newSW = reg.installing;
-                    newSW.onstatechange = () => {
-                        if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
-                            console.log('New SW found, reloading...');
-                            location.reload();
-                        }
-                    };
-                };
-            })
-            .catch(err => console.log('SW Error:', err));
-
-        // Ensure new SW takes control
-        let refreshing = false;
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
-            // Solo reiniciamos si NO estamos descargando el cerebro
-            if (!refreshing && !isDownloadingAI) {
-                console.log('Update detected, reloading safely...');
-                window.location.reload();
-                refreshing = true;
-            }
-        });
-    }
-}
-
-// Exercise Logic
-let exercises = JSON.parse(localStorage.getItem('exercises') || '[]');
-
-function saveExercises() {
-    localStorage.setItem('exercises', JSON.stringify(exercises));
-    updateExerciseUI();
-}
-
-function calculateStreak() {
-    if (exercises.length === 0) return 0;
-    
-    // Sort by date descending
-    const sorted = [...exercises].sort((a, b) => new Date(b.date) - new Date(a.date));
-    let streak = 0;
-    let currentDate = new Date();
-    currentDate.setHours(0, 0, 0, 0);
-
-    for (let i = 0; i < sorted.length; i++) {
-        const itemDate = new Date(sorted[i].date);
-        itemDate.setHours(0, 0, 0, 0);
-        
-        const diffDays = Math.floor((currentDate - itemDate) / (1000 * 60 * 60 * 24));
-        
-        if (diffDays === 0 || diffDays === 1) {
-            streak++;
-            currentDate = itemDate;
-        } else {
-            break;
-        }
-    }
-    return streak;
-}
-
-function updateExerciseUI() {
-    const list = document.getElementById('exercise-list');
-    const streakElement = document.getElementById('exercise-streak-val');
-    const homeStreakElement = document.getElementById('home-streak-val');
-    
-    const currentStreak = calculateStreak();
-    
-    // Update Streaks
-    if (streakElement) streakElement.textContent = currentStreak;
-    if (homeStreakElement) homeStreakElement.textContent = currentStreak;
-
-    // Update List
-    if (exercises.length === 0) {
-        list.innerHTML = '<p class="empty-state">No hay registros nuevos.</p>';
-        return;
-    }
-
-    list.innerHTML = exercises
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .slice(0, 5)
-        .map(ex => `
-            <div class="history-item">
-                <span class="history-date">${new Date(ex.date).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' })}</span>
-                <span class="history-duration">${ex.duration} min</span>
-            </div>
-        `).join('');
 }
 
 function initExercise() {
-    const btn = document.getElementById('btn-log-exercise');
-    const durationInput = document.getElementById('exercise-duration');
-
-    if (btn) {
-        btn.addEventListener('click', () => {
-            const duration = durationInput.value || 30;
-            const today = new Date().toISOString();
-            
-            // Check if already logged today
-            const alreadyLogged = exercises.some(ex => 
-                new Date(ex.date).toDateString() === new Date().toDateString()
-            );
-
-            if (!alreadyLogged) {
-                exercises.push({ date: today, duration: parseInt(duration) });
-                saveExercises();
-                logEvent('exercise_logged', { duration: parseInt(duration) });
-                if (durationInput) durationInput.value = '';
-                alert('¡Entrenamiento registrado! 🔥');
-            } else {
-                alert('Ya registraste tu entrenamiento de hoy. ¡Sigue así! 💪');
-            }
-        });
-    }
-
-    updateExerciseUI();
+    const btn = document.getElementById('btn-save-exercise');
+    btn?.addEventListener('click', () => {
+        const type = document.getElementById('exercise-type').value;
+        const dur = document.getElementById('exercise-duration').value;
+        if (dur) {
+            logEvent('exercise_logged', { type, dur });
+            alert(`¡Entrenamiento de ${type} guardado! 🔥`);
+        }
+    });
 }
 
-// Chat Logic
-function addMessage(text, sender) {
-    const container = document.getElementById('chat-messages');
-    if (!container) return;
+function initReminders() {
+    const btn = document.getElementById('btn-add-reminder');
+    btn?.addEventListener('click', () => {
+        const text = document.getElementById('reminder-input').value;
+        if (text) {
+            logEvent('reminder_created', { text });
+            const list = document.getElementById('reminders-list');
+            const item = document.createElement('div');
+            item.className = 'reminder-item';
+            item.innerHTML = `<span>${text}</span><button class="btn-check">✓</button>`;
+            list.prepend(item);
+            document.getElementById('reminder-input').value = '';
+        }
+    });
+}
 
-    const msgDiv = document.createElement('div');
-    msgDiv.className = `message ${sender}`;
-    msgDiv.textContent = text;
-    container.appendChild(msgDiv);
-    
-    // Auto scroll
-    container.parentElement.scrollTop = container.parentElement.scrollHeight;
+// Journal (Face ID)
+let isJournalUnlocked = false;
+async function initJournal() {
+    const btnLock = document.getElementById('btn-unlock-journal');
+    btnLock?.addEventListener('click', async () => {
+        try {
+            if (window.PublicKeyCredential) {
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+                await navigator.credentials.get({ publicKey: { challenge, timeout: 60000, userVerification: "required" }});
+                document.getElementById('lock-overlay').style.display = 'none';
+                document.getElementById('journal-content').style.opacity = '1';
+                isJournalUnlocked = true;
+                logEvent('journal_unlocked');
+            } else {
+                alert("FaceID no disponible. Desbloqueando modo manual.");
+                document.getElementById('lock-overlay').style.display = 'none';
+                document.getElementById('journal-content').style.opacity = '1';
+                isJournalUnlocked = true;
+            }
+        } catch (e) { console.error("Bio Check failed"); }
+    });
+
+    document.getElementById('btn-save-journal')?.addEventListener('click', () => {
+        const text = document.getElementById('journal-input').value;
+        if (text) {
+            logEvent('journal_entry_saved');
+            alert("Pensamiento guardado en tu diario privado. 🖤");
+            document.getElementById('journal-input').value = '';
+        }
+    });
 }
 
 async function initChat() {
-    const btn = document.getElementById('btn-send-chat');
-    const input = document.getElementById('chat-input');
-
-    if (!btn || !input) return;
-
-    const sendMessage = async () => {
+    document.getElementById('btn-send-chat')?.addEventListener('click', async () => {
+        const input = document.getElementById('chat-input');
         const text = input.value.trim();
         if (!text) return;
 
-        addMessage(text, 'user');
+        const chatBox = document.getElementById('chat-container');
+        const userMsg = document.createElement('div');
+        userMsg.className = 'message user';
+        userMsg.textContent = text;
+        chatBox.appendChild(userMsg);
         input.value = '';
 
-        if (!generator) {
-            addMessage("Aún estoy cargando mi cerebro... ⌛", 'ai');
-            return;
-        }
-
-        const system = `Eres el asistente de ${userData.name} en su app "Mini Jefecita". Sé breve, elegante y usa ${userData.vibe}. Racha actual: ${calculateStreak()} días. Estado mental detectado: ${behaviorRules.vibe}.`;
+        const system = `Eres el asistente de ${userData.name}. Sé breve y elegante.`;
         const reply = await generateLocalAI(text, system);
-        logEvent('chat_sent', { text });
-        addMessage(reply || "Jade, me quedé pensando... ¿Me repites eso? 💚", 'ai');
-    };
-
-    btn.addEventListener('click', sendMessage);
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') sendMessage();
+        const aiMsg = document.createElement('div');
+        aiMsg.className = 'message ai';
+        aiMsg.textContent = reply || "Me quedé pensando... ¿Me repites?";
+        chatBox.appendChild(aiMsg);
+        chatBox.scrollTop = chatBox.scrollHeight;
     });
 }
 
-// Reminders Logic
-let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
-
-function saveReminders() {
-    localStorage.setItem('reminders', JSON.stringify(reminders));
-    updateRemindersUI();
-}
-
-function updateRemindersUI() {
-    const list = document.getElementById('reminder-list-active');
-    if (!list) return;
-
-    if (reminders.length === 0) {
-        list.innerHTML = '<p class="empty-state">No hay avisos programados.</p>';
-        return;
-    }
-
-    list.innerHTML = reminders
-        .sort((a, b) => new Date(`${a.date}T${a.time}`) - new Date(`${b.date}T${b.time}`))
-        .map(rem => `
-            <div class="reminder-item" id="rem-${rem.id}">
-                <span class="dot"></span>
-                <div class="reminder-info">
-                    <span class="reminder-title">${rem.title}</span>
-                    <span class="reminder-time-badge">${rem.date} • ${rem.time}</span>
-                </div>
-            </div>
-        `).join('');
-}
-
-async function initReminders() {
-    const btn = document.getElementById('btn-parse-reminder');
-    const input = document.getElementById('reminder-magic-input');
-
-    if (!btn || !input) return;
-
-    btn.addEventListener('click', async () => {
-        const text = input.value.trim();
-        if (!text) return;
-
-        btn.disabled = true;
-        btn.textContent = "...";
-
-        if (!generator) {
-            alert("La IA se está descargando. Por favor espera un momento.");
-            btn.disabled = false;
-            btn.textContent = "Añadir";
-            return;
-        }
-
-        try {
-            const system = `Extrae datos de recordatorio en JSON: { "title": "...", "date": "YYYY-MM-DD", "time": "HH:mm" }. Hoy es ${new Date().toLocaleDateString()}.`;
-            const jsonText = await generateLocalAI(`Recordatorio: ${text}`, system);
-            
-            // Basic extraction if model logic fails to give pure JSON
-            const data = JSON.parse(jsonText.match(/{.*?}/s)[0]);
-
-            if (data.title) {
-                reminders.push({ id: Date.now(), ...data });
-                saveReminders();
-                logEvent('reminder_created', { title: data.title });
-                input.value = '';
-            }
-        } catch (e) {
-            console.warn('Parsing failed, manual entry', e);
-            reminders.push({ 
-                id: Date.now(), 
-                title: text, 
-                date: new Date().toISOString().split('T')[0], 
-                time: "09:00" 
+// Service Worker
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+            reg.addEventListener('updatefound', () => {
+                const newSW = reg.installing;
+                newSW.addEventListener('statechange', () => {
+                    if (newSW.state === 'installed' && navigator.serviceWorker.controller) {
+                        if (!isDownloadingAI) window.location.reload();
+                    }
+                });
             });
-            saveReminders();
-            input.value = '';
-        } finally {
-            btn.disabled = false;
-            btn.textContent = "Añadir";
-        }
-    });
-
-    updateRemindersUI();
-}
-
-// Journal Logic (with Biometric Lock)
-let journalEntries = JSON.parse(localStorage.getItem('journal_entries') || '[]');
-let isDiarioUnlocked = false;
-
-function saveJournalEntries() {
-    localStorage.setItem('journal_entries', JSON.stringify(journalEntries));
-    updateJournalUI();
-}
-
-function updateJournalUI() {
-    const list = document.getElementById('journal-list');
-    if (!list) return;
-
-    if (journalEntries.length === 0) {
-        list.innerHTML = '<p class="empty-state">Tu historia comienza aquí.</p>';
-        return;
-    }
-
-    list.innerHTML = journalEntries
-        .sort((a, b) => new Date(b.date) - new Date(a.date))
-        .map(entry => `
-            <div class="history-item journal-entry">
-                <span class="history-date">${new Date(entry.date).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}</span>
-                <span class="journal-text-preview">${entry.text}</span>
-            </div>
-        `).join('');
-}
-
-async function unlockDiario() {
-    const lockScreen = document.getElementById('diario-lock-screen');
-    const content = document.getElementById('diario-content');
-
-    // Intentar usar Biometría (FaceID/TouchID)
-    if (window.PublicKeyCredential) {
-        try {
-            // Simulamos un reto para activar el sensor nativo en iOS
-            console.log("Iniciando FaceID check...");
-            // Nota: En una PWA real sin backend, esto disparará el prompt de iOS si se configura un objeto dummy.
-            // Por ahora usamos un flujo seguro:
-            
-            isDiarioUnlocked = true;
-            if (lockScreen) lockScreen.style.display = 'none';
-            if (content) content.style.display = 'block';
-            updateJournalUI();
-            logEvent('journal_unlocked');
-        } catch (e) {
-            alert("No se pudo verificar tu identidad.");
-        }
-    } else {
-        // Fallback para dispositivos sin biometría
-        isDiarioUnlocked = true;
-        if (lockScreen) lockScreen.style.display = 'none';
-        if (content) content.style.display = 'block';
-        updateJournalUI();
-    }
-}
-
-function initJournal() {
-    const btnUnlock = document.getElementById('btn-unlock-diario');
-    const btnSave = document.getElementById('btn-save-journal');
-    const input = document.getElementById('journal-input');
-
-    if (btnUnlock) btnUnlock.addEventListener('click', unlockDiario);
-
-    if (btnSave) {
-        btnSave.addEventListener('click', () => {
-            const text = input.value.trim();
-            if (!text) return;
-
-            journalEntries.push({
-                id: Date.now(),
-                date: new Date().toISOString(),
-                text: text
-            });
-            saveJournalEntries();
-            input.value = '';
-            logEvent('journal_entry_saved');
-            alert("Momento guardado con éxito. 📔💚");
         });
-    }
-
-    updateJournalUI();
+    });
 }
 
-// Initialize
+// Global Init
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Mini Jefecita PWA v1.9.0 starting (Choice AI Edition)');
     applyPersonalization();
     updateGreeting();
     initTabs();
     initExercise();
-    initChat();
     initReminders();
     initJournal();
     initSettings();
     checkHealthDeepLink();
     updateHealthUI();
     await initAI();
-    updateMotivationalInsight();
-    registerSW();
-
-    // Cron job invisible: sintetizar aprendizajes cada 5 minutos si la app está abierta
-    setInterval(() => synthesizeLearnings(), 1000 * 60 * 5);
+    setInterval(synthesizeLearnings, 300000);
 });

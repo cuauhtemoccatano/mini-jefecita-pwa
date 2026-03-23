@@ -57,6 +57,12 @@ body {
     font-size: 18px;
     margin-bottom: 12px;
 }
+.loader-version {
+    font-size: 10px;
+    opacity: 0.3;
+    margin-top: 16px;
+    letter-spacing: 1px;
+}
 
 .progress-container {
     width: 100%;
