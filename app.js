@@ -23,8 +23,10 @@ async function initAI() {
     try {
         // Configurar para usar wasm si webgpu falla
         env.allowLocalModels = false;
+        env.useBrowserCache = true;
         
-        generator = await pipeline('text-generation', 'Xenova/SmolLM-135M-Instruct', {
+        // Cambio a modelo confirmado público y ligero (~280MB)
+        generator = await pipeline('text2text-generation', 'Xenova/LaMini-Flan-T5-77M', {
             progress_callback: (data) => {
                 if (data.status === 'progress') {
                     const p = Math.round(data.progress);
@@ -40,24 +42,32 @@ async function initAI() {
         }
     } catch (e) {
         console.error('Detailed Error:', e);
-        if (loader) loader.innerHTML = `<div style="padding:20px"><h3>Error de conexión 📶</h3><p>No pude descargar mi cerebro. Revisa tu internet y recarga la página.</p><small style="opacity:0.5">${e.message}</small></div>`;
+        if (loader) {
+            loader.innerHTML = `
+                <div style="padding:24px; background: rgba(0,0,0,0.8); border-radius: 20px; border: 1px solid var(--primary);">
+                    <h3 style="color: var(--primary); margin-bottom:12px;">Pausa técnica 📶</h3>
+                    <p style="font-size:14px; margin-bottom:20px; opacity:0.8;">No pude descargar mi cerebro. ¿Tienes buena conexión?</p>
+                    <button onclick="location.reload()" class="btn-primary" style="padding: 10px 24px; border-radius: 100px; font-size:14px;">Reintentar</button>
+                    <p style="font-size:10px; opacity:0.4; margin-top:20px;">Error: ${e.message}</p>
+                </div>
+            `;
+        }
     }
 }
 
 async function generateLocalAI(prompt, systemMsg) {
     if (!generator) return null;
     
-    const fullPrompt = `<|im_start|>system\n${systemMsg}<|im_end|>\n<|im_start|>user\n${prompt}<|im_end|>\n<|im_start|>assistant\n`;
+    // Simplificado para T5
+    const fullPrompt = `Instruction: ${systemMsg}\nInput: ${prompt}\nOutput: `;
     
     const output = await generator(fullPrompt, {
-        max_new_tokens: 60,
+        max_new_tokens: 64,
         temperature: 0.7,
-        do_sample: true,
-        stop_sequence: '<|im_end|>'
+        do_sample: true
     });
 
-    let text = output[0].generated_text.replace(fullPrompt, '').split('<|im_end|>')[0].trim();
-    return text;
+    return output[0].generated_text.trim();
 }
 
 // Insights Logic
@@ -325,7 +335,7 @@ async function initReminders() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Mini Jefecita PWA v1.1.0 starting...');
+    console.log('Mini Jefecita PWA v1.2.0 starting (Local AI)');
     updateGreeting();
     initTabs();
     initExercise();
