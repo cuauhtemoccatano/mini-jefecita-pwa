@@ -10,29 +10,58 @@ function updateGreeting() {
     greetingElement.textContent = text;
 }
 
+// AI Engine (Local)
+let generator = null;
+
+async function initAI() {
+    const loader = document.getElementById('ai-loader');
+    const progressBar = document.getElementById('progress-bar');
+    const loaderDetails = document.getElementById('loader-details');
+
+    try {
+        generator = await window.pipeline('text-generation', 'Xenova/SmolLM-135M-Instruct', {
+            progress_callback: (data) => {
+                if (data.status === 'progress') {
+                    const p = Math.round(data.progress);
+                    progressBar.style.width = `${p}%`;
+                    loaderDetails.textContent = `${p}% - Descargando conocimientos...`;
+                }
+            }
+        });
+        
+        loader.style.opacity = '0';
+        setTimeout(() => loader.style.visibility = 'hidden', 500);
+    } catch (e) {
+        console.error('Error loading AI:', e);
+        loader.innerHTML = '<p>Error al despertar mi cerebro. ¿Tienes conexión?</p>';
+    }
+}
+
+async function generateLocalAI(prompt, systemMsg) {
+    if (!generator) return null;
+    
+    const fullPrompt = `<|im_start|>system\n${systemMsg}<|im_end|>\n<|im_start|>user\n${prompt}<|im_end|>\n<|im_start|>assistant\n`;
+    
+    const output = await generator(fullPrompt, {
+        max_new_tokens: 60,
+        temperature: 0.7,
+        do_sample: true,
+        stop_sequence: '<|im_end|>'
+    });
+
+    let text = output[0].generated_text.replace(fullPrompt, '').split('<|im_end|>')[0].trim();
+    return text;
+}
+
 // Insights Logic
 async function updateMotivationalInsight() {
     const textElement = document.getElementById('motivational-text');
-    if (!textElement) return;
+    if (!textElement || !generator) return;
 
-    try {
-        const response = await fetch('/api/insight', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                context: {
-                    streak: calculateStreak(),
-                    remindersCount: reminders.length
-                }
-            })
-        });
-        const data = await response.json();
-        if (data.insight) {
-            textElement.textContent = data.insight;
-        }
-    } catch (e) {
-        textElement.textContent = "¡Tú puedes, Jade! 💚 Mantén el enfoque hoy.";
-    }
+    const system = `Eres el coach de Jade. Genera UNA frase corta (máx 15 palabras) con 💚 de inspiración. Contexto: Racha ${calculateStreak()} días.`;
+    const insight = await generateLocalAI("Dame una frase de hoy", system);
+    
+    if (insight) textElement.textContent = insight;
 }
 
 // Tab Switching Logic
@@ -190,29 +219,14 @@ async function initChat() {
         addMessage(text, 'user');
         input.value = '';
 
-        try {
-            const response = await fetch('/api/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    message: text,
-                    context: { streak: calculateStreak() }
-                })
-            });
-
-            const data = await response.json();
-            if (data.reply) {
-                addMessage(data.reply, 'ai');
-            } else {
-                addMessage("Lo siento Jade, estoy teniendo un momento de desconexión. 💚", 'ai');
-            }
-        } catch (e) {
-            // Fallback for local testing without Vercel API
-            console.warn('API not available, using mock response');
-            setTimeout(() => {
-                addMessage(`(Modo Offline) ¡Excelente Jade! 💚 Tu racha de ${calculateStreak()} días es inspiradora.`, 'ai');
-            }, 800);
+        if (!generator) {
+            addMessage("Aún estoy cargando mi cerebro... ⌛", 'ai');
+            return;
         }
+
+        const system = `Eres el asistente de Jade en su app "Mini Jefecita". Sé breve, elegante y usa 💚. Racha actual: ${calculateStreak()} días.`;
+        const reply = await generateLocalAI(text, system);
+        addMessage(reply || "Jade, me quedé pensando... ¿Me repites eso? 💚", 'ai');
     };
 
     btn.addEventListener('click', sendMessage);
@@ -264,13 +278,19 @@ async function initReminders() {
         btn.disabled = true;
         btn.textContent = "...";
 
+        if (!generator) {
+            alert("La IA se está descargando. Por favor espera un momento.");
+            btn.disabled = false;
+            btn.textContent = "Añadir";
+            return;
+        }
+
         try {
-            const response = await fetch('/api/parse-reminder', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ input: text })
-            });
-            const data = await response.json();
+            const system = `Extrae datos de recordatorio en JSON: { "title": "...", "date": "YYYY-MM-DD", "time": "HH:mm" }. Hoy es ${new Date().toLocaleDateString()}.`;
+            const jsonText = await generateLocalAI(`Recordatorio: ${text}`, system);
+            
+            // Basic extraction if model logic fails to give pure JSON
+            const data = JSON.parse(jsonText.match(/{.*?}/s)[0]);
 
             if (data.title) {
                 reminders.push({ id: Date.now(), ...data });
@@ -278,7 +298,7 @@ async function initReminders() {
                 input.value = '';
             }
         } catch (e) {
-            console.warn('Reminder parsing failed, using simple entry');
+            console.warn('Parsing failed, manual entry', e);
             reminders.push({ 
                 id: Date.now(), 
                 title: text, 
@@ -297,12 +317,13 @@ async function initReminders() {
 }
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     updateGreeting();
     initTabs();
     initExercise();
     initChat();
     initReminders();
+    await initAI();
     updateMotivationalInsight();
     registerSW();
 });

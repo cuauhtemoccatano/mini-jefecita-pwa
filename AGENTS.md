@@ -6,9 +6,16 @@ Este archivo guía a los agentes de IA (como Antigravity/Claude Code) que trabaj
 
 **Mini Jefecita** es una **PWA (Progressive Web App)** de bienestar personal diseñada con un enfoque minimalista y premium. Está personalizada para una usuaria específica llamada "Jade".
 
-- **Stack Tecnológico**: HTML5, CSS3 (Vanilla), JavaScript (ES6+), Service Workers.
-- **Enfoque**: Mobile-First, Offline-ready, instalable como aplicación nativa.
+- **Stack Tecnológico**: HTML5, CSS3 (Vanilla), JavaScript (ES6+), Service Workers, Transformers.js.
+- **Enfoque**: Mobile-First, Offline-ready, IA Local en el navegador (Edge Computing).
 - **Diseño**: Minimalista oscuro, acento verde esmeralda (`#00C4B4`).
+
+## IA Local (Edge AI)
+
+La aplicación utiliza el modelo **SmolLM-135M-Instruct** ejecutado directamente en el cliente mediante **Transformers.js**.
+- No requiere API Keys ni servidores externos.
+- Datos 100% privados y procesados en el dispositivo.
+- El modelo se descarga una sola vez y se almacena en el cache del navegador.
 
 ## Estructura del Código
 

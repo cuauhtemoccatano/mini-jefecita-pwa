@@ -8,8 +8,24 @@
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#00C4B4">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <!-- AI Library -->
+    <script type="module">
+        import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
+        window.pipeline = pipeline;
+        window.env = env;
+    </script>
 </head>
 <body>
+    <div id="ai-loader" class="loader-overlay">
+        <div class="loader-content">
+            <span class="icon">🧠</span>
+            <p id="loader-text">Jade, estoy despertando mi cerebro...</p>
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <p id="loader-details">0%</p>
+        </div>
+    </div>
     <div id="app">
         <!-- Main Content -->
         <main id="content">
