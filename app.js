@@ -95,14 +95,15 @@ async function initAI() {
     const loaderDetails = document.getElementById('loader-details');
     
     // Si ya sabemos que está cargado, no mostrar el loader inmediatamente
-    const isModelCached = localStorage.getItem('ai_model_ready') === 'true';
+    // Reseteamos si es una versión mayor para forzar descarga del nuevo cerebro
+    const currentModel = 'Qwen1.5-0.5B';
+    const isModelCached = localStorage.getItem('ai_model_name') === currentModel;
     let loaderShown = false;
 
     try {
         env.allowLocalModels = false;
         env.useBrowserCache = true;
         
-        // Timeout para mostrar el loader solo si tarda más de 300ms (descarga real)
         const showLoaderTimeout = setTimeout(() => {
             if (loader && !generator) {
                 loader.style.visibility = 'visible';
@@ -111,17 +112,19 @@ async function initAI() {
             }
         }, 300);
 
-        generator = await pipeline('text2text-generation', 'Xenova/LaMini-Flan-T5-77M', {
+        // Upgrade al cerebro de alta gama
+        generator = await pipeline('text-generation', `Xenova/${currentModel}-Chat`, {
             progress_callback: (data) => {
                 if (data.status === 'progress') {
                     const p = Math.round(data.progress);
                     if (progressBar) progressBar.style.width = `${p}%`;
-                    if (loaderDetails) loaderDetails.textContent = `${p}% - Descargando conocimientos...`;
+                    if (loaderDetails) loaderDetails.textContent = `${p}% - Instalando Cerebro Pro...`;
                 }
             }
         });
         
         clearTimeout(showLoaderTimeout);
+        localStorage.setItem('ai_model_name', currentModel);
         localStorage.setItem('ai_model_ready', 'true');
         
         if (loader && loaderShown) {
@@ -150,16 +153,27 @@ async function initAI() {
 async function generateLocalAI(prompt, systemMsg) {
     if (!generator) return null;
     
-    // Simplificado para T5
-    const fullPrompt = `Instruction: ${systemMsg}\nInput: ${prompt}\nOutput: `;
+    // Formato ChatML para Qwen
+    const chat = [
+        { role: 'system', content: systemMsg },
+        { role: 'user', content: prompt }
+    ];
+    
+    // Crear el prompt usando el template del modelo
+    const fullPrompt = generator.tokenizer.apply_chat_template(chat, { 
+        tokenize: false, 
+        add_generation_prompt: true 
+    });
     
     const output = await generator(fullPrompt, {
-        max_new_tokens: 64,
+        max_new_tokens: 128,
         temperature: 0.7,
-        do_sample: true
+        do_sample: true,
+        repetition_penalty: 1.1
     });
 
-    return output[0].generated_text.trim();
+    // Limpiar respuesta para sacar solo el texto generado
+    return output[0].generated_text.split('<|im_start|>assistant')[1].replace('<|im_end|>', '').trim();
 }
 
 // Insights Logic
@@ -532,7 +546,7 @@ function initJournal() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Mini Jefecita PWA v1.5.0 starting (Security First)');
+    console.log('Mini Jefecita PWA v1.6.0 starting (AI PRO Edition)');
     updateGreeting();
     initTabs();
     initExercise();
