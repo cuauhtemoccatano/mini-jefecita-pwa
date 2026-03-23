@@ -543,6 +543,77 @@ input[type="number"]:focus {
 }
 
 .tab-item .label {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 500;
+}
+
+/* Biometric Lock Overlay */
+.lock-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(18, 18, 18, 0.95);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+    z-index: 110;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 20px;
+}
+
+.lock-content .icon {
+    font-size: 50px;
+    margin-bottom: 20px;
+}
+
+.lock-content h2 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: white;
+}
+
+.lock-content p {
+    opacity: 0.6;
+    margin-bottom: 30px;
+    font-size: 14px;
+}
+
+/* Journal Styles */
+.journal-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 24px;
+    padding: 24px;
+    margin-bottom: 32px;
+}
+
+#journal-input {
+    width: 100%;
+    height: 180px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-family: inherit;
+    font-size: 18px;
+    line-height: 1.6;
+    resize: none;
+    outline: none;
+    margin-bottom: 16px;
+}
+
+.history-item.journal-entry {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 20px;
+    border-radius: 16px;
+}
+
+.journal-text-preview {
+    font-size: 15px;
+    opacity: 0.8;
+    line-height: 1.5;
+    display: block;
 }
