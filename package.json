@@ -1,8 +1,8 @@
 {
   "name": "mini-jefecita-pwa",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "private": true,
-  "description": "Smart Personal Companion PWA - AI PRO Upgrade (Qwen 0.5B)",
+  "description": "Smart Personal Companion PWA - Scale-to-Hardware Edition",
   "scripts": {
     "start": "python3 -m http.server 8080"
   }

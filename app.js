@@ -86,18 +86,46 @@ function applyBehavioralUI() {
     }
 }
 
-// AI Engine (Local)
-let generator = null;
+// Hardware Detection (Proactive AI Scaling)
+function getDevicePowerLevel() {
+    try {
+        const canvas = document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (!gl) return 'NORMAL';
+        
+        const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+        const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || "";
+        
+        console.log("Device GPU Detected:", renderer);
+
+        // Chip A17 Pro (iPhone 15 Pro/Max) -> Nivel ULTRA
+        if (renderer.includes('A17')) return 'ULTRA';
+        
+        // Chip A16 (iPhone 14 Pro / 15) -> Nivel PRO
+        if (renderer.includes('A16')) return 'PRO';
+        
+        // Otros dispositivos modernos
+        return 'PRO';
+    } catch (e) {
+        return 'NORMAL';
+    }
+}
 
 async function initAI() {
     const loader = document.getElementById('ai-loader');
     const progressBar = document.getElementById('progress-bar');
     const loaderDetails = document.getElementById('loader-details');
     
-    // Si ya sabemos que está cargado, no mostrar el loader inmediatamente
-    // Reseteamos si es una versión mayor para forzar descarga del nuevo cerebro
-    const currentModel = 'Qwen1.5-0.5B';
-    const isModelCached = localStorage.getItem('ai_model_name') === currentModel;
+    // Mapeo de modelos por potencia
+    const powerLevel = getDevicePowerLevel();
+    const modelConfig = {
+        'ULTRA': { name: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0', label: 'Cerebro Ultra (1.1B)' },
+        'PRO': { name: 'Xenova/Qwen1.5-0.5B-Chat', label: 'Cerebro Pro (0.5B)' },
+        'NORMAL': { name: 'Xenova/SmolLM2-135M-Instruct', label: 'Cerebro Lite (135M)' }
+    };
+
+    const targetModel = modelConfig[powerLevel];
+    const isModelCached = localStorage.getItem('ai_model_name') === targetModel.name;
     let loaderShown = false;
 
     try {
@@ -112,19 +140,21 @@ async function initAI() {
             }
         }, 300);
 
+        console.log(`Loading ${targetModel.label} for Jade...`);
+
         // Upgrade al cerebro de alta gama
-        generator = await pipeline('text-generation', `Xenova/${currentModel}-Chat`, {
+        generator = await pipeline('text-generation', targetModel.name, {
             progress_callback: (data) => {
                 if (data.status === 'progress') {
                     const p = Math.round(data.progress);
                     if (progressBar) progressBar.style.width = `${p}%`;
-                    if (loaderDetails) loaderDetails.textContent = `${p}% - Instalando Cerebro Pro...`;
+                    if (loaderDetails) loaderDetails.textContent = `${p}% - Optimizando para ${powerLevel}...`;
                 }
             }
         });
         
         clearTimeout(showLoaderTimeout);
-        localStorage.setItem('ai_model_name', currentModel);
+        localStorage.setItem('ai_model_name', targetModel.name);
         localStorage.setItem('ai_model_ready', 'true');
         
         if (loader && loaderShown) {
@@ -153,13 +183,12 @@ async function initAI() {
 async function generateLocalAI(prompt, systemMsg) {
     if (!generator) return null;
     
-    // Formato ChatML para Qwen
+    // Formato ChatML universal
     const chat = [
         { role: 'system', content: systemMsg },
         { role: 'user', content: prompt }
     ];
     
-    // Crear el prompt usando el template del modelo
     const fullPrompt = generator.tokenizer.apply_chat_template(chat, { 
         tokenize: false, 
         add_generation_prompt: true 
@@ -172,8 +201,15 @@ async function generateLocalAI(prompt, systemMsg) {
         repetition_penalty: 1.1
     });
 
-    // Limpiar respuesta para sacar solo el texto generado
-    return output[0].generated_text.split('<|im_start|>assistant')[1].replace('<|im_end|>', '').trim();
+    // Soporte para ambos formatos (Qwen/TinyLlama)
+    let text = output[0].generated_text;
+    if (text.includes('<|im_start|>assistant')) {
+        text = text.split('<|im_start|>assistant')[1];
+    } else if (text.includes('<|assistant|>')) {
+        text = text.split('<|assistant|>')[1];
+    }
+    
+    return text.replace('<|im_end|>', '').replace('</s>', '').trim();
 }
 
 // Insights Logic
@@ -546,7 +582,7 @@ function initJournal() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Mini Jefecita PWA v1.6.0 starting (AI PRO Edition)');
+    console.log('Mini Jefecita PWA v1.7.0 starting (Scale-to-Hardware AI)');
     updateGreeting();
     initTabs();
     initExercise();
