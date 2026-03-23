@@ -13,7 +13,7 @@
     <div id="ai-loader" class="loader-overlay">
         <div class="loader-content">
             <span class="icon">🧠</span>
-            <p id="loader-text">Jade, estoy despertando mi cerebro...</p>
+            <p id="loader-text"><span class="user-name-label">Jade</span>, estoy despertando mi cerebro...</p>
             <div class="progress-container">
                 <div id="progress-bar" class="progress-bar"></div>
             </div>
@@ -26,8 +26,11 @@
             <!-- Home View (Inicio) -->
             <section id="view-inicio" class="view active">
                 <header class="home-header">
-                    <p id="greeting" class="caption">Cargando...</p>
-                    <h1>Jade 💚</h1>
+                    <div class="header-main">
+                        <p id="greeting" class="caption">Cargando...</p>
+                        <h1><span class="user-name-label">Jade</span> <span id="user-vibe-label">💚</span></h1>
+                    </div>
+                    <button id="btn-settings" class="btn-icon">⚙️</button>
                 </header>
 
                 <div class="motivational-card">
@@ -199,6 +202,33 @@
                     <button id="btn-send-chat" class="btn-primary">Enviar</button>
                 </div>
             </section>
+            <!-- Settings Modal (Ajustes) -->
+            <div id="settings-modal" class="modal-overlay" style="display: none;">
+                <div class="modal-content">
+                    <h2>Configuración Personal</h2>
+                    <div class="set-group">
+                        <label>¿Cómo te llamas?</label>
+                        <input type="text" id="set-name" placeholder="Tu nombre...">
+                    </div>
+                    <div class="set-group">
+                        <label>Vibe (Emoji)</label>
+                        <input type="text" id="set-vibe" placeholder="Ej: 🔥, ✨, 🚀">
+                    </div>
+                    <div class="set-group">
+                        <label>Color de la app</label>
+                        <div class="color-picker">
+                            <button class="color-dot" data-color="#00C4B4" style="background:#00C4B4"></button>
+                            <button class="color-dot" data-color="#81D4FA" style="background:#81D4FA"></button>
+                            <button class="color-dot" data-color="#FF7043" style="background:#FF7043"></button>
+                            <button class="color-dot" data-color="#9575CD" style="background:#9575CD"></button>
+                        </div>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="btn-save-settings" class="btn-primary">Guardar</button>
+                        <button id="btn-close-settings" class="btn-secondary">Cerrar</button>
+                    </div>
+                </div>
+            </div>
         </main>
 
         <!-- Tab Bar -->
@@ -225,6 +255,6 @@
             </button>
         </nav>
     </div>
-    <script src="app.js?v=1.7.0" type="module"></script>
+    <script src="app.js?v=1.8.0" type="module"></script>
 </body>
 </html>

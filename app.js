@@ -86,7 +86,6 @@ function applyBehavioralUI() {
     }
 }
 
-// Hardware Detection (Proactive AI Scaling)
 function getDevicePowerLevel() {
     try {
         const canvas = document.createElement('canvas');
@@ -95,9 +94,13 @@ function getDevicePowerLevel() {
         
         const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
         const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || "";
+        const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
         
-        console.log("Device GPU Detected:", renderer);
+        console.log("Device Hardware Info:", { renderer, platform: navigator.platform });
 
+        // Chip Apple M1/M2/M3 (Desktop/Laptop) -> Nivel MASTER
+        if (isMac && (renderer.includes('Apple M') || renderer.includes('Apple GPU'))) return 'MASTER';
+        
         // Chip A17 Pro (iPhone 15 Pro/Max) -> Nivel ULTRA
         if (renderer.includes('A17')) return 'ULTRA';
         
@@ -111,14 +114,65 @@ function getDevicePowerLevel() {
     }
 }
 
+// User Settings
+let userData = JSON.parse(localStorage.getItem('user_settings') || '{"name": "Jade", "color": "#00C4B4", "vibe": "💚"}');
+
+function applyPersonalization() {
+    document.querySelectorAll('.user-name-label').forEach(el => el.textContent = userData.name);
+    const vibeEl = document.getElementById('user-vibe-label');
+    if (vibeEl) vibeEl.textContent = userData.vibe;
+    
+    document.documentElement.style.setProperty('--primary', userData.color);
+    document.title = `Mini Jefecita - ${userData.name}`;
+}
+
+function initSettings() {
+    const modal = document.getElementById('settings-modal');
+    const btnOpen = document.getElementById('btn-settings');
+    const btnClose = document.getElementById('btn-close-settings');
+    const btnSave = document.getElementById('btn-save-settings');
+    
+    const inputName = document.getElementById('set-name');
+    const inputVibe = document.getElementById('set-vibe');
+    const colorDots = document.querySelectorAll('.color-dot');
+
+    let selectedColor = userData.color;
+
+    if (btnOpen) btnOpen.addEventListener('click', () => {
+        inputName.value = userData.name;
+        inputVibe.value = userData.vibe;
+        modal.style.display = 'flex';
+    });
+
+    if (btnClose) btnClose.addEventListener('click', () => modal.style.display = 'none');
+
+    colorDots.forEach(dot => {
+        dot.addEventListener('click', () => {
+            selectedColor = dot.getAttribute('data-color');
+            colorDots.forEach(d => d.style.border = 'none');
+            dot.style.border = '2px solid white';
+        });
+    });
+
+    if (btnSave) btnSave.addEventListener('click', () => {
+        userData.name = inputName.value.trim() || "Jefecita";
+        userData.vibe = inputVibe.value.trim() || "💚";
+        userData.color = selectedColor;
+        
+        localStorage.setItem('user_settings', JSON.stringify(userData));
+        applyPersonalization();
+        modal.style.display = 'none';
+    });
+}
+
 async function initAI() {
     const loader = document.getElementById('ai-loader');
     const progressBar = document.getElementById('progress-bar');
     const loaderDetails = document.getElementById('loader-details');
     
-    // Mapeo de modelos por potencia
     const powerLevel = getDevicePowerLevel();
     const modelConfig = {
+        'MASTER': { name: 'Xenova/Qwen1.5-1.8B-Chat', label: 'Cerebro Maestro (1.8B)' },
         'ULTRA': { name: 'TinyLlama/TinyLlama-1.1B-Chat-v1.0', label: 'Cerebro Ultra (1.1B)' },
         'PRO': { name: 'Xenova/Qwen1.5-0.5B-Chat', label: 'Cerebro Pro (0.5B)' },
         'NORMAL': { name: 'Xenova/SmolLM2-135M-Instruct', label: 'Cerebro Lite (135M)' }
@@ -402,7 +456,7 @@ async function initChat() {
             return;
         }
 
-        const system = `Eres el asistente de Jade en su app "Mini Jefecita". Sé breve, elegante y usa 💚. Racha actual: ${calculateStreak()} días. Estado mental detectado: ${behaviorRules.vibe}.`;
+        const system = `Eres el asistente de ${userData.name} en su app "Mini Jefecita". Sé breve, elegante y usa ${userData.vibe}. Racha actual: ${calculateStreak()} días. Estado mental detectado: ${behaviorRules.vibe}.`;
         const reply = await generateLocalAI(text, system);
         logEvent('chat_sent', { text });
         addMessage(reply || "Jade, me quedé pensando... ¿Me repites eso? 💚", 'ai');
@@ -582,13 +636,15 @@ function initJournal() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('Mini Jefecita PWA v1.7.0 starting (Scale-to-Hardware AI)');
+    console.log('Mini Jefecita PWA v1.8.0 starting (Master Desktop Edition)');
+    applyPersonalization();
     updateGreeting();
     initTabs();
     initExercise();
     initChat();
     initReminders();
     initJournal();
+    initSettings();
     checkHealthDeepLink();
     updateHealthUI();
     await initAI();
