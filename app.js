@@ -1,3 +1,5 @@
+import { pipeline, env } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2';
+
 // Greeting Logic
 function updateGreeting() {
     const greetingElement = document.getElementById('greeting');
@@ -19,21 +21,26 @@ async function initAI() {
     const loaderDetails = document.getElementById('loader-details');
 
     try {
-        generator = await window.pipeline('text-generation', 'Xenova/SmolLM-135M-Instruct', {
+        // Configurar para usar wasm si webgpu falla
+        env.allowLocalModels = false;
+        
+        generator = await pipeline('text-generation', 'Xenova/SmolLM-135M-Instruct', {
             progress_callback: (data) => {
                 if (data.status === 'progress') {
                     const p = Math.round(data.progress);
-                    progressBar.style.width = `${p}%`;
-                    loaderDetails.textContent = `${p}% - Descargando conocimientos...`;
+                    if (progressBar) progressBar.style.width = `${p}%`;
+                    if (loaderDetails) loaderDetails.textContent = `${p}% - Descargando conocimientos...`;
                 }
             }
         });
         
-        loader.style.opacity = '0';
-        setTimeout(() => loader.style.visibility = 'hidden', 500);
+        if (loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.visibility = 'hidden', 500);
+        }
     } catch (e) {
-        console.error('Error loading AI:', e);
-        loader.innerHTML = '<p>Error al despertar mi cerebro. ¿Tienes conexión?</p>';
+        console.error('Detailed Error:', e);
+        if (loader) loader.innerHTML = `<div style="padding:20px"><h3>Error de conexión 📶</h3><p>No pude descargar mi cerebro. Revisa tu internet y recarga la página.</p><small style="opacity:0.5">${e.message}</small></div>`;
     }
 }
 
