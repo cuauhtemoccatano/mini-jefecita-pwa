@@ -32,11 +32,17 @@ Esta skill debe ser consultada ANTES de realizar cualquier cambio visual o funci
 - **Detección**: Usar `sw.js` para detectar nuevas versiones.
 - **Notificación**: Mostrar `#update-toast` solo cuando no se esté descargando IA.
 
-## 6. Verificación Obligatoria (QA Robot)
-- **Robot**: Ejecutar `python3 qa_audit.py` para validar visualmente.
-- **Escudo Táctil**: Verificar que el Loader desaparezca realmente y no bloquee clics (verificar `pointer-events`).
+## 6. Verificación Obligatoria (QA Robot) 🤖
+- **Script**: Ejecutar `python3 qa_audit.py` después de cada cambio significativo.
+- **Prueba Manual**: Abrir la app en modo incógnito para asegurar que la caché no oculte errores de inicialización.
+- **Sincronización Total**: NUNCA cambiar un ID o Clase en `index.html` sin actualizar simultáneamente `app.js` y `qa_audit.py`.
 
-## 7. Checklist Pre-Commit
-- [ ] ¿La app abre e interactúa en menos de 1 segundo?
-- [ ] ¿Las pestañas funcionan sin IA?
-- [ ] ¿Versión sincronizada (v2.6.0) en los 6 puntos clave?
+## 7. Checklist de Integridad (Anti-Rotura) 🛡️
+- [ ] **Selectores**: ¿Los selectores en `app.js` existen en `index.html`?
+- [ ] **Loader**: ¿El loader tiene `display: none` cuando está oculto?
+- [ ] **IA Isolation**: ¿La carga de IA ocurre solo después del primer mensaje del chat?
+- [ ] **Error Handling**: ¿Todos los `localStorage.getItem` y `JSON.parse` están en un bloque `try-catch`?
+- [ ] **Navegación**: ¿Funcionan las 5 pestañas principales?
+
+---
+*Mini Jefecita - Calidad v2.6.5*
