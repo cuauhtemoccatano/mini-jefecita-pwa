@@ -42,9 +42,9 @@ body {
 }
 
 .loader-overlay.hidden {
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
     display: none !important;
 }
 
@@ -429,8 +429,12 @@ input[type="number"]:focus {
 }
 
 /* Messages View (Chat) */
-#view-mensajes {
+#view-mensajes.active {
     display: flex;
+}
+
+#view-mensajes {
+    display: none;
     flex-direction: column;
     height: calc(100vh - 120px);
 }
@@ -485,8 +489,12 @@ input[type="number"]:focus {
     padding: 10px;
     border-radius: 100px;
     border: 1px solid rgba(255, 255, 255, 0.15);
-    z-index: 50;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: none;
+}
+
+#view-mensajes.active .chat-input-area {
+    display: flex;
 }
 
 #chat-input {

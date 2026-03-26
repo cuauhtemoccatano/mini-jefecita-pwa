@@ -281,6 +281,8 @@ function initZenMode() {
     exit.addEventListener('click', () => {
         zenView.classList.remove('active');
         sanctuary.innerHTML = '<div class="zen-instruction">Organiza el caos, Jade</div>';
+        // Reset message
+        zenMsg.textContent = "Buscando calma...";
     });
 
     function createZenCrystals() {
@@ -394,13 +396,21 @@ function initApp() {
     } catch (err) {
         console.error("Fallo crítico en inicialización:", err);
     } finally {
-        // Garantizar que el loader siempre desaparezca
+        // Garantizar que el loader siempre desaparezca físicamente
         const loader = document.getElementById('ai-loader');
         if (loader) {
             setTimeout(() => {
                 loader.classList.add('hidden');
-                console.log('Loader oculto - UI Lista');
+                loader.style.display = 'none'; // Salida de emergencia física
+                console.log('Loader oculto y removido - UI Lista');
             }, 800);
+            
+            // Segundo intento de seguridad a los 3 segundos
+            setTimeout(() => {
+                if (!loader.classList.contains('hidden')) {
+                    loader.style.display = 'none';
+                }
+            }, 3000);
         }
     }
 }
