@@ -1,6 +1,6 @@
 ---
 name: quality-guide
-description: Asegura la consistencia visual, técnica y de rendimiento de Mini Jefecita.
+description: Asegura la consistencia visual, técnica y de rendimiento de Mini Jefecita. la frase para activar esta skill es, "run mqa"
 ---
 
 # 💎 Mini Jefecita: Quality Guide v2.6.0
@@ -20,7 +20,7 @@ Esta skill debe ser consultada ANTES de realizar cualquier cambio visual o funci
   - Modales: `1000`.
 
 ## 3. Estándares de Responsividad (Multi-Layout) 📐
-- **Mac / Desktop (>= 1100px)**: Sidebar con etiquetas, 3 columnas (`nav content side`), ancho 1400px.
+- **Mac / Desktop (>= 1100px)**: Sidebar con etiquetas, 3 columnas (`nav content side`), ancho 1800px.
 - **iPad / Tablet (768px - 1099px)**: Sidebar minimalista (solo iconos), 2 columnas (`nav content`).
 - **iPhone / Mobile (< 768px)**: Tab Bar inferior fija, 1 columna vertical.
 
