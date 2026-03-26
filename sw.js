@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mini-jefecita-v2.6.0';
+const CACHE_NAME = 'mini-jefecita-v2.6.5';
 const ASSETS = [
   '/',
   '/index.html',

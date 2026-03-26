@@ -392,6 +392,7 @@ function initApp() {
         initChat();
         initExercise();
         initZenMode();
+        initIdleManager();
         updateHealthUI();
     } catch (err) {
         console.error("Fallo crítico en inicialización:", err);
@@ -422,9 +423,62 @@ if (document.readyState === 'loading') {
     initApp();
 }
 
-// Service Worker (Persistencia PWA)
+// ---------------------------------------------------------
+// 8. GESTOR DE REPOSO (ACTUALIZACIÓN AUTÓNOMA)
+// ---------------------------------------------------------
+let lastInteractionTime = Date.now();
+let isUpdateWaiting = false;
+
+function initIdleManager() {
+    const IDLE_THRESHOLD = 60000; // 1 minuto de ocio
+
+    const resetTimer = () => {
+        lastInteractionTime = Date.now();
+    };
+
+    // Escuchar cualquier interacción táctil o de ratón
+    ['mousedown', 'touchstart', 'keydown', 'scroll'].forEach(evt => {
+        document.addEventListener(evt, resetTimer, { passive: true });
+    });
+
+    // Revisar periódicamente si es momento de actualizar
+    setInterval(() => {
+        if (isUpdateWaiting && (Date.now() - lastInteractionTime > IDLE_THRESHOLD)) {
+            console.log("💎 Reposo detectado. Evolucionando objeto...");
+            window.location.reload();
+        }
+    }, 5000);
+
+    // Actualizar también si la app pasa a segundo plano
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'hidden' && isUpdateWaiting) {
+            console.log("🌙 App en reposo absoluto. Actualizando...");
+            window.location.reload();
+        }
+    });
+}
+
+// Service Worker (Gestión de Actualizaciones Invisible)
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW Skip'));
+        navigator.serviceWorker.register('./sw.js').then(reg => {
+            reg.onupdatefound = () => {
+                const installingWorker = reg.installing;
+                installingWorker.onstatechange = () => {
+                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        isUpdateWaiting = true;
+                        console.log("✨ Nueva versión lista. Esperando momento de ocio...");
+                    }
+                };
+            };
+        }).catch(e => console.warn('SW Skip'));
+    });
+
+    // Detección inmediata si el Worker ya tomó el control
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+        // Solo refrescar si no estamos en medio de una interacción crítica
+        if (Date.now() - lastInteractionTime > 10000) {
+            window.location.reload();
+        }
     });
 }
