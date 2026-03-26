@@ -116,6 +116,57 @@ body {
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     padding: 20px 20px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.care-card {
+    background: linear-gradient(135deg, rgba(0, 196, 180, 0.15), rgba(0, 196, 180, 0.05));
+    border: 1px solid rgba(0, 196, 180, 0.3);
+    border-radius: 20px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    backdrop-filter: blur(10px);
+    animation: slideDown 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.care-card.hidden {
+    display: none;
+}
+
+.care-icon {
+    font-size: 28px;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+.care-text {
+    flex: 1;
+}
+
+.care-title {
+    display: block;
+    font-weight: 700;
+    font-size: 15px;
+    margin-bottom: 2px;
+}
+
+.care-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+#btn-care-go {
+    padding: 8px 16px;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .view {
@@ -138,11 +189,12 @@ body {
 }
 
 .caption {
-    font-size: 14px;
+    font-size: 13px; /* Más refinado */
     color: var(--text-secondary);
-    margin-bottom: 4px;
+    margin-bottom: 8px; /* Más aire */
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px; /* Más premium */
+    font-weight: 500;
 }
 
 .home-header {
@@ -575,7 +627,7 @@ input[type="number"]:focus {
     justify-content: space-around;
     padding: 12px 10px calc(8px + var(--safe-area-bottom));
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    z-index: 100;
+    z-index: 200; /* Siempre sobre los overlays de vista (v3.0.1) */
 }
 
 .tab-item {
@@ -998,16 +1050,23 @@ input[type="number"]:focus {
     perspective: 1000px;
 }
 
+#zen-3d-canvas {
+    width: 100%;
+    height: 100%;
+    touch-action: none;
+}
+
 .zen-instruction {
     position: absolute;
-    top: 20px;
+    bottom: 40px; /* Movido abajo para no tapar el 3D */
     width: 100%;
     text-align: center;
-    font-size: 12px;
+    font-size: 11px;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    opacity: 0.3;
+    letter-spacing: 3px;
+    opacity: 0.4;
     pointer-events: none;
+    font-weight: 600;
 }
 
 /* Draggable Blocks (Crystals) */

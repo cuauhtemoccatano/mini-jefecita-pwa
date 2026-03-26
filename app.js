@@ -54,10 +54,19 @@ function updateGreeting() {
 }
 
 function updateHealthUI() {
-    const stepsEl = document.getElementById('health-steps');
-    const calsEl = document.getElementById('health-cals');
-    if (stepsEl) stepsEl.textContent = (healthData.steps || 0).toLocaleString();
-    if (calsEl) calsEl.textContent = healthData.cals || 0;
+    try {
+        const data = JSON.parse(localStorage.getItem('health_data') || '{"steps": 0, "energy": 0, "hrv": 50}');
+        const stepsEl = document.getElementById('health-steps-val');
+        const calsEl = document.getElementById('health-energy-val');
+        
+        if (stepsEl) stepsEl.textContent = (data.steps || 0).toLocaleString();
+        if (calsEl) calsEl.textContent = data.energy || 0;
+
+        // Feedback de sistema
+        if (data.hrv) console.log(`📊 Sentient Sync: HRV ${data.hrv}ms`);
+    } catch (e) {
+        console.warn("Error en UI de salud", e);
+    }
 }
 
 // ---------------------------------------------------------
@@ -260,119 +269,197 @@ function initChat() {
 // ---------------------------------------------------------
 // 6. SANTUARIO ZEN (CUIDADO Y MATERIALES)
 // ---------------------------------------------------------
+// ---------------------------------------------------------
+// 6. SANTUARIO ZEN (SENSORY 3D & SOUND)
+// ---------------------------------------------------------
+const ZenAudio = {
+    ctx: null,
+    unlock() {
+        if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (this.ctx.state === 'suspended') this.ctx.resume();
+    },
+    playCrystal(freq = 440) {
+        if (!this.ctx) return;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 1.5);
+        
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        osc.start();
+        osc.stop(this.ctx.currentTime + 1.5);
+    }
+};
+
+let zen3DRenderer = null;
+let zen3DScene = null;
+let zen3DCamera = null;
+let zen3DActive = false;
+let crystals = [];
+
 function initZenMode() {
     const portal = document.getElementById('btn-zen-portal');
     const exit = document.getElementById('btn-exit-zen');
     const zenView = document.getElementById('view-zen');
-    const sanctuary = document.getElementById('zen-sanctuary');
     const zenMsg = document.getElementById('zen-message');
-    const voiceWave = document.querySelector('.voice-wave');
+    const canvas = document.getElementById('zen-3d-canvas');
 
     if (!portal) return;
 
     portal.addEventListener('click', () => {
+        ZenAudio.unlock();
         zenView.classList.add('active');
-        createZenCrystals();
+        zen3DActive = true;
+        init3DScene();
         setTimeout(() => {
-            speakZen("Bienvenida al santuario, Jade. Vamos a poner cada cosa en su lugar.");
-        }, 1500);
+            speakZen("Siente la materia, Jade. Todo está en calma.");
+        }, 1000);
     });
 
     exit.addEventListener('click', () => {
         zenView.classList.remove('active');
-        sanctuary.innerHTML = '<div class="zen-instruction">Organiza el caos, Jade</div>';
-        // Reset message
+        zen3DActive = false;
         zenMsg.textContent = "Buscando calma...";
     });
 
-    function createZenCrystals() {
-        sanctuary.querySelectorAll('.zen-block').forEach(b => b.remove());
-        const icons = ['✨', '💎', '🧊', '🪵', '☁️'];
-        
-        for (let i = 0; i < 5; i++) {
-            const block = document.createElement('div');
-            block.className = 'zen-block';
-            block.innerHTML = icons[i % icons.length];
-            block.style.left = `${Math.random() * 60 + 20}%`;
-            block.style.top = `${Math.random() * 60 + 20}%`;
-            
-            makeDraggable(block);
-            sanctuary.appendChild(block);
+    function init3DScene() {
+        if (zen3DRenderer) return;
+
+        const width = canvas.clientWidth;
+        const height = canvas.clientHeight;
+
+        zen3DScene = new THREE.Scene();
+        zen3DCamera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+        zen3DCamera.position.z = 5;
+
+        zen3DRenderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+        zen3DRenderer.setSize(width, height);
+        zen3DRenderer.setPixelRatio(window.devicePixelRatio);
+
+        const light = new THREE.PointLight(0x00C4B4, 1, 100);
+        light.position.set(10, 10, 10);
+        zen3DScene.add(light);
+        zen3DScene.add(new THREE.AmbientLight(0x404040, 2));
+
+        // Let's create our "Crystals"
+        const geometries = [
+            new THREE.IcosahedronGeometry(1, 0),
+            new THREE.OctahedronGeometry(0.8, 0),
+            new THREE.TetrahedronGeometry(1, 0)
+        ];
+
+        for(let i=0; i<3; i++) {
+            const mat = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.6,
+                shininess: 100,
+                specular: 0x00C4B4
+            });
+            const mesh = new THREE.Mesh(geometries[i], mat);
+            mesh.position.x = (i - 1) * 2;
+            mesh.position.y = Math.random() * 2 - 1;
+            zen3DScene.add(mesh);
+            crystals.push(mesh);
         }
+
+        animate();
     }
 
-    function makeDraggable(el) {
-        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    function animate() {
+        if (!zen3DActive) return;
+        requestAnimationFrame(animate);
         
-        el.onmousedown = dragMouseDown;
-        el.ontouchstart = dragMouseDown;
+        crystals.forEach((c, i) => {
+            c.rotation.y += 0.01;
+            c.rotation.x += 0.005;
+        });
+        
+        zen3DRenderer.render(zen3DScene, zen3DCamera);
+    }
 
-        function dragMouseDown(e) {
-            e.preventDefault();
-            const clientX = e.clientX || e.touches[0].clientX;
-            const clientY = e.clientY || e.touches[0].clientY;
-            pos3 = clientX;
-            pos4 = clientY;
-            document.onmouseup = closeDragElement;
-            document.ontouchend = closeDragElement;
-            document.onmousemove = elementDrag;
-            document.ontouchmove = elementDrag;
-            
-            if (window.navigator.vibrate) window.navigator.vibrate(10);
-        }
+    // Touch interaction for 3D
+    canvas.addEventListener('touchstart', (e) => {
+        if (!zen3DActive) return;
+        const touch = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
 
-        function elementDrag(e) {
-            e.preventDefault();
-            const clientX = e.clientX || e.touches[0].clientX;
-            const clientY = e.clientY || e.touches[0].clientY;
-            pos1 = pos3 - clientX;
-            pos2 = pos4 - clientY;
-            pos3 = clientX;
-            pos4 = clientY;
-            el.style.top = (el.offsetTop - pos2) + "px";
-            el.style.left = (el.offsetLeft - pos1) + "px";
-            
-            // Check alignment (simplified)
-            if (Math.abs(el.offsetLeft % 50) < 10 && Math.abs(el.offsetTop % 50) < 10) {
-                el.classList.add('aligned');
-                if (window.navigator.vibrate) window.navigator.vibrate(5);
-            } else {
-                el.classList.remove('aligned');
+        // Play sound
+        ZenAudio.playCrystal(440 + (y * 200));
+        if (window.navigator.vibrate) window.navigator.vibrate(5);
+        
+        // Simple 3D response
+        crystals.forEach(c => {
+            c.scale.set(1.2, 1.2, 1.2);
+            setTimeout(() => c.scale.set(1, 1, 1), 100);
+        });
+    });
+}
+
+// ---------------------------------------------------------
+// 7. SENTINEL BRAIN & HEALTH SYNC (v3.0.0)
+// ---------------------------------------------------------
+function speakZen(text) {
+    if (!('speechSynthesis' in window)) return;
+    const voiceWave = document.querySelector('.voice-wave');
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'es-MX';
+    utterance.rate = 0.85; 
+    utterance.pitch = 1.0;
+    
+    utterance.onstart = () => voiceWave?.classList.add('active');
+    utterance.onend = () => voiceWave?.classList.remove('active');
+    
+    window.speechSynthesis.speak(utterance);
+}
+
+function initHealthSync() {
+    const params = new URLSearchParams(window.location.search);
+    const steps = params.get('steps');
+    const energy = params.get('energy');
+    const hrv = params.get('hrv');
+
+    if (steps || energy || hrv) {
+        console.log("🧬 Señales vitales detectadas. Sincronizando...");
+        try {
+            const data = JSON.parse(localStorage.getItem('health_data') || '{}');
+            if (steps) data.steps = parseInt(steps);
+            if (energy) data.energy = parseInt(energy);
+            if (hrv) {
+                data.hrv = parseInt(hrv);
+                checkStressLevels(data.hrv);
             }
-        }
-
-        function closeDragElement() {
-            document.onmouseup = null;
-            document.onmousemove = null;
-            document.ontouchend = null;
-            document.ontouchmove = null;
-            
-            checkTotalOrder();
+            localStorage.setItem('health_data', JSON.stringify(data));
+            updateHealthUI();
+        } catch (e) {
+            console.error("Error en sincronización vital", e);
         }
     }
 
-    function checkTotalOrder() {
-        const blocks = sanctuary.querySelectorAll('.zen-block');
-        const aligned = sanctuary.querySelectorAll('.zen-block.aligned');
-        
-        if (aligned.length === blocks.length && blocks.length > 0) {
-            zenMsg.textContent = "Todo está en paz.";
-            speakZen("Todo está en su lugar ahora, Jade. Tú también.");
-        }
-    }
+    // Listener para el botón de cuidado
+    document.getElementById('btn-care-go')?.addEventListener('click', () => {
+        document.getElementById('btn-zen-portal')?.click();
+        document.getElementById('care-suggestion')?.classList.add('hidden');
+    });
+}
 
-    function speakZen(text) {
-        if (!('speechSynthesis' in window)) return;
-        
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = 'es-MX';
-        utterance.rate = 0.8; // Calma
-        utterance.pitch = 0.9;
-        
-        utterance.onstart = () => voiceWave.classList.add('active');
-        utterance.onend = () => voiceWave.classList.remove('active');
-        
-        window.speechSynthesis.speak(utterance);
+function checkStressLevels(hrv) {
+    if (hrv < 35) { // Umbral de sobreestimulación profunda
+        const card = document.getElementById('care-suggestion');
+        if (card) {
+            card.classList.remove('hidden');
+            setTimeout(() => {
+                speakZen("Jade, noto que tu ritmo es acelerado. He preparado el Santuario para ti.");
+            }, 2000);
+            if (window.navigator.vibrate) window.navigator.vibrate([10, 50, 10]);
+        }
     }
 }
 
@@ -380,7 +467,7 @@ function initZenMode() {
 // 7. INICIALIZACIÓN FINAL MAESTRA
 // ---------------------------------------------------------
 function initApp() {
-    console.log('🚀 Inicializando Mini Jefecita Core...');
+    console.log("💎 Mini Jefecita v3.0.0: Sentient Edition Activa.");
     
     try {
         applyPersonalization();
@@ -393,6 +480,7 @@ function initApp() {
         initExercise();
         initZenMode();
         initIdleManager();
+        initHealthSync(); // Cerebro v3.0.0
         updateHealthUI();
     } catch (err) {
         console.error("Fallo crítico en inicialización:", err);

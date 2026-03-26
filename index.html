@@ -18,18 +18,27 @@
                 <div id="progress-bar" class="progress-bar"></div>
             </div>
             <p id="loader-details">Cargando interfaz...</p>
-            <p class="loader-version">v2.6.0</p>
+            <p class="loader-version">v3.0.0</p>
         </div>
     </div>
 
     <!-- Toast de Actualización -->
     <div id="update-toast" class="update-toast hidden">
-        <span>✨ Mejoras listas (v2.6.0)</span>
+        <span>✨ Mejoras listas (v3.0.0)</span>
         <button id="btn-update-now">Actualizar</button>
     </div>
     <div id="app">
         <!-- Main Content -->
         <main id="content">
+            <!-- Sugerencia de Cuidado (Proactiva) -->
+            <div id="care-suggestion" class="care-card hidden">
+                <div class="care-icon">✨</div>
+                <div class="care-text">
+                    <span class="care-title">Jade, noto algo de tensión...</span>
+                    <span class="care-desc">Tu cuerpo agradecería un momento en el Santuario. ¿Vamos?</span>
+                </div>
+                <button id="btn-care-go" class="btn-primary">Ir ahora</button>
+            </div>
             <!-- Home View (Inicio) -->
             <section id="view-inicio" class="view active">
                 <header class="home-header">
@@ -225,8 +234,9 @@
                     </header>
                     
                     <div id="zen-sanctuary" class="zen-canvas-container">
-                        <!-- Los bloques de cristal se generarán aquí -->
-                        <div class="zen-instruction">Organiza el caos, Jade</div>
+                        <!-- El Santuario 3D se renderizará aquí -->
+                        <canvas id="zen-3d-canvas"></canvas>
+                        <div class="zen-instruction">Siente la materia, Jade</div>
                     </div>
 
                     <footer class="zen-footer">
@@ -315,6 +325,8 @@
             </button>
         </nav>
     </div>
-    <script src="app.js?v=2.7.0" type="module"></script>
+    <!-- Scripts Maestros -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="app.js?v=3.0.0" type="module"></script>
 </body>
 </html>

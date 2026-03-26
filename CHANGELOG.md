@@ -4,22 +4,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.7.0] - 2026-03-25
-### Added
-- **Santuario Zen:** Un nuevo espacio inmersivo con diseño de materiales (cristal y luz) para alivio de sobreestimulación.
-- **Interacción Táctica:** Bloques de cristal arrastrables con respuesta háptica y alineación por cuadrícula.
-- **Voz del Cuidado:** Sistema de síntesis de voz calmada y empática que acompaña a Jade en el Santuario.
-- **Biometría (FaceID/TouchID):** Protección real para el Diario usando el Secure Enclave del iPhone.
-- **Evolución Invisible:** Gestor de reposo que actualiza la app automáticamente tras 60s de inactividad o al pasar a segundo plano.
-
+## [3.0.1] - 2026-03-26
 ### Fixed
-- **Física de Desplazamiento:** Corregido el bloqueo de scroll en iPhone mediante el uso de `100dvh` e inercia nativa de Apple.
-- **Conflicto de Capas:** Ajustada la especificidad de CSS para evitar que la vista de mensajes bloquee la pantalla de inicio.
-- **Robustez del Loader:** Implementada salida de emergencia física (`display: none`) para el protector de carga.
+- **Fluidez de Navegación:** Corregido el bloqueo de la barra de pestañas cuando el Diario está en estado de protección biométrica.
+
+## [3.0.0] - 2026-03-26
+### Added
+- **Sentient Core:** Transplante de 5 nuevas habilidades locales de inteligencia y privacidad (`ai-analyzer`, `wellally-tech`, etc.).
+- **Sentinel Brain:** Lógica de análisis de estrés integrada en el arranque del sistema.
+- **Protocolo de Agentes v3.0:** Actualización de `AGENTS.md` para reflejar la nueva consciencia del objeto.
 
 ### Changed
-- **Arquitectura de Scroll:** Unificado el desplazamiento en un solo contenedor maestro para mayor fluidez.
-- **Gestión de Caché:** Actualizada la identidad del Service Worker a `v2.7.0`.
+- **Identidad de Sistema:** Elevación de todas las capas (sw.js, package.json, index.html) a la versión 3.0.0.
+
+## [2.9.0] - 2026-03-26
+### Added
+- **Inteligencia Vital:** Sistema de sincronización proactiva con datos de salud (Pasos, Energía, HRV).
+- **Interfaz de Cuidado:** Nueva tarjeta dinámica en Inicio que sugiere el Santuario Zen tras detectar estrés.
+- **HealthSync Manager:** Motor de recepción de señales vitales vía Atajos de Apple (URL Params).
+
+### Fixed
+- **Optimización de Renderizado:** El motor 3D ahora respeta el ciclo de visibilidad de la pestaña.
+
+## [2.8.0] - 2026-03-26
+### Added
+- **Materia Viva (3D):** Integración de Three.js con cristales geométricos reales en el Santuario.
+- **Paisaje Sonoro:** Sintetizador de audio orgánico (Web Audio) con tonos de cristal reactivos.
+- **Micro-háptica:** Feedback táctil refinado siguiendo estándares HIG de Apple.
+
+### Changed
+- **Ritmo Tipográfico:** Reajuste del espaciado vertical y vertical rhythm en tarjetas de Inicio (v2.8.0 standards).
 
 ## [2.6.0] - 2026-03-20
 ### Added
