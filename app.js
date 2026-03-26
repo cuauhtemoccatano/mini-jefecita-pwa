@@ -258,7 +258,124 @@ function initChat() {
 }
 
 // ---------------------------------------------------------
-// 6. INICIALIZACIÓN FINAL MAESTRA
+// 6. SANTUARIO ZEN (CUIDADO Y MATERIALES)
+// ---------------------------------------------------------
+function initZenMode() {
+    const portal = document.getElementById('btn-zen-portal');
+    const exit = document.getElementById('btn-exit-zen');
+    const zenView = document.getElementById('view-zen');
+    const sanctuary = document.getElementById('zen-sanctuary');
+    const zenMsg = document.getElementById('zen-message');
+    const voiceWave = document.querySelector('.voice-wave');
+
+    if (!portal) return;
+
+    portal.addEventListener('click', () => {
+        zenView.classList.add('active');
+        createZenCrystals();
+        setTimeout(() => {
+            speakZen("Bienvenida al santuario, Jade. Vamos a poner cada cosa en su lugar.");
+        }, 1500);
+    });
+
+    exit.addEventListener('click', () => {
+        zenView.classList.remove('active');
+        sanctuary.innerHTML = '<div class="zen-instruction">Organiza el caos, Jade</div>';
+    });
+
+    function createZenCrystals() {
+        sanctuary.querySelectorAll('.zen-block').forEach(b => b.remove());
+        const icons = ['✨', '💎', '🧊', '🪵', '☁️'];
+        
+        for (let i = 0; i < 5; i++) {
+            const block = document.createElement('div');
+            block.className = 'zen-block';
+            block.innerHTML = icons[i % icons.length];
+            block.style.left = `${Math.random() * 60 + 20}%`;
+            block.style.top = `${Math.random() * 60 + 20}%`;
+            
+            makeDraggable(block);
+            sanctuary.appendChild(block);
+        }
+    }
+
+    function makeDraggable(el) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        
+        el.onmousedown = dragMouseDown;
+        el.ontouchstart = dragMouseDown;
+
+        function dragMouseDown(e) {
+            e.preventDefault();
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            pos3 = clientX;
+            pos4 = clientY;
+            document.onmouseup = closeDragElement;
+            document.ontouchend = closeDragElement;
+            document.onmousemove = elementDrag;
+            document.ontouchmove = elementDrag;
+            
+            if (window.navigator.vibrate) window.navigator.vibrate(10);
+        }
+
+        function elementDrag(e) {
+            e.preventDefault();
+            const clientX = e.clientX || e.touches[0].clientX;
+            const clientY = e.clientY || e.touches[0].clientY;
+            pos1 = pos3 - clientX;
+            pos2 = pos4 - clientY;
+            pos3 = clientX;
+            pos4 = clientY;
+            el.style.top = (el.offsetTop - pos2) + "px";
+            el.style.left = (el.offsetLeft - pos1) + "px";
+            
+            // Check alignment (simplified)
+            if (Math.abs(el.offsetLeft % 50) < 10 && Math.abs(el.offsetTop % 50) < 10) {
+                el.classList.add('aligned');
+                if (window.navigator.vibrate) window.navigator.vibrate(5);
+            } else {
+                el.classList.remove('aligned');
+            }
+        }
+
+        function closeDragElement() {
+            document.onmouseup = null;
+            document.onmousemove = null;
+            document.ontouchend = null;
+            document.ontouchmove = null;
+            
+            checkTotalOrder();
+        }
+    }
+
+    function checkTotalOrder() {
+        const blocks = sanctuary.querySelectorAll('.zen-block');
+        const aligned = sanctuary.querySelectorAll('.zen-block.aligned');
+        
+        if (aligned.length === blocks.length && blocks.length > 0) {
+            zenMsg.textContent = "Todo está en paz.";
+            speakZen("Todo está en su lugar ahora, Jade. Tú también.");
+        }
+    }
+
+    function speakZen(text) {
+        if (!('speechSynthesis' in window)) return;
+        
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'es-MX';
+        utterance.rate = 0.8; // Calma
+        utterance.pitch = 0.9;
+        
+        utterance.onstart = () => voiceWave.classList.add('active');
+        utterance.onend = () => voiceWave.classList.remove('active');
+        
+        window.speechSynthesis.speak(utterance);
+    }
+}
+
+// ---------------------------------------------------------
+// 7. INICIALIZACIÓN FINAL MAESTRA
 // ---------------------------------------------------------
 function initApp() {
     console.log('🚀 Inicializando Mini Jefecita Core...');
@@ -272,6 +389,7 @@ function initApp() {
         initSettings();
         initChat();
         initExercise();
+        initZenMode();
         updateHealthUI();
     } catch (err) {
         console.error("Fallo crítico en inicialización:", err);

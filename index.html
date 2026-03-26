@@ -37,7 +37,10 @@
                         <p id="greeting" class="caption">Cargando...</p>
                         <h1><span class="user-name-label">Jade</span> <span id="user-vibe-label">💚</span></h1>
                     </div>
-                    <button id="btn-settings" class="btn-icon">⚙️</button>
+                    <div class="header-actions">
+                        <button id="btn-zen-portal" class="btn-zen-trigger" title="Momento de Calma">✨</button>
+                        <button id="btn-settings" class="btn-icon">⚙️</button>
+                    </div>
                 </header>
 
                 <div class="motivational-card">
@@ -207,6 +210,30 @@
                 <div class="chat-input-area">
                     <input type="text" id="chat-input" placeholder="Escribe un mensaje..." autocomplete="off">
                     <button id="btn-send-chat" class="btn-primary">Enviar</button>
+                </div>
+            </section>
+
+            <!-- Zen View (Santuario de Materiales) -->
+            <section id="view-zen" class="view view-zen-immersive">
+                <div class="zen-container">
+                    <header class="zen-header">
+                        <button id="btn-exit-zen" class="btn-glass-back">✕</button>
+                        <div class="zen-status">
+                            <span class="zen-aura"></span>
+                            <p id="zen-message">Buscando calma...</p>
+                        </div>
+                    </header>
+                    
+                    <div id="zen-sanctuary" class="zen-canvas-container">
+                        <!-- Los bloques de cristal se generarán aquí -->
+                        <div class="zen-instruction">Organiza el caos, Jade</div>
+                    </div>
+
+                    <footer class="zen-footer">
+                        <div id="zen-voice-guide" class="voice-wave">
+                            <span></span><span></span><span></span><span></span>
+                        </div>
+                    </footer>
                 </div>
             </section>
             <!-- Settings Modal (Ajustes) -->
