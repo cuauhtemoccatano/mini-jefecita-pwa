@@ -176,8 +176,8 @@ body {
 .btn-icon, .btn-zen-trigger {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 12px;
     display: flex;
     align-items: center;
@@ -475,7 +475,7 @@ input[type="number"]:focus {
     padding: 14px 18px;
     border-radius: 20px;
     font-size: 15px;
-    line-height: 1.4;
+    line-height: 1.5;
     animation: messageIn 0.3s ease-out forwards;
 }
 
@@ -608,8 +608,13 @@ input[type="number"]:focus {
     align-items: center;
     gap: 4px;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: transform 0.2s, color 0.2s, opacity 0.2s;
     flex: 1;
+}
+
+.tab-item:active {
+    transform: scale(0.95);
+    opacity: 0.7;
 }
 
 .tab-item.active {
@@ -739,7 +744,7 @@ input[type="number"]:focus {
     padding: 12px;
     border-radius: 12px;
     color: white;
-    font-size: 14px;
+    font-size: 16px;
     outline: none;
 }
 
@@ -754,8 +759,8 @@ input[type="number"]:focus {
 }
 
 .color-dot {
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     border: none;
     cursor: pointer;
