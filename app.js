@@ -14,6 +14,7 @@ try {
 
 let generator = null;
 let isDownloadingAI = false;
+let wakeLock = null;
 
 // Helpers
 const saveSettings = () => localStorage.setItem('user_settings', JSON.stringify(userData));
@@ -205,7 +206,27 @@ function initExercise() {
 // ---------------------------------------------------------
 // 5. MOTOR IA (SMOL-LM2)
 // ---------------------------------------------------------
-async function initAI() {
+async function requestWakeLock() {
+    try {
+        if ('wakeLock' in navigator) {
+            wakeLock = await navigator.wakeLock.request('screen');
+            console.log('🔒 Pantalla protegida (Wake Lock Activo)');
+        }
+    } catch (err) {
+        console.warn('Wake Lock no disponible');
+    }
+}
+
+function releaseWakeLock() {
+    if (wakeLock) {
+        wakeLock.release().then(() => {
+            wakeLock = null;
+            console.log('🔓 Pantalla liberada');
+        });
+    }
+}
+
+async function initAI(retryCount = 0) {
     if (generator || isDownloadingAI) return;
 
     const bgDownloader = document.getElementById('ai-bg-downloader');
@@ -214,6 +235,7 @@ async function initAI() {
 
     try {
         console.log('💎 Evolucionando motor de consciencia (v3 + WebGPU)...');
+        await requestWakeLock();
         
         // Mostrar barra de progreso en segundo plano
         if (bgDownloader) bgDownloader.classList.remove('hidden');
@@ -287,11 +309,18 @@ async function initAI() {
             setTimeout(() => bgDownloader.classList.add('hidden'), 3000);
         }
         isDownloadingAI = false;
+        releaseWakeLock();
     } catch (e) {
-        console.error("❌ Error crítico en IA local:", e);
-        if (bgStatus) bgStatus.textContent = "Error en sincronización";
+        console.error(`❌ Error en IA (Intento ${retryCount + 1}):`, e);
         isDownloadingAI = false;
-        throw e;
+        releaseWakeLock();
+
+        if (retryCount < 2) {
+            if (bgStatus) bgStatus.textContent = "Reintentando sintonización...";
+            setTimeout(() => initAI(retryCount + 1), 3000);
+        } else {
+            if (bgStatus) bgStatus.textContent = "Error en sincronización";
+        }
     }
 }
 
