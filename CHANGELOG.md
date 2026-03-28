@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.4] - 2026-03-27
+### 🔥 Evolución de Inteligencia (Hardware Accelerated)
+- **Engine Upgrade**: Migración a **Transformers.js v3** con soporte oficial para **WebGPU**.
+- **Hardware Sync**: Detección automática de GPU (Mac/iPhone) para aceleración por hardware.
+- **Nuevos Cerebros**:
+  - **MASTER**: `Llama-3.2-1B-Instruct` (Optimizado para Mac M2).
+  - **ULTRA/PRO**: `Qwen2.5-0.5B-Instruct` (Máximo razonamiento para iPhone 15/14 Pro).
+  - **NORMAL**: `SmolLM2-135M-Instruct` (Eficiencia máxima).
+- **Feedback Visual**: Porcentaje de descarga real mostrado directamente en el chat.
+- **Estabilidad**: Corregidos errores de referencias nulas en `initZenMode`.
+
+
 ## [3.0.1] - 2026-03-26
 ### Fixed
 - **Fluidez de Navegación:** Corregido el bloqueo de la barra de pestañas cuando el Diario está en estado de protección biométrica.

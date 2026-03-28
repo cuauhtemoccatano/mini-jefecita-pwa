@@ -5,8 +5,9 @@ Este documento define las reglas de operación para los agentes de IA que trabaj
 ## 🛠 Skills & Herramientas
 - **💎 quality-guide**: localiza en `.agent/skills/quality-guide/`. Úsalo para validar CUALQUIER cambio visual.
 - **👁️ ui-visual-validator**: Skill de sistema para validación de responsividad y glassmorphism.
-- **�️ verification-before-completion**: PROTOCOLO OBLIGATORIO. Prohibido reportar éxito sin pruebas reales.
-- **�🚀 browser_subagent**: Herramienta indispensable para validación QA local (`localhost:8080`).
+- **️ verification-before-completion**: PROTOCOLO OBLIGATORIO. Prohibido reportar éxito sin pruebas reales.
+- **🚀 browser_subagent**: Herramienta indispensable para validación QA local (`localhost:8080`).
+- **🤖 vercel-ai-sdk-expert**: Localizada en `.agent/skills/vercel-ai-sdk-expert/`. Implementación de IA fluida y estructurada.
 
 ## 📐 Estándares de Plataforma (v2.0.0)
 - **Multi-Layout**:

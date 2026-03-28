@@ -209,22 +209,66 @@ async function initAI() {
     if (generator || isDownloadingAI) return;
 
     try {
-        console.log('Despertando cerebro IA...');
-        const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@xenova/transformers@2.17.2');
+        console.log('💎 Evolucionando motor de consciencia (v3 + WebGPU)...');
+        
+        // Cargamos la versión 3 que soporta WebGPU para máximo rendimiento en hardware Mini Jefecita
+        const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
         
         env.allowLocalModels = false;
         env.useBrowserCache = true;
         isDownloadingAI = true;
 
-        const level = userData.brain || 'PRO';
-        const modelName = level === 'MASTER' ? 'Xenova/Qwen1.5-0.5B-Chat' : 'Xenova/SmolLM2-135M-Instruct';
+        // Detección proactiva de WebGPU
+        let device = 'wasm';
+        try {
+            if (navigator.gpu) {
+                const adapter = await navigator.gpu.requestAdapter();
+                if (adapter) device = 'webgpu';
+            }
+        } catch (gpuErr) {
+            console.warn("WebGPU no disponible, usando WASM como respaldo.");
+        }
 
-        generator = await pipeline('text-generation', modelName);
-        console.log('IA Lista y Cargada ✅');
+        const level = userData.brain || 'PRO';
+        
+        // Mapeo optimizado por jerarquía de hardware (Mac M2 / iPhone 15 Pro / iPhone 14 Pro)
+        const modelMappings = {
+            'MASTER': 'onnx-community/Llama-3.2-1B-Instruct',       // Para Mac M2 (Razonamiento Superior)
+            'ULTRA':  'onnx-community/Qwen2.5-0.5B-Instruct',        // Para iPhone 15 Pro Max (8GB RAM)
+            'PRO':    'onnx-community/Qwen2.5-0.5B-Instruct',        // Para iPhone 14 Pro (6GB RAM)
+            'NORMAL': 'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA' // Fallback universal (Ligero)
+        };
+
+        const modelName = modelMappings[level] || modelMappings['NORMAL'];
+
+        console.log(`🧠 Motor: ${device.toUpperCase()} | Modelo: ${modelName}`);
+
+        generator = await pipeline('text-generation', modelName, {
+            device: device,
+            progress_callback: (progress) => {
+                if (progress.status === 'progress') {
+                    const pct = progress.progress.toFixed(0);
+                    
+                    // Actualizar loader principal
+                    const loaderDetails = document.getElementById('loader-details');
+                    if (loaderDetails) loaderDetails.textContent = `Descargando cerebro: ${pct}%`;
+
+                    // Actualizar chat si está en proceso
+                    const aiMessages = document.querySelectorAll('.message.ai');
+                    const lastAI = aiMessages[aiMessages.length - 1];
+                    if (lastAI && lastAI.textContent.includes('Iniciando IA')) {
+                        lastAI.textContent = `Descargando consciencia (${device.toUpperCase()})... ${pct}% 🧠`;
+                    }
+                }
+            }
+        });
+
+        console.log(`IA Lista y Cargada con ${device.toUpperCase()} ✅`);
         isDownloadingAI = false;
     } catch (e) {
-        console.error("Error crítico en IA local:", e);
+        console.error("❌ Error crítico en IA local:", e);
         isDownloadingAI = false;
+        throw e;
     }
 }
 
@@ -314,7 +358,7 @@ function initZenMode() {
 
     portal.addEventListener('click', () => {
         ZenAudio.unlock();
-        zenView.classList.add('active');
+        zenView?.classList.add('active');
         zen3DActive = true;
         init3DScene();
         setTimeout(() => {
@@ -322,10 +366,10 @@ function initZenMode() {
         }, 1000);
     });
 
-    exit.addEventListener('click', () => {
-        zenView.classList.remove('active');
+    exit?.addEventListener('click', () => {
+        zenView?.classList.remove('active');
         zen3DActive = false;
-        zenMsg.textContent = "Buscando calma...";
+        if (zenMsg) zenMsg.textContent = "Buscando calma...";
     });
 
     function init3DScene() {
