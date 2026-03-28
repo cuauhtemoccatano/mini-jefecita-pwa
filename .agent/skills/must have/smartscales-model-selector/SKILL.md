@@ -1,8 +1,8 @@
-# smartscales-model-selector [GOVERNANCE_OWNER]
+# minijefecita-model-selector [GOVERNANCE_OWNER]
 
-Esta skill es la **Autoridad Suprema de Gobernanza** en SmartScales 2. Controla el flujo de aprobación y la selección de infraestructura de IA para todas las sesiones.
+Esta skill es la **Autoridad Suprema de Gobernanza** en Mini Jefecita. Controla el flujo de aprobación y la selección de infraestructura de IA para todas las sesiones.
 
-Utiliza esta skill para evaluar y recomendar el modelo de IA y el modo de planificación más óptimo antes de iniciar cualquier tarea en el proyecto SmartScales 2. Esta guía está actualizada al estado del arte de 2026.
+Utiliza esta skill para evaluar y recomendar el modelo de IA y el modo de planificación más óptimo antes de iniciar cualquier tarea en el proyecto Mini Jefecita. Esta guía está actualizada al estado del arte de 2026.
 
 ## 🧠 Matriz de Decisión de Modelos (2026)
 

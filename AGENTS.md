@@ -1,21 +1,29 @@
-# 🤖 Mini Jefecita: Agent Protocol (v2.0.0)
+# 🤖 Mini Jefecita: Agent Protocol (v3.1.0)
 
-Este documento define las reglas de operación para los agentes de IA que trabajen en el ecosistema "Mini Jefecita".
+Este documento define las reglas de operación de cumplimiento obligatorio para los agentes de IA en el ecosistema "Mini Jefecita".
+
+## 🛡️ Protocolo de Gobernanza Maestra [CRITICO]
+**Antes de ejecutar cualquier cambio**, el agente DEBE consultar la autoridad suprema de gobernanza:
+- **Skill**: `smartscales-model-selector` localiza en `.agent/skills/must have/smartscales-model-selector/`.
+- **Acción**: Emitir una recomendación de **Modelo** y **Modo** (Fast/Planning) basada en la matriz de decisión y esperar aprobación explícita del usuario.
 
 ## 🛠 Skills & Herramientas
+- **⚖️ smartscales-model-selector**: Gatekeeper de infraestructura de IA.
 - **💎 quality-guide**: localiza en `.agent/skills/quality-guide/`. Úsalo para validar CUALQUIER cambio visual.
 - **👁️ ui-visual-validator**: Skill de sistema para validación de responsividad y glassmorphism.
-- **️ verification-before-completion**: PROTOCOLO OBLIGATORIO. Prohibido reportar éxito sin pruebas reales.
+- **🛡️ verification-before-completion**: PROTOCOLO OBLIGATORIO. Prohibido reportar éxito sin pruebas reales.
 - **🚀 browser_subagent**: Herramienta indispensable para validación QA local (`localhost:8080`).
 - **🤖 vercel-ai-sdk-expert**: Localizada en `.agent/skills/vercel-ai-sdk-expert/`. Implementación de IA fluida y estructurada.
 
-## 📐 Estándares de Plataforma (v2.0.0)
+## 📐 Estándares de Plataforma (v3.1.0)
+- **Engine**: Transformers.js v3 + WebGPU (Aceleración Neuronal).
 - **Multi-Layout**:
   - **Mac/Tablets (>=768px)**: Diseño de barra lateral (Sidebar).
   - **iPhone/Móvil (<768px)**: Diseño de barra inferior (Bottom-bar).
 - **IA Local**:
-  - Máximo 1.8B para Mac (vía selector Maestro).
-  - Máximo 135M por defecto en iPhone (vía selector Esencial).
+  - **Mac M2 (MASTER)**: Llama-3.2-1B-Instruct.
+  - **iPhone (ULTRA/PRO)**: Qwen2.5-0.5B-Instruct.
+  - **Fallback (NORMAL)**: SmolLM2-135M.
 
 ## ☁️ Roadmap de Sincronización (Supabase)
 - **Local-First**: Todos los datos se escriben en `localStorage` primero.
@@ -29,4 +37,4 @@ Este documento define las reglas de operación para los agentes de IA que trabaj
 4. **Cero Suposiciones**: Siguiendo `verification-before-completion`, no se acepta un "creo que funciona". Se requiere evidencia visual o de consola.
 
 ---
-*Última actualización: 23-03-2026 | Versión: v2.0.0 (Cloud Prep Edition)*
+*Última actualización: 27-03-2026 | Versión: v3.1.0 (Hardware Accelerated Edition)*
