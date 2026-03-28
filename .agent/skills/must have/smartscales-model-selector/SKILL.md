@@ -38,9 +38,3 @@ Utiliza esta skill para evaluar y recomendar el modelo de IA y el modo de planif
    - **Modo:** [Fast o Planning]
    - **Justificación:** [Por qué este modelo es el mejor para este caso]
 3. **Pausa de Confirmación:** El agente NO debe proceder con la ejecución hasta que el usuario dé su aprobación explícita tras la recomendación.
-
-## 🛠️ Casos de Uso Específicos de SmartScales
-
-- **Módulo Intelligence/Neural:** Siempre requiere **Claude Opus 4.6** para asegurar que el output estructurado no rompa la UI.
-- **Mantenimiento de Roadmap:** Puede realizarse con **Gemini Flash** en modo Fast.
-- **Modo Zen:** Requiere **Gemini 3 Pro (High)** por la densidad de contexto y la necesidad de integrar múltiples componentes de UI/UX.

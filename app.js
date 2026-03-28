@@ -592,10 +592,11 @@ if (document.readyState === 'loading') {
 }
 
 // ---------------------------------------------------------
-// 8. GESTOR DE REPOSO (ACTUALIZACIÓN AUTÓNOMA)
+// 8. GESTOR DE REPOSO Y ACTUALIZACIONES DE PWA
 // ---------------------------------------------------------
 let lastInteractionTime = Date.now();
 let isUpdateWaiting = false;
+let newWorker = null;
 
 function initIdleManager() {
     const IDLE_THRESHOLD = 60000; // 1 minuto de ocio
@@ -609,44 +610,60 @@ function initIdleManager() {
         document.addEventListener(evt, resetTimer, { passive: true });
     });
 
-    // Revisar periódicamente si es momento de actualizar
+    // Auto-actualizar si el usuario ignora el Toast pero deja la app inactiva
     setInterval(() => {
-        if (isUpdateWaiting && (Date.now() - lastInteractionTime > IDLE_THRESHOLD)) {
+        if (isUpdateWaiting && newWorker && (Date.now() - lastInteractionTime > IDLE_THRESHOLD)) {
             console.log("💎 Reposo detectado. Evolucionando objeto...");
-            window.location.reload();
+            newWorker.postMessage({ type: 'SKIP_WAITING' });
         }
     }, 5000);
 
     // Actualizar también si la app pasa a segundo plano
     document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden' && isUpdateWaiting) {
+        if (document.visibilityState === 'hidden' && isUpdateWaiting && newWorker) {
             console.log("🌙 App en reposo absoluto. Actualizando...");
-            window.location.reload();
+            newWorker.postMessage({ type: 'SKIP_WAITING' });
         }
     });
 }
 
-// Service Worker (Gestión de Actualizaciones Invisible)
+// Service Worker y Toast de Actualización
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(reg => {
             reg.onupdatefound = () => {
-                const installingWorker = reg.installing;
-                installingWorker.onstatechange = () => {
-                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                newWorker = reg.installing;
+                newWorker.onstatechange = () => {
+                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
                         isUpdateWaiting = true;
-                        console.log("✨ Nueva versión lista. Esperando momento de ocio...");
+                        console.log("✨ Nueva versión descargada en caché. Mostrando Toast...");
+                        
+                        // Mostrar el UI del Toast
+                        const toast = document.getElementById('update-toast');
+                        if (toast) toast.classList.remove('hidden');
                     }
                 };
             };
-        }).catch(e => console.warn('SW Skip'));
+        }).catch(e => console.warn('SW Register Error:', e));
     });
 
-    // Detección inmediata si el Worker ya tomó el control
+    // Manejar el clic en "Actualizar"
+    const btnUpdate = document.getElementById('btn-update-now');
+    if (btnUpdate) {
+        btnUpdate.addEventListener('click', () => {
+            if (newWorker) {
+                newWorker.postMessage({ type: 'SKIP_WAITING' });
+            }
+        });
+    }
+
+    // Cuando el nuevo SW toma el control, recargar instantáneamente
+    let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-        // Solo refrescar si no estamos en medio de una interacción crítica
-        if (Date.now() - lastInteractionTime > 10000) {
+        if (!refreshing) {
+            refreshing = true;
             window.location.reload();
         }
     });
 }
+
