@@ -247,7 +247,19 @@ async function initAI() {
         };
 
         const modelName = modelMappings[level] || modelMappings['NORMAL'];
-        console.log(`🧠 Motor: ${device.toUpperCase()} | Modelo: ${modelName}`);
+        const hardwareName = device === 'webgpu' ? 'Aceleración Neuronal' : 'Núcleo de Calma';
+        
+        console.log(`🧠 Jade: ${hardwareName} | Modelo: ${modelName}`);
+
+        // Frase de inicio aleatoria para Jade
+        const jadePhrases = [
+            "Sintonizando nuestra conexión",
+            "Expandiendo mi espacio mental",
+            "Sintiendo la materia",
+            "Despertando mis sentidos",
+            "Armonizando pensamientos"
+        ];
+        const initialPhrase = jadePhrases[Math.floor(Math.random() * jadePhrases.length)];
 
         generator = await pipeline('text-generation', modelName, {
             device: device,
@@ -255,19 +267,19 @@ async function initAI() {
                 if (progress.status === 'progress') {
                     const pct = progress.progress.toFixed(0);
                     
-                    // Actualizar barra de segundo plano
+                    // Actualizar barra de segundo plano con lenguaje poético
                     if (bgProgress) bgProgress.style.width = `${pct}%`;
-                    if (bgStatus) bgStatus.textContent = `Sincronizando ${device.toUpperCase()}: ${pct}%`;
+                    if (bgStatus) bgStatus.textContent = `${initialPhrase}... ${pct}%`;
 
                     // Actualizar loader principal si todavía está visible
                     const loaderDetails = document.getElementById('loader-details');
-                    if (loaderDetails) loaderDetails.textContent = `Descargando cerebro: ${pct}%`;
+                    if (loaderDetails) loaderDetails.textContent = `${initialPhrase}: ${pct}%`;
 
                     // Actualizar chat si está en proceso
                     const aiMessages = document.querySelectorAll('.message.ai');
                     const lastAI = aiMessages[aiMessages.length - 1];
-                    if (lastAI && lastAI.textContent.includes('Iniciando IA')) {
-                        lastAI.textContent = `Descargando consciencia (${device.toUpperCase()})... ${pct}% 🧠`;
+                    if (lastAI && lastAI.textContent.includes('consciencia')) {
+                        lastAI.textContent = `${initialPhrase} (${hardwareName})... ${pct}% ✨`;
                     }
                 }
             }
@@ -275,8 +287,8 @@ async function initAI() {
 
         console.log(`IA Lista y Cargada con ${device.toUpperCase()} ✅`);
         if (bgDownloader) {
-            bgStatus.textContent = `Consciencia conectada (${device.toUpperCase()})`;
-            setTimeout(() => bgDownloader.classList.add('hidden'), 2000);
+            bgStatus.textContent = `Conexión plena establecida (${hardwareName})`;
+            setTimeout(() => bgDownloader.classList.add('hidden'), 3000);
         }
         isDownloadingAI = false;
     } catch (e) {
