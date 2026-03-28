@@ -612,7 +612,7 @@ function initIdleManager() {
 
     // Auto-actualizar si el usuario ignora el Toast pero deja la app inactiva
     setInterval(() => {
-        if (isUpdateWaiting && newWorker && (Date.now() - lastInteractionTime > IDLE_THRESHOLD)) {
+        if (isUpdateWaiting && newWorker && !isDownloadingAI && (Date.now() - lastInteractionTime > IDLE_THRESHOLD)) {
             console.log("💎 Reposo detectado. Evolucionando objeto...");
             newWorker.postMessage({ type: 'SKIP_WAITING' });
         }
@@ -620,7 +620,7 @@ function initIdleManager() {
 
     // Actualizar también si la app pasa a segundo plano
     document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'hidden' && isUpdateWaiting && newWorker) {
+        if (document.visibilityState === 'hidden' && isUpdateWaiting && newWorker && !isDownloadingAI) {
             console.log("🌙 App en reposo absoluto. Actualizando...");
             newWorker.postMessage({ type: 'SKIP_WAITING' });
         }
