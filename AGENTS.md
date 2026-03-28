@@ -3,9 +3,10 @@
 Este documento define las reglas de operación de cumplimiento obligatorio para los agentes de IA en el ecosistema "Mini Jefecita".
 
 ## 🛡️ Protocolo de Gobernanza Maestra [CRITICO]
-**Antes de ejecutar cualquier cambio**, el agente DEBE consultar la autoridad suprema de gobernanza:
-- **Skill**: `smartscales-model-selector` localiza en `.agent/skills/must have/smartscales-model-selector/`.
-- **Acción**: Emitir una recomendación de **Modelo** y **Modo** (Fast/Planning) basada en la matriz de decisión y esperar aprobación explícita del usuario.
+**Antes de ejecutar cualquier cambio**, el agente DEBE:
+1. **Verificar el Archivo IMM**: Consultar `IMMUTABLE_MODULES.md` para asegurarse de que el archivo o bloque a modificar no esté protegido por el Inventario de Módulos Inmutables. Si está en la "Freeze List", el agente DEBE detenerse y pedir autorización explícita de nivel Opus.
+2. **Seleccionar Modelo**: Consultar la autoridad suprema de código (Skill: `smartscales-model-selector` localizada en `.agent/skills/must have/smartscales-model-selector/skILL.md`).
+3. **Validación**: Emitir una recomendación de **Modelo** y **Modo** (Fast/Planning) basada en la matriz de decisión y ESPERAR aprobación explícita del usuario antes de escribir.
 
 ## 🛠 Skills & Herramientas
 - **⚖️ smartscales-model-selector**: Gatekeeper de infraestructura de IA.
