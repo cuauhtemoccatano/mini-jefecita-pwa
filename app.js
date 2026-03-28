@@ -657,6 +657,30 @@ if ('serviceWorker' in navigator) {
         });
     }
 
+    // Check Updates Manual
+    const btnCheckUpdate = document.getElementById('btn-check-updates');
+    if (btnCheckUpdate) {
+        btnCheckUpdate.addEventListener('click', async () => {
+            btnCheckUpdate.textContent = "Buscando mejoras...";
+            try {
+                const reg = await navigator.serviceWorker.getRegistration();
+                if (reg) {
+                    await reg.update();
+                    setTimeout(() => {
+                        if (!isUpdateWaiting) {
+                            btnCheckUpdate.textContent = "Estás al día ✨";
+                            setTimeout(() => {
+                                btnCheckUpdate.textContent = "Buscar Actualizaciones 🔄";
+                            }, 3000);
+                        }
+                    }, 1500);
+                }
+            } catch (err) {
+                btnCheckUpdate.textContent = "Error al buscar ⚠️";
+            }
+        });
+    }
+
     // Cuando el nuevo SW toma el control, recargar instantáneamente
     let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
