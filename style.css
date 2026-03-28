@@ -33,9 +33,9 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
-    z-index: 150;
+    z-index: 9999;
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    height: 40px;
+    height: 44px;
 }
 
 .ai-bg-downloader.hidden {

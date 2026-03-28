@@ -41,6 +41,12 @@ function applyPersonalization() {
         
         // Actualizar nombres de la IA en toda la app
         document.querySelectorAll('.jade-name-display').forEach(el => el.textContent = userData.jadeName);
+
+        // MODO DEBUG VISUAL: Mostrar barra de carga si no hay generador
+        if (!generator) {
+            const bar = document.getElementById('ai-bg-downloader');
+            if (bar) bar.classList.remove('hidden');
+        }
     } catch (e) {
         console.error("Error aplicando personalización:", e);
     }
