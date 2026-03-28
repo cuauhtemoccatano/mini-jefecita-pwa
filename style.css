@@ -100,6 +100,51 @@ body {
     100% { transform: scale(1); filter: drop-shadow(0 0 0px var(--primary)); }
 }
 
+/* Background Downloader Bar */
+.ai-bg-downloader {
+    background: rgba(26, 26, 26, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 150;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 40px;
+}
+
+.ai-bg-downloader.hidden {
+    margin-top: -40px;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.bg-progress-container {
+    flex: 1;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.bg-progress-bar {
+    height: 100%;
+    width: 0%;
+    background: var(--primary);
+    transition: width 0.3s ease-out;
+    box-shadow: 0 0 10px var(--primary);
+}
+
+#ai-bg-status {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
 #app {
     width: 100%;
     max-width: 1400px;

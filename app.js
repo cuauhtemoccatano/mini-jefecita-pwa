@@ -208,9 +208,16 @@ function initExercise() {
 async function initAI() {
     if (generator || isDownloadingAI) return;
 
+    const bgDownloader = document.getElementById('ai-bg-downloader');
+    const bgProgress = document.getElementById('ai-bg-progress');
+    const bgStatus = document.getElementById('ai-bg-status');
+
     try {
         console.log('💎 Evolucionando motor de consciencia (v3 + WebGPU)...');
         
+        // Mostrar barra de progreso en segundo plano
+        if (bgDownloader) bgDownloader.classList.remove('hidden');
+
         // Cargamos la versión 3 que soporta WebGPU para máximo rendimiento en hardware Mini Jefecita
         const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
         
@@ -240,7 +247,6 @@ async function initAI() {
         };
 
         const modelName = modelMappings[level] || modelMappings['NORMAL'];
-
         console.log(`🧠 Motor: ${device.toUpperCase()} | Modelo: ${modelName}`);
 
         generator = await pipeline('text-generation', modelName, {
@@ -249,7 +255,11 @@ async function initAI() {
                 if (progress.status === 'progress') {
                     const pct = progress.progress.toFixed(0);
                     
-                    // Actualizar loader principal
+                    // Actualizar barra de segundo plano
+                    if (bgProgress) bgProgress.style.width = `${pct}%`;
+                    if (bgStatus) bgStatus.textContent = `Sincronizando ${device.toUpperCase()}: ${pct}%`;
+
+                    // Actualizar loader principal si todavía está visible
                     const loaderDetails = document.getElementById('loader-details');
                     if (loaderDetails) loaderDetails.textContent = `Descargando cerebro: ${pct}%`;
 
@@ -264,9 +274,14 @@ async function initAI() {
         });
 
         console.log(`IA Lista y Cargada con ${device.toUpperCase()} ✅`);
+        if (bgDownloader) {
+            bgStatus.textContent = `Consciencia conectada (${device.toUpperCase()})`;
+            setTimeout(() => bgDownloader.classList.add('hidden'), 2000);
+        }
         isDownloadingAI = false;
     } catch (e) {
         console.error("❌ Error crítico en IA local:", e);
+        if (bgStatus) bgStatus.textContent = "Error en sincronización";
         isDownloadingAI = false;
         throw e;
     }
@@ -526,6 +541,7 @@ function initApp() {
         initIdleManager();
         initHealthSync(); // Cerebro v3.0.0
         updateHealthUI();
+        initAI(); // Carga en segundo plano (v3.0.4)
     } catch (err) {
         console.error("Fallo crítico en inicialización:", err);
     } finally {
