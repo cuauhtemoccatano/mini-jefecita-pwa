@@ -271,10 +271,6 @@ async function initAI() {
                     if (bgProgress) bgProgress.style.width = `${pct}%`;
                     if (bgStatus) bgStatus.textContent = `${initialPhrase}... ${pct}%`;
 
-                    // Actualizar loader principal si todavía está visible
-                    const loaderDetails = document.getElementById('loader-details');
-                    if (loaderDetails) loaderDetails.textContent = `${initialPhrase}: ${pct}%`;
-
                     // Actualizar chat si está en proceso
                     const aiMessages = document.querySelectorAll('.message.ai');
                     const lastAI = aiMessages[aiMessages.length - 1];
@@ -556,23 +552,6 @@ function initApp() {
         initAI(); // Carga en segundo plano (v3.0.4)
     } catch (err) {
         console.error("Fallo crítico en inicialización:", err);
-    } finally {
-        // Garantizar que el loader siempre desaparezca físicamente
-        const loader = document.getElementById('ai-loader');
-        if (loader) {
-            setTimeout(() => {
-                loader.classList.add('hidden');
-                loader.style.display = 'none'; // Salida de emergencia física
-                console.log('Loader oculto y removido - UI Lista');
-            }, 800);
-            
-            // Segundo intento de seguridad a los 3 segundos
-            setTimeout(() => {
-                if (!loader.classList.contains('hidden')) {
-                    loader.style.display = 'none';
-                }
-            }, 3000);
-        }
     }
 }
 
