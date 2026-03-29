@@ -34,7 +34,7 @@ body {
     align-items: center;
     gap: 15px;
     z-index: 9999;
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
     height: 44px;
 }
 

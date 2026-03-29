@@ -41,12 +41,6 @@ function applyPersonalization() {
         
         // Actualizar nombres de la IA en toda la app
         document.querySelectorAll('.jade-name-display').forEach(el => el.textContent = userData.jadeName);
-
-        // MODO DEBUG VISUAL: Mostrar barra de carga si no hay generador
-        if (!generator) {
-            const bar = document.getElementById('ai-bg-downloader');
-            if (bar) bar.classList.remove('hidden');
-        }
     } catch (e) {
         console.error("Error aplicando personalización:", e);
     }
@@ -312,7 +306,12 @@ async function initAI(retryCount = 0) {
         console.log(`IA Lista y Cargada con ${device.toUpperCase()} ✅`);
         if (bgDownloader) {
             bgStatus.textContent = `Conexión plena establecida (${hardwareName})`;
-            setTimeout(() => bgDownloader.classList.add('hidden'), 3000);
+            // Transición elegante y lenta para evitar flasheos
+            setTimeout(() => {
+                bgDownloader.style.opacity = '0';
+                bgDownloader.style.transform = 'translateY(-100%)';
+                setTimeout(() => bgDownloader.classList.add('hidden'), 800);
+            }, 2000);
         }
         isDownloadingAI = false;
         releaseWakeLock();
