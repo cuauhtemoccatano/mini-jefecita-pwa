@@ -693,16 +693,26 @@ function initIdleManager() {
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js').then(reg => {
+            // Helper para mostrar el Toast
+            const showUpdateToast = (worker) => {
+                newWorker = worker;
+                isUpdateWaiting = true;
+                const toast = document.getElementById('update-toast');
+                if (toast) toast.classList.remove('hidden');
+                console.log("✨ Actualización detectada/esperando. Mostrando Toast...");
+            };
+
+            // 1. Si ya hay un SW esperando al cargar la página
+            if (reg.waiting) {
+                showUpdateToast(reg.waiting);
+            }
+
+            // 2. Si se encuentra un nuevo SW mientras la página ya está abierta
             reg.onupdatefound = () => {
-                newWorker = reg.installing;
-                newWorker.onstatechange = () => {
-                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                        isUpdateWaiting = true;
-                        console.log("✨ Nueva versión descargada en caché. Mostrando Toast...");
-                        
-                        // Mostrar el UI del Toast
-                        const toast = document.getElementById('update-toast');
-                        if (toast) toast.classList.remove('hidden');
+                const installingWorker = reg.installing;
+                installingWorker.onstatechange = () => {
+                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        showUpdateToast(installingWorker);
                     }
                 };
             };
@@ -714,6 +724,7 @@ if ('serviceWorker' in navigator) {
     if (btnUpdate) {
         btnUpdate.addEventListener('click', () => {
             if (newWorker) {
+                console.log("💎 Forzando activación del nuevo motor...");
                 newWorker.postMessage({ type: 'SKIP_WAITING' });
             }
         });

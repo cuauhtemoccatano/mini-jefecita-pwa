@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mini-jefecita-v3.1.7';
+const CACHE_NAME = 'mini-jefecita-v3.1.8';
 const ASSETS = [
   '/',
   '/index.html',
@@ -42,7 +42,23 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', (event) => {
   event.respondWith(
-    caches.match(event.request)
-      .then((response) => response || fetch(event.request))
+    caches.match(event.request).then((cachedResponse) => {
+      // 1. Devolver respuesta de caché inmediatamente (si existe)
+      const fetchPromise = fetch(event.request).then((networkResponse) => {
+        // 2. Actualizar el caché en segundo plano con la nueva versión
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      }).catch(() => {
+        // Fallback si falla la red y no hay caché (offline extremo)
+        return cachedResponse;
+      });
+
+      return cachedResponse || fetchPromise;
+    })
   );
 });
