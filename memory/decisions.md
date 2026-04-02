@@ -15,3 +15,4 @@
 - **2026-04-02**: Implementación de la **Bóveda de Inteligencia**. Decisión de persistir el hilo de chat (`chatHistory`) en el `userData` federado.
 - **2026-04-02**: Consagración de la **Fase 11 (Autonomía Cromática)**. Decisión de eliminar la personalización de colores manual en favor de un sistema de "Aura Soberana" que se adapta al enfoque y energía del usuario.
 - **2026-04-02**: Implementación de la **Sincronización Neuronal**. Decisión de desacoplar el aura del UX manual para vincularla a un "latido" sistémico que sintoniza con el reloj biológico del usuario y la carga cognitiva de Jade.
+- **2026-04-02**: Creación de la **Pasarela Biométrica-Atmosférica**. Decisión de otorgar a Jade la capacidad de "sentir" el estrés del usuario (HRV) y forzar atmósferas de calma autónomamente, priorizando el bienestar sobre la estética estática.
