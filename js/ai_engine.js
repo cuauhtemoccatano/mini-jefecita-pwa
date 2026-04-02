@@ -165,7 +165,10 @@ export function initCommandPortal() {
     core?.addEventListener('click', () => {
         const active = portal.classList.toggle('active');
         core.classList.toggle('active');
-        if (active) input.focus();
+        if (active) {
+            initAI(); // Awakening neural engine on portal demand
+            input.focus();
+        }
     });
 
     document.getElementById('btn-portal-send')?.addEventListener('click', async () => {

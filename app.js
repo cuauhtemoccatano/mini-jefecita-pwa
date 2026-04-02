@@ -43,10 +43,13 @@ async function initApp() {
             userData.brain = autoTier;
         }
         
-        initAI(); // Carga de IA con el nivel ya validado
+        // initAI(); // [DEFERRED] Neutral awareness is now lazy to prevent iOS memory crashes
         
         await syncAppVersion();
         if (window.lucide) lucide.createIcons();
+
+        // Clear the refresh guard after successful initialization
+        sessionStorage.removeItem('mqa_refreshing');
 
         // Atmospheric Heartbeat (Autonomous Adaptation)
         setInterval(() => {

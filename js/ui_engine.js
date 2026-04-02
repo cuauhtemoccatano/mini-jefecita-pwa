@@ -141,6 +141,11 @@ export function initTabs() {
             nextView.style.display = 'block';
             updateAuraMood(target);
 
+            // Lazy Neural Trigger
+            if (target === 'mensajes') {
+                import('./ai_engine.js').then(m => m.initAI());
+            }
+
             requestAnimationFrame(() => {
                 nextView.classList.remove('entering');
                 nextView.classList.add('active');

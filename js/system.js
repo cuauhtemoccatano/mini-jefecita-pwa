@@ -68,10 +68,10 @@ export async function syncAppVersion() {
                 }
             });
 
-            let refreshing = false;
             navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (refreshing) return;
-                refreshing = true;
+                // Persistent guard using sessionStorage
+                if (sessionStorage.getItem('mqa_refreshing')) return;
+                sessionStorage.setItem('mqa_refreshing', 'true');
                 window.location.reload();
             });
         }
