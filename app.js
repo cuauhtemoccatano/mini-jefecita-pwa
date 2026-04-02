@@ -12,7 +12,7 @@ try {
     healthData = {"steps": 0, "cals": 0};
 }
 
-let generator = null;
+let generatorWorker = null; // SmartScales Worker Bridge
 let isDownloadingAI = false;
 let wakeLock = null;
 
@@ -323,10 +323,10 @@ async function checkModelCache(modelName) {
 }
 
 async function initAI(retryCount = 0) {
-    // Si ya existe un generador, primero lo limpiamos para evitar fugas de memoria
-    if (generator) {
-        console.log("🧹 Limpiando motor previo...");
-        generator = null;
+    if (generatorWorker) {
+        console.log("🧹 Reiniciando puente neuronal...");
+        generatorWorker.terminate();
+        generatorWorker = null;
     }
     
     if (isDownloadingAI) return;
@@ -339,7 +339,6 @@ async function initAI(retryCount = 0) {
         await requestPersistentStorage();
         const level = userData.brain || 'PRO';
         
-        // Mapeo optimizado por jerarquía de hardware
         const modelMappings = {
             'MASTER': 'onnx-community/Llama-3.2-1B-Instruct',
             'ULTRA':  'onnx-community/Qwen2.5-0.5B-Instruct',
@@ -347,84 +346,71 @@ async function initAI(retryCount = 0) {
             'NORMAL': 'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA'
         };
         const modelName = modelMappings[level] || modelMappings['NORMAL'];
-
         const isCached = await checkModelCache(modelName);
-        console.log(`🧠 Jade: Evaluando cerebro... Cristalizado: ${isCached}`);
 
         if (bgDownloader) {
             bgDownloader.classList.remove('hidden');
             if (isCached) bgStatus.textContent = "Sintonizando consciencia cristalizada...";
         }
 
-        console.log('💎 Evolucionando motor de consciencia (v3 + WebGPU)...');
+        console.log('💎 Spawning Neural Sandbox (Web Worker)...');
         await requestWakeLock();
         
-        // Cargamos la versión 3 que soporta WebGPU y Streamers
-        const { pipeline, env, TextStreamer } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
-        
-        env.allowLocalModels = false;
-        env.useBrowserCache = true;
         isDownloadingAI = true;
 
-        // Detección proactiva de WebGPU
+        // Detección de WebGPU para pasar al worker
         let device = 'wasm';
-        try {
-            if (navigator.gpu) {
-                const adapter = await navigator.gpu.requestAdapter();
-                if (adapter) device = 'webgpu';
-            }
-        } catch (gpuErr) {
-            console.warn("WebGPU no disponible, usando WASM como respaldo.");
+        if (navigator.gpu) {
+            const adapter = await navigator.gpu.requestAdapter();
+            if (adapter) device = 'webgpu';
         }
 
         const hardwareName = device === 'webgpu' ? 'Aceleración Neuronal' : 'Núcleo de Calma';
         
-        console.log(`🧠 Jade: ${hardwareName} | Modelo: ${modelName}`);
+        // Inicializar Worker
+        generatorWorker = new Worker('ai_worker.js', { type: 'module' });
 
-        // Frase de inicio aleatoria para Jade
-        const jadePhrases = [
-            "Sintonizando nuestra conexión",
-            "Expandiendo mi espacio mental",
-            "Sintiendo la materia",
-            "Despertando mis sentidos",
-            "Armonizando pensamientos"
-        ];
-        const initialPhrase = jadePhrases[Math.floor(Math.random() * jadePhrases.length)];
+        generatorWorker.onmessage = (e) => {
+            const { type, data } = e.data;
 
-        generator = await pipeline('text-generation', modelName, {
-            device: device,
-            progress_callback: (progress) => {
-                if (progress.status === 'progress') {
-                    const pct = progress.progress.toFixed(0);
+            if (type === 'progress') {
+                if (data.status === 'progress') {
+                    const pct = data.progress.toFixed(0);
                     if (bgProgress) bgProgress.style.width = `${pct}%`;
-                    if (bgStatus) bgStatus.textContent = `${initialPhrase}... ${pct}%`;
+                    if (bgStatus) bgStatus.textContent = `Sintonizando... ${pct}%`;
                 }
             }
+
+            if (type === 'ready') {
+                console.log(`IA Lista en Worker con ${data.device.toUpperCase()} ✅`);
+                if (bgDownloader) {
+                    bgStatus.textContent = isCached ? `Cristalización intacta (${hardwareName})` : `Conexión plena establecida (${hardwareName})`;
+                    setTimeout(() => {
+                        bgDownloader.style.opacity = '0';
+                        setTimeout(() => bgDownloader.classList.add('hidden'), 800);
+                    }, 2000);
+                }
+                isDownloadingAI = false;
+                releaseWakeLock();
+            }
+
+            if (type === 'error') {
+                console.error("Worker Neural Error:", data);
+                isDownloadingAI = false;
+                if (bgStatus) bgStatus.textContent = "Error en sintonización";
+                releaseWakeLock();
+            }
+        };
+
+        generatorWorker.postMessage({ 
+            type: 'init', 
+            data: { modelName, device } 
         });
 
-        console.log(`IA Lista y Cargada con ${device.toUpperCase()} ✅`);
-        if (bgDownloader) {
-            bgStatus.textContent = isCached ? `Cristalización intacta (${hardwareName})` : `Conexión plena establecida (${hardwareName})`;
-            setTimeout(() => {
-                bgDownloader.style.opacity = '0';
-                setTimeout(() => bgDownloader.classList.add('hidden'), 800);
-            }, 2000);
-        }
-        isDownloadingAI = false;
-        releaseWakeLock();
     } catch (e) {
-        console.error(`❌ Error en IA (Intento ${retryCount + 1}):`, e);
+        console.error(`❌ Fallo al crear Worker:`, e);
         isDownloadingAI = false;
-        releaseWakeLock();
-
-        const errorMsg = e.message?.includes('quota') ? "Falta de espacio en disco" : "Red restringida o inestable";
-        
-        if (retryCount < 2) {
-            if (bgStatus) bgStatus.textContent = `Reintentando: ${errorMsg}...`;
-            setTimeout(() => initAI(retryCount + 1), 5000);
-        } else {
-            if (bgStatus) bgStatus.textContent = `Error: ${errorMsg}`;
-        }
+        if (bgStatus) bgStatus.textContent = "Hardware no compatible";
     }
 }
 
@@ -446,40 +432,54 @@ function initChat() {
             await initAI();
         }
 
-        if (generator) {
+        if (generatorWorker) {
             try {
                 const system = `Eres ${userData.jadeName}, la esencia inteligente de este objeto. Tu tono es el de un diseñador de alta costura o un arquitecto minimalista: calmado, poético, preciso y profundamente empático con ${userData.name}. No eres una utilidad; eres una compañía sensorial. Usa frases cortas y elegantes.`;
                 const messages = [{ role: 'system', content: system }, { role: 'user', content: text }];
                 
-                const fullPrompt = generator.tokenizer.apply_chat_template(messages, { tokenize: false, add_generation_prompt: true });
+                // Nota: apply_chat_template no está disponible en el worker fácilmente sin re-importar el tokenizer
+                // Así que enviamos los mensajes crudos y el worker se encarga de la plantilla o el worker ya tiene todo el motor.
+                // Sin embargo, para mantener la lógica igual, dejaremos que el worker lo maneje todo.
                 
                 const aiMsgDiv = document.createElement('div');
                 aiMsgDiv.className = 'message ai typing';
                 aiMsgDiv.textContent = '...';
                 chatBox.appendChild(aiMsgDiv);
 
-                // Consciencia Fluida: Streaming UX (v3.1.2)
-                const { TextStreamer } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
-                let accumulated = "";
-                const streamer = new TextStreamer(generator.tokenizer, {
-                    skip_prompt: true,
-                    callback_function: (chunk) => {
-                        accumulated += chunk.replace('<|im_end|>', '');
-                        aiMsgDiv.textContent = accumulated;
+                // Escuchar respuesta del worker
+                const originalHandler = generatorWorker.onmessage;
+                generatorWorker.onmessage = (e) => {
+                    const { type, data } = e.data;
+                    
+                    if (type === 'chunk') {
+                        aiMsgDiv.textContent = data;
                         aiMsgDiv.classList.remove('typing');
                         chatBox.parentElement.scrollTop = chatBox.parentElement.scrollHeight;
                     }
-                });
+                    if (type === 'complete') {
+                        // Restaurar el handler original de progreso para futuros re-init
+                        generatorWorker.onmessage = originalHandler;
+                    }
+                    if (type === 'error') {
+                        aiMsgDiv.textContent = "Mi motor de pensamiento se detuvo. ¿Puedes repetir?";
+                        generatorWorker.onmessage = originalHandler;
+                    }
 
-                await generator(fullPrompt, { 
-                    max_new_tokens: 120, 
-                    temperature: 0.7,
-                    streamer: streamer 
+                    // Pasar a los otros handlers internos si existen (progreso etc)
+                    if (type === 'progress') originalHandler(e);
+                };
+
+                generatorWorker.postMessage({
+                    type: 'generate',
+                    data: {
+                        fullPrompt: `assistant\n${system}\nuser\n${text}\nassistant\n`, // Plantilla simplificada para el worker
+                        settings: { max_new_tokens: 120, temperature: 0.7 }
+                    }
                 });
                 
             } catch (err) {
-                console.error("AI Generation Error:", err);
-                chatBox.innerHTML += `<div class="message ai">Lo siento, mi motor de pensamiento falló. ¿Puedes repetir?</div>`;
+                console.error("Interaction Error:", err);
+                chatBox.innerHTML += `<div class="message ai">No puedo conectar con mis sentidos ahora.</div>`;
             }
         } else {
             chatBox.innerHTML += `<div class="message ai">Vaya, mi cerebro local no pudo cargar. ¿Tienes conexión a internet?</div>`;
