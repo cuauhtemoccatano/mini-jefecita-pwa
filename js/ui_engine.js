@@ -1,0 +1,84 @@
+// ---------------------------------------------------------
+// js/ui_engine.js - Estética y Navegación
+// ---------------------------------------------------------
+import { userData } from './state.js';
+
+export function triggerHaptic(type = 'light') {
+    if (!window.navigator || !window.navigator.vibrate) return;
+    switch (type) {
+        case 'light': window.navigator.vibrate(10); break;
+        case 'medium': window.navigator.vibrate([15, 30, 15]); break;
+        case 'success': window.navigator.vibrate([10, 50, 10, 50, 10]); break;
+        case 'warning': window.navigator.vibrate([100, 50, 100]); break;
+    }
+}
+
+export function applyPersonalization() {
+    const nameLabel = document.querySelector('.user-name-label');
+    if (nameLabel) nameLabel.textContent = userData.name;
+    
+    document.querySelectorAll('.jade-name-display').forEach(el => el.textContent = userData.jadeName);
+    document.documentElement.style.setProperty('--primary', userData.color);
+    document.documentElement.style.setProperty('--aura-1', `${userData.color}26`);
+
+    const streakEl = document.getElementById('home-streak-val');
+    if (streakEl) streakEl.textContent = userData.streak || 0;
+
+    const remCountEl = document.getElementById('home-reminders-val');
+    if (remCountEl) remCountEl.textContent = userData.remindersCount || 0;
+}
+
+export function updateGreeting() {
+    const el = document.getElementById('greeting');
+    if (!el) return;
+    const hour = new Date().getHours();
+    let text = hour < 12 ? "¡Buenos días!" : hour < 19 ? "¡Buenas tardes!" : "¡Buenas noches!";
+    el.textContent = `${text} ${userData.name}`;
+}
+
+export function updateAuraMood(view) {
+    const aura = document.getElementById('aura-system');
+    if (!aura) return;
+    let mood = (view === 'diario') ? 'introspection' : (view === 'ejercicio') ? 'energy' : (view === 'zen') ? 'calm' : 'default';
+    aura.setAttribute('data-mood', mood);
+    triggerHaptic(view === 'ejercicio' ? 'medium' : 'light');
+}
+
+export function initTabs() {
+    const tabs = document.querySelectorAll('.tab-item');
+    let isTransitioning = false;
+    
+    tabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (isTransitioning) return;
+            const target = tab.getAttribute('data-view');
+            const currentView = document.querySelector('.view.active');
+            const nextView = document.getElementById(`view-${target}`);
+            if (!nextView || currentView === nextView) return;
+
+            isTransitioning = true;
+            if (currentView) {
+                currentView.classList.add('exiting');
+                currentView.classList.remove('active');
+            }
+            nextView.classList.add('entering');
+            nextView.style.display = 'block';
+            updateAuraMood(target);
+
+            requestAnimationFrame(() => {
+                nextView.classList.remove('entering');
+                nextView.classList.add('active');
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                setTimeout(() => {
+                    if (currentView) {
+                        currentView.classList.remove('exiting');
+                        currentView.style.display = 'none';
+                    }
+                    isTransitioning = false;
+                }, 600);
+            });
+        });
+    });
+}
