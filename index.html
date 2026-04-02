@@ -337,6 +337,26 @@
             </button>
         </nav>
     </div>
+
+    <!-- UI Global: El Núcleo de Jade (Convergence) -->
+    <div id="liquid-core" class="liquid-button">
+        <i data-lucide="sparkles"></i>
+    </div>
+
+    <!-- UI Global: Portal de Comando -->
+    <div id="command-portal" class="view overlay-portal">
+        <div class="portal-header">
+            <span class="portal-title">Comando Neuronal</span>
+            <button id="btn-close-portal" class="icon-btn"><i data-lucide="x"></i></button>
+        </div>
+        <div id="portal-messages" class="portal-content">
+            <div class="message ai">Jade está lista. ¿En qué puedo guiarte?</div>
+        </div>
+        <div class="portal-input-area">
+            <input type="text" id="portal-input" placeholder="Comando rápido..." />
+            <button id="btn-portal-send" class="icon-btn primary"><i data-lucide="send"></i></button>
+        </div>
+    </div>
     <!-- Scripts Maestros -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <!-- SmartScales 2 Legacy MQA & App Logic -->
