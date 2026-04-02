@@ -39,6 +39,9 @@ function applyPersonalization() {
 
         document.documentElement.style.setProperty('--primary', userData.color);
         
+        // Sincronizar Aura con el color principal
+        document.documentElement.style.setProperty('--aura-1', `${userData.color}26`); // 15% opacidad
+        
         // Actualizar nombres de la IA en toda la app
         document.querySelectorAll('.jade-name-display').forEach(el => el.textContent = userData.jadeName);
     } catch (e) {
@@ -556,11 +559,21 @@ function checkStressLevels(hrv) {
         const card = document.getElementById('care-suggestion');
         if (card) {
             card.classList.remove('hidden');
+            
+            // Calmar el Aura
+            document.documentElement.style.setProperty('--aura-speed', '60s');
+            document.documentElement.style.setProperty('--aura-1', 'rgba(0, 150, 200, 0.2)');
+            document.documentElement.style.setProperty('--aura-blur', '180px');
+
             setTimeout(() => {
                 speakZen("Jade, noto que tu ritmo es acelerado. He preparado el Santuario para ti.");
             }, 2000);
             if (window.navigator.vibrate) window.navigator.vibrate([10, 50, 10]);
         }
+    } else {
+        // Restaurar Aura normal si no hay estrés
+        document.documentElement.style.setProperty('--aura-speed', '25s');
+        document.documentElement.style.setProperty('--aura-blur', '120px');
     }
 }
 
