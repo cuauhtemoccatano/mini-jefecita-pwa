@@ -1,6 +1,7 @@
 // ---------------------------------------------------------
 // app.js - Orquestador Maestro (Modular v3.3.0)
 // ---------------------------------------------------------
+import { OnboardingCeremony } from './js/components/OnboardingCeremony.js';
 import { loadState, userData, saveSettings } from './js/state.js';
 import { renderAllViews, applyPersonalization, updateGreeting, initTabs, triggerHaptic } from './js/ui_engine.js';
 import { initAI, initChat, initCommandPortal } from './js/ai_engine.js';
@@ -10,7 +11,14 @@ import { syncAppVersion, initIdleManager, initConnectivityAwareness, initInstall
 
 async function initApp() {
     console.log("🌊 Orquestación Modular Iniciada: Jade despertando...");
+    loadState();
     
+    if (!userData.onboarded) {
+        document.body.innerHTML = OnboardingCeremony.render();
+        OnboardingCeremony.init();
+        return;
+    }
+
     try {
         loadState();
         renderAllViews();
