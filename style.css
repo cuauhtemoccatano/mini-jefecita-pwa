@@ -1,10 +1,15 @@
 :root {
     --primary: #00C4B4;
     --background: #0A0A0A;
-    --surface: rgba(26, 26, 26, 0.6);
+    --surface: rgba(26, 26, 26, 0.55);
     --text: #FFFFFF;
-    --text-secondary: #999999;
-    --safe-area-bottom: env(safe-area-inset-bottom, 20px);
+    --text-secondary: rgba(255, 255, 255, 0.6);
+    --safe-area-bottom: env(safe-area-inset-bottom, 24px);
+
+    /* Typography Polish */
+    --f-weight-light: 300;
+    --f-weight-medium: 500;
+    --f-letter-spacing: 0.03em;
     
     /* Aura Physics */
     --aura-1: rgba(0, 196, 180, 0.15);
@@ -22,13 +27,25 @@
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background-color: var(--background);
     color: var(--text);
     overflow: hidden;
     height: 100%;
     width: 100%;
-    position: fixed; 
+    position: fixed;
+    letter-spacing: var(--f-letter-spacing);
+}
+
+/* Glass Texture Pattern (Noise) */
+body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3%3Ffilter id='n' project-name='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Aura Sentiente - Sistema de Fondo */
@@ -280,20 +297,19 @@ body {
     50% { transform: scale(1.1); box-shadow: 0 0 15px rgba(255,255,255,0.2); }
 }
 
-/* Motivational Card (Organic Version) */
+/* Motivational Card (High-Fidelity) */
 .motivational-card {
     background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    padding: 32px 24px;
-    border-radius: 60% 40% 70% 30% / 40% 50% 60% 50%; /* Forma de gota orgánica */
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    padding: 32px;
+    border-radius: 40px 30px 50px 35px; /* Super-elipse balanceado */
+    border: 0.5px solid rgba(255, 255, 255, 0.15); /* Borde más fino */
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
     margin-bottom: 32px;
     position: relative;
     overflow: hidden;
-    transform: perspective(1000px) translateZ(20px); /* Flota más alto */
-    transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform: perspective(1200px) translateZ(30px);
 }
 
 .motivational-card::before {
@@ -338,17 +354,17 @@ body {
 }
 
 .stat-card {
-    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary), transparent 30%));
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
-    padding: 20px;
-    border-radius: 40% 60% 50% 50% / 50% 40% 60% 50%; /* Radio orgánico */
+    background: linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary), transparent 25%));
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    padding: 24px 20px;
+    border-radius: 28px 32px 24px 36px;
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
     flex: 1;
     min-width: 140px;
-    transform: translateZ(10px); /* Flota intermedio */
+    transform: translateZ(15px);
 }
 
 /* El segundo card del cluster se desfasa sutilmente */
@@ -450,7 +466,7 @@ body {
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(12px);
     padding: 16px 20px;
-    border-radius: 40px 10px 40px 10px; /* Forma de hoja/nervadura */
+    border-radius: 20px 40px 20px 40px; /* Curvatura más elegante */
     display: flex;
     align-items: center;
     gap: 12px;
@@ -460,7 +476,7 @@ body {
 }
 
 .reminder-row:nth-child(even) {
-    border-radius: 10px 40px 10px 40px;
+    border-radius: 40px 20px 40px 20px;
 }
 
 .dot {
@@ -823,13 +839,13 @@ input[type="number"]:focus {
     background: rgba(255, 255, 255, 0.04);
     backdrop-filter: blur(25px);
     -webkit-backdrop-filter: blur(25px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 50% 50% 45% 55% / 40% 40% 60% 60%; /* Forma de vasija/cuenco */
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border-radius: 40px 40px 60px 60px; /* Vasija refinada */
     padding: 40px 32px;
     margin-bottom: 32px;
     box-shadow: 0 15px 45px rgba(0, 0, 0, 0.3);
     position: relative;
-    transform: perspective(1000px) translateZ(-5px); /* Se hunde un poco para introspección */
+    transform: perspective(1000px) translateZ(-5px);
 }
 
 #journal-input {

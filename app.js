@@ -74,8 +74,19 @@ function updateHealthUI() {
 }
 
 // ---------------------------------------------------------
-// 2.5 MOTOR DE ATMÓSFERA (AURA)
+// 2.5 MOTOR DE ATMÓSFERA (AURA Y HÁPTICOS)
 // ---------------------------------------------------------
+function triggerHaptic(type = 'light') {
+    if (!window.navigator || !window.navigator.vibrate) return;
+
+    switch (type) {
+        case 'light': window.navigator.vibrate(10); break;
+        case 'medium': window.navigator.vibrate([15, 30, 15]); break;
+        case 'success': window.navigator.vibrate([10, 50, 10, 50, 10]); break;
+        case 'warning': window.navigator.vibrate([100, 50, 100]); break;
+    }
+}
+
 function updateAuraMood(view) {
     const aura = document.getElementById('aura-system');
     if (!aura) return;
@@ -87,6 +98,9 @@ function updateAuraMood(view) {
 
     aura.setAttribute('data-mood', mood);
     console.log(`🌌 Aura Mood: ${mood}`);
+    
+    // Háptico de ambiente al cambiar de vista
+    triggerHaptic(view === 'ejercicio' ? 'medium' : 'light');
 }
 
 // ---------------------------------------------------------
@@ -461,6 +475,7 @@ function initZenMode() {
     if (!portal) return;
 
     portal.addEventListener('click', () => {
+        triggerHaptic('light');
         ZenAudio.unlock();
         zenView?.classList.add('active');
         zen3DActive = true;
@@ -471,6 +486,7 @@ function initZenMode() {
     });
 
     exit?.addEventListener('click', () => {
+        triggerHaptic('light');
         zenView?.classList.remove('active');
         zen3DActive = false;
         if (zenMsg) zenMsg.textContent = "Buscando calma...";
