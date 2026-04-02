@@ -669,6 +669,8 @@ function analyzeHealthTrends(data) {
 }
 
 function checkStressLevels(hrv) {
+    const zenPortal = document.getElementById('btn-zen-portal');
+    
     if (hrv < 35) { // Umbral de sobreestimulación profunda
         const card = document.getElementById('care-suggestion');
         if (card) {
@@ -679,16 +681,52 @@ function checkStressLevels(hrv) {
             document.documentElement.style.setProperty('--aura-1', 'rgba(0, 150, 200, 0.2)');
             document.documentElement.style.setProperty('--aura-blur', '180px');
 
+            // Neural Shadowing: El portal respira
+            zenPortal?.classList.add('predictive-shadow');
+
             setTimeout(() => {
                 speakZen("Jade, noto que tu ritmo es acelerado. He preparado el Santuario para ti.");
             }, 2000);
             if (window.navigator.vibrate) window.navigator.vibrate([10, 50, 10]);
         }
     } else {
-        // Restaurar Aura normal si no hay estrés
+        // Restaurar
         document.documentElement.style.setProperty('--aura-speed', '25s');
         document.documentElement.style.setProperty('--aura-blur', '120px');
+        zenPortal?.classList.remove('predictive-shadow');
     }
+}
+
+// ---------------------------------------------------------
+// 6.5 PUENTE SMART SCALES 2: PERSPECTIVA HOLOGRÁFICA
+// ---------------------------------------------------------
+async function initHolographicPerspective() {
+    if (typeof DeviceOrientationEvent === 'undefined') return;
+
+    // Pedir permiso en iOS
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        document.addEventListener('click', async () => {
+            try {
+                await DeviceOrientationEvent.requestPermission();
+            } catch (e) {}
+        }, { once: true });
+    }
+
+    window.addEventListener('deviceorientation', (event) => {
+        const { beta, gamma } = event; // beta (-180, 180), gamma (-90, 90)
+        
+        // Suavizamos el movimiento para que se sienta subatómico
+        const x = (gamma / 15).toFixed(2);
+        const y = (beta / 15).toFixed(2);
+        
+        const activeView = document.querySelector('.view.active');
+        if (activeView) {
+            const cards = activeView.querySelectorAll('.stat-card, .motivational-card, .journal-card');
+            cards.forEach(card => {
+                card.style.transform = `perspective(1200px) rotateY(${x}deg) rotateX(${-y}deg) translateZ(30px)`;
+            });
+        }
+    });
 }
 
 // ---------------------------------------------------------
@@ -711,6 +749,7 @@ function initApp() {
         initHealthSync(); // Cerebro v3.0.0
         updateHealthUI();
         initAI(); // Carga en segundo plano (v3.0.4)
+        initHolographicPerspective(); // SmartScales 2 Bridge
     } catch (err) {
         console.error("Fallo crítico en inicialización:", err);
     }
