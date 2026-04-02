@@ -45,16 +45,21 @@ La evolución de Jade se divide en fases de madurez técnica y sensorial. Actual
 - [x] **Baptism Ritual**: Personalización bidireccional (Nombres del usuario e IA).
 - [x] **Identity Lock**: Nodo de identidad vinculado al estado persistente.
 
+### Fase 11: Aura Soberana (Atmospheric Unification)
+- [x] **Minimalist Autonomy**: Eliminación de selectores de color manuales.
+- [x] **Atmospheric Leakage**: Brillos y sombras dinámicas basados en el aura.
+- [x] **System Chrome Sync**: Sincronización con `theme-color` del OS.
+
 ## Próximas Misiones (Visión v3.5+)
 
-### Fase 11: Percepción Atmosférica
+### Fase 12: Percepción Atmosférica
 - [ ] **Holographic Perspective**: Movimiento de cristales basado en Giroscopio.
 - [ ] **Aura Reactiva**: Sincronización de color con luz ambiental y hora.
 
-### Fase 12: Orquestación Bio-Feedback
+### Fase 13: Orquestación Bio-Feedback
 - [ ] **Haptic Synesthesia**: Lenguaje de vibraciones Taptic Engine (latidos ai).
 - [ ] **Neural Acoustics**: Paisajes sonoros generativos basados en HRV.
 
-### Fase 13: Inteligencia Predictiva (Oracle)
+### Fase 14: Inteligencia Predictiva (Oracle)
 - [ ] **Rhythms Prediction**: Anticipación de estados de fatiga.
 - [ ] **Adaptive Nudges**: Micro-interacciones proactivas basadas en patrones históricos.
