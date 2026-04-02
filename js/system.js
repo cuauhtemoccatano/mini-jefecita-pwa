@@ -50,8 +50,30 @@ export async function syncAppVersion() {
             document.getElementById('update-toast')?.classList.remove('hidden');
         }
         localStorage.setItem('app_version', pkg.version);
+
+        // Registro de Service Worker con gestión de actualizaciones
+        if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.register('./sw.js');
+            
+            // Si hay un worker esperando, mostrar el toast
+            if (reg.waiting) {
+                document.getElementById('update-toast')?.classList.remove('hidden');
+            }
+
+            document.getElementById('btn-update-now')?.addEventListener('click', () => {
+                if (reg.waiting) {
+                    reg.waiting.postMessage({ type: 'SKIP_WAITING' });
+                } else {
+                    window.location.reload();
+                }
+            });
+
+            navigator.serviceWorker.addEventListener('controllerchange', () => {
+                window.location.reload();
+            });
+        }
     } catch (e) {
-        console.warn("🛡️ MQA: Fallo en sincronización de versión.");
+        console.warn("🛡️ MQA: Fallo en sincronización de versión/SW.");
     }
 }
 

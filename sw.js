@@ -1,10 +1,26 @@
-const CACHE_NAME = 'mini-jefecita-v3.2.2';
+const CACHE_NAME = 'mini-jefecita-v3.5.0';
 const ASSETS = [
   '/',
   '/index.html',
   '/style.css',
+  '/css/awakening.css',
   '/app.js',
   '/manifest.json',
+  '/ai_worker.js',
+  '/js/state.js',
+  '/js/ai_engine.js',
+  '/js/ui_engine.js',
+  '/js/health_engine.js',
+  '/js/santuario.js',
+  '/js/system.js',
+  '/js/components/HomeView.js',
+  '/js/components/ChatView.js',
+  '/js/components/ExerciseView.js',
+  '/js/components/RemindersView.js',
+  '/js/components/JournalView.js',
+  '/js/components/ZenView.js',
+  '/js/components/SettingsModal.js',
+  '/js/components/OnboardingCeremony.js',
   '/icons/icon-192.png',
   '/icons/icon-512.png'
 ];
