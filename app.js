@@ -6,7 +6,7 @@ import { renderAllViews, applyPersonalization, updateGreeting, initTabs, trigger
 import { initAI, initChat, initCommandPortal } from './js/ai_engine.js';
 import { initHealthSync, updateHealthUI } from './js/health_engine.js';
 import { initZenMode } from './js/santuario.js';
-import { syncAppVersion, initIdleManager, initConnectivityAwareness, initInstallManager } from './js/system.js';
+import { syncAppVersion, initIdleManager, initConnectivityAwareness, initInstallManager, predictOptimalBrainTier } from './js/system.js';
 
 async function initApp() {
     console.log("🌊 Orquestación Modular Iniciada: Jade despertando...");
@@ -28,7 +28,14 @@ async function initApp() {
         initConnectivityAwareness();
         initInstallManager();
         
-        initAI(); // Carga de IA en segundo plano
+        // Auto-Elevation Ceremony
+        if (!userData.brain || userData.brain === 'AUTO') {
+            const autoTier = await predictOptimalBrainTier();
+            console.log(`✨ Silicón Elevation: Aplicando nivel ${autoTier} de forma automática.`);
+            userData.brain = autoTier;
+        }
+        
+        initAI(); // Carga de IA con el nivel ya validado
         
         await syncAppVersion();
         if (window.lucide) lucide.createIcons();

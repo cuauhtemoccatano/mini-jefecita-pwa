@@ -80,6 +80,20 @@ export function initInstallManager() {
     });
 }
 
+export async function predictOptimalBrainTier() {
+    const profile = await getHardwareProfile();
+    console.log("🛠️ MQA Perfil Hardware:", profile);
+
+    if (profile.lowPower) return 'NORMAL';
+    
+    // Heuristic Map
+    if (profile.tier === 'Elite') return 'MASTER';
+    if (profile.memory >= 8) return 'ULTRA';
+    if (profile.memory >= 4) return 'PRO';
+    
+    return 'NORMAL';
+}
+
 export function initIdleManager() {
     window.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden') {
