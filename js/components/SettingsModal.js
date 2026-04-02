@@ -31,10 +31,10 @@ export const SettingsModal = {
                 <p class="set-desc">Modelos grandes son más listos pero pueden cerrar la app en móvil.</p>
                 <select id="set-brain-level" class="set-select">
                     <option value="AUTO" ${(!userData.brain || userData.brain === 'AUTO') ? 'selected' : ''}>Auto-Inteligencia (Recomendado)</option>
-                    <option value="NORMAL" ${userData.brain === 'NORMAL' ? 'selected' : ''}>Esencial (Ligero)</option>
-                    <option value="PRO" ${userData.brain === 'PRO' ? 'selected' : ''}>Avanzado (Equilibrado)</option>
-                    <option value="ULTRA" ${userData.brain === 'ULTRA' ? 'selected' : ''}>Pro (Nivel Pro)</option>
-                    <option value="MASTER" ${userData.brain === 'MASTER' ? 'selected' : ''}> Ultra (Solo Mac/PC)</option>
+                    <option value="ULTRA" ${userData.brain === 'ULTRA' ? 'selected' : ''}>Ultra (Máxima Fidelidad)</option>
+                    <option value="PRO" ${userData.brain === 'PRO' ? 'selected' : ''}>Pro (Rendimiento Alto)</option>
+                    <option value="AVANZADO" ${userData.brain === 'AVANZADO' ? 'selected' : ''}>Avanzado (Equilibrado)</option>
+                    <option value="ESENCIAL" ${userData.brain === 'ESENCIAL' ? 'selected' : ''}>Esencial (Ligero)</option>
                 </select>
                 <div id="hardware-badge" style="font-size: 10px; color: var(--primary); margin-top: 4px; display: none;">
                     <i data-lucide="check-circle" style="width: 10px;"></i> Hardware Optimizado
@@ -61,7 +61,10 @@ export const SettingsModal = {
             </div>
         </div>
     `,
-    init: () => {
+    init: async () => {
         if (window.lucide) lucide.createIcons();
+        if (!userData.brain || userData.brain === 'AUTO') {
+            document.getElementById('hardware-badge')?.setAttribute('style', 'font-size: 10px; color: var(--primary); margin-top: 4px; display: block;');
+        }
     }
 };

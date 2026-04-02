@@ -84,14 +84,14 @@ export async function predictOptimalBrainTier() {
     const profile = await getHardwareProfile();
     console.log("🛠️ MQA Perfil Hardware:", profile);
 
-    if (profile.lowPower) return 'NORMAL';
+    if (profile.lowPower) return 'ESENCIAL';
     
     // Heuristic Map
-    if (profile.tier === 'Elite') return 'MASTER';
-    if (profile.memory >= 8) return 'ULTRA';
-    if (profile.memory >= 4) return 'PRO';
+    if (profile.tier === 'Elite') return 'ULTRA';
+    if (profile.memory >= 8) return 'PRO';
+    if (profile.memory >= 4) return 'AVANZADO';
     
-    return 'NORMAL';
+    return 'ESENCIAL';
 }
 
 export function initIdleManager() {

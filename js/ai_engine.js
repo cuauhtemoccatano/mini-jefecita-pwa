@@ -24,12 +24,12 @@ export async function initAI() {
         isDownloadingAI = true;
         const level = userData.brain || 'PRO';
         const modelMappings = {
-            'MASTER': 'onnx-community/Llama-3.2-1B-Instruct',
-            'ULTRA':  'onnx-community/Qwen2.5-0.5B-Instruct',
-            'PRO':    'onnx-community/Qwen2.5-0.5B-Instruct',
-            'NORMAL': 'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA'
+            'ULTRA':    'onnx-community/Llama-3.2-1B-Instruct',
+            'PRO':      'onnx-community/Qwen2.5-0.5B-Instruct',
+            'AVANZADO':  'onnx-community/Qwen2.5-0.5B-Instruct',
+            'ESENCIAL':  'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA'
         };
-        const modelName = modelMappings[level] || modelMappings['NORMAL'];
+        const modelName = modelMappings[level] || modelMappings['ESENCIAL'];
         
         let device = 'wasm';
         if (navigator.gpu) {
