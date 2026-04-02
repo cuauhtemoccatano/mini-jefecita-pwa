@@ -63,14 +63,21 @@ async function initApp() {
 
 function initHolographic() {
     if (typeof DeviceOrientationEvent !== 'undefined') {
+        let ticking = false;
         window.addEventListener('deviceorientation', (e) => {
-            const x = (e.gamma / 15).toFixed(2);
-            const y = (e.beta / 15).toFixed(2);
-            const activeView = document.querySelector('.view.active');
-            if (activeView) {
-                activeView.querySelectorAll('.stat-card, .motivational-card').forEach(c => {
-                    c.style.transform = `perspective(1200px) rotateY(${x}deg) rotateX(${-y}deg)`;
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    const x = (e.gamma / 15).toFixed(2);
+                    const y = (e.beta / 15).toFixed(2);
+                    const activeView = document.querySelector('.view.active');
+                    if (activeView) {
+                        activeView.querySelectorAll('.stat-card, .motivational-card').forEach(c => {
+                            c.style.transform = `perspective(1200px) rotateY(${x}deg) rotateX(${-y}deg)`;
+                        });
+                    }
+                    ticking = false;
                 });
+                ticking = true;
             }
         });
     }
