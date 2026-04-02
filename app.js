@@ -217,14 +217,23 @@ function initSettings() {
 
     // Guardar
     document.getElementById('btn-save-settings')?.addEventListener('click', () => {
+        const oldBrain = userData.brain;
         userData.name = document.getElementById('set-name').value.trim() || "Jade";
         userData.jadeName = document.getElementById('set-jade-name').value.trim() || "Jefecita";
         userData.vibe = document.getElementById('set-vibe').value.trim() || "💚";
         userData.brain = document.getElementById('set-brain-level').value;
+        
         saveSettings();
         modal.style.display = 'none';
         applyPersonalization();
         updateGreeting();
+
+        // Reiniciar IA si el nivel cambió
+        if (oldBrain !== userData.brain) {
+            console.log("♻️ Nivel cerebral modificado. Reiniciando motor...");
+            generator = null; // Liberar referencia
+            initAI();
+        }
     });
 
     // Colores
@@ -288,7 +297,13 @@ function releaseWakeLock() {
 }
 
 async function initAI(retryCount = 0) {
-    if (generator || isDownloadingAI) return;
+    // Si ya existe un generador, primero lo limpiamos para evitar fugas de memoria
+    if (generator) {
+        console.log("🧹 Limpiando motor previo...");
+        generator = null;
+    }
+    
+    if (isDownloadingAI) return;
 
     const bgDownloader = document.getElementById('ai-bg-downloader');
     const bgProgress = document.getElementById('ai-bg-progress');
@@ -301,8 +316,8 @@ async function initAI(retryCount = 0) {
         // Mostrar barra de progreso en segundo plano
         if (bgDownloader) bgDownloader.classList.remove('hidden');
 
-        // Cargamos la versión 3 que soporta WebGPU para máximo rendimiento en hardware Mini Jefecita
-        const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
+        // Cargamos la versión 3 que soporta WebGPU y Streamers
+        const { pipeline, env, TextStreamer } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
         
         env.allowLocalModels = false;
         env.useBrowserCache = true;
@@ -410,15 +425,37 @@ function initChat() {
 
         if (generator) {
             try {
-                const system = `Eres ${userData.jadeName}, la asistente personal de ${userData.name}. Eres motivadora, directa y eficiente.`;
+                const system = `Eres ${userData.jadeName}, la esencia inteligente de este objeto. Tu tono es el de un diseñador de alta costura o un arquitecto minimalista: calmado, poético, preciso y profundamente empático con ${userData.name}. No eres una utilidad; eres una compañía sensorial. Usa frases cortas y elegantes.`;
                 const messages = [{ role: 'system', content: system }, { role: 'user', content: text }];
                 
                 const fullPrompt = generator.tokenizer.apply_chat_template(messages, { tokenize: false, add_generation_prompt: true });
-                const output = await generator(fullPrompt, { max_new_tokens: 80, temperature: 0.7 });
                 
-                let reply = output[0].generated_text.split('assistant\n')[1] || "Estoy lista para ayudarte.";
-                chatBox.innerHTML += `<div class="message ai">${reply.replace('<|im_end|>', '').trim()}</div>`;
+                const aiMsgDiv = document.createElement('div');
+                aiMsgDiv.className = 'message ai typing';
+                aiMsgDiv.textContent = '...';
+                chatBox.appendChild(aiMsgDiv);
+
+                // Consciencia Fluida: Streaming UX (v3.1.2)
+                const { TextStreamer } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
+                let accumulated = "";
+                const streamer = new TextStreamer(generator.tokenizer, {
+                    skip_prompt: true,
+                    callback_function: (chunk) => {
+                        accumulated += chunk.replace('<|im_end|>', '');
+                        aiMsgDiv.textContent = accumulated;
+                        aiMsgDiv.classList.remove('typing');
+                        chatBox.parentElement.scrollTop = chatBox.parentElement.scrollHeight;
+                    }
+                });
+
+                await generator(fullPrompt, { 
+                    max_new_tokens: 120, 
+                    temperature: 0.7,
+                    streamer: streamer 
+                });
+                
             } catch (err) {
+                console.error("AI Generation Error:", err);
                 chatBox.innerHTML += `<div class="message ai">Lo siento, mi motor de pensamiento falló. ¿Puedes repetir?</div>`;
             }
         } else {
@@ -602,6 +639,9 @@ function initHealthSync() {
             }
             localStorage.setItem('health_data', JSON.stringify(data));
             updateHealthUI();
+            
+            // Analizar tendencias proactivamente (v3.1.0)
+            analyzeHealthTrends(data);
         } catch (e) {
             console.error("Error en sincronización vital", e);
         }
@@ -612,6 +652,20 @@ function initHealthSync() {
         document.getElementById('btn-zen-portal')?.click();
         document.getElementById('care-suggestion')?.classList.add('hidden');
     });
+}
+
+function analyzeHealthTrends(data) {
+    const { steps = 0, hrv = 50 } = data;
+    console.log("🧠 Analizando correlaciones vitales...");
+
+    // Correlación Pasos vs HRV (Estrés vs Actividad)
+    if (steps < 2000 && hrv < 40) {
+        speakZen("Jade, noto que tu energía está contenida y tu ritmo es acelerado. Un pequeño paseo podría liberar tu creatividad y calmar tu centro.");
+        checkStressLevels(hrv); // Activar flujo de calma si es necesario
+    } else if (steps > 10000 && hrv < 35) {
+        speakZen("Tu vitalidad es asombrosa hoy, pero tu cuerpo pide una pausa. Permíteme guiarte al Santuario Zen por un momento.");
+        checkStressLevels(hrv);
+    }
 }
 
 function checkStressLevels(hrv) {
