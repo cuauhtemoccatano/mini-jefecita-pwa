@@ -15,15 +15,7 @@ export const SettingsModal = {
             <div class="set-group">
                 <label for="set-vibe">Aura de IA <i data-lucide="palette" style="width: 14px;"></i></label>
                 <input type="text" id="set-vibe" placeholder="Color o palabra clave (ej: esmeralda)..." value="${userData.vibe}">
-            </div>
-            <div class="set-group">
-                <label>Color de la app</label>
-                <div class="color-picker">
-                    <button class="color-dot" data-color="#00C4B4" style="background:#00C4B4"></button>
-                    <button class="color-dot" data-color="#81D4FA" style="background:#81D4FA"></button>
-                    <button class="color-dot" data-color="#FF7043" style="background:#FF7043"></button>
-                    <button class="color-dot" data-color="#9575CD" style="background:#9575CD"></button>
-                </div>
+                <p class="set-desc" style="font-size: 10px; margin-top: 4px; opacity: 0.6;">Jade modula su tono según tu energía vital.</p>
             </div>
 
             <div class="set-section">

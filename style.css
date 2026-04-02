@@ -17,6 +17,7 @@
     --aura-3: rgba(149, 117, 205, 0.1);
     --aura-speed: 25s;
     --aura-blur: 120px;
+    --aura-glow: rgba(0, 196, 180, 0.2); /* Dynamic Leakage Source */
 }
 
 * {
@@ -305,11 +306,12 @@ body::after {
     padding: 32px;
     border-radius: 40px 30px 50px 35px; /* Super-elipse balanceado */
     border: 0.5px solid rgba(255, 255, 255, 0.15); /* Borde más fino */
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4), 0 0 40px var(--aura-glow);
     margin-bottom: 32px;
     position: relative;
     overflow: hidden;
     transform: perspective(1200px) translateZ(30px);
+    border: 0.5px solid var(--aura-glow);
 }
 
 .motivational-card::before {
@@ -506,7 +508,7 @@ body::after {
     font-weight: 700;
     font-size: 16px;
     cursor: pointer;
-    box-shadow: 0 10px 20px rgba(0, 196, 180, 0.3);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px var(--aura-glow);
     transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 

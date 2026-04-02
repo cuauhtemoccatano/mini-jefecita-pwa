@@ -43,8 +43,10 @@ export function applyPersonalization() {
     if (nameLabel) nameLabel.textContent = userData.name;
     
     document.querySelectorAll('.jade-name-display').forEach(el => el.textContent = userData.jadeName);
-    document.documentElement.style.setProperty('--primary', userData.color);
-    document.documentElement.style.setProperty('--aura-1', `${userData.color}26`);
+    
+    // Sovereign Aura Foundation
+    const activeView = document.querySelector('.tab-item.active')?.getAttribute('data-view') || 'inicio';
+    updateAuraMood(activeView);
 
     // Actualizar elementos dinámicos después del render
     const streakEl = document.getElementById('home-streak-val');
@@ -67,13 +69,22 @@ export function updateAuraMood(view) {
     let speed = '25s';
     let blur = '120px';
 
-    if (view === 'diario') { mood = 'introspection'; speed = '45s'; blur = '180px'; }
-    else if (view === 'ejercicio') { mood = 'energy'; speed = '12s'; blur = '80px'; }
-    else if (view === 'zen') { mood = 'calm'; speed = '35s'; blur = '150px'; }
+    if (view === 'diario') { mood = 'introspection'; speed = '45s'; blur = '180px'; color = '#9575CD'; }
+    else if (view === 'ejercicio') { mood = 'energy'; speed = '12s'; blur = '80px'; color = '#FF7043'; }
+    else if (view === 'zen') { mood = 'calm'; speed = '35s'; blur = '150px'; color = '#00C4B4'; }
+    else if (view === 'avisos') { mood = 'warning'; speed = '20s'; blur = '100px'; color = '#81D4FA'; }
+    else { color = '#00C4B4'; }
 
     aura.setAttribute('data-mood', mood);
     aura.style.setProperty('--aura-speed', speed);
     aura.style.setProperty('--aura-blur', blur);
+
+    // Apply Chromatic Leakage
+    document.documentElement.style.setProperty('--primary', color);
+    document.documentElement.style.setProperty('--aura-glow', `${color}33`);
+    
+    // Sync System Chrome
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
     
     triggerHaptic(view === 'ejercicio' ? 'medium' : 'feather');
     
