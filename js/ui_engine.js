@@ -13,10 +13,13 @@ import { SettingsModal } from './components/SettingsModal.js';
 export function triggerHaptic(type = 'light') {
     if (!window.navigator || !window.navigator.vibrate) return;
     switch (type) {
+        case 'feather': window.navigator.vibrate(5); break;
         case 'light': window.navigator.vibrate(10); break;
         case 'medium': window.navigator.vibrate([15, 30, 15]); break;
         case 'success': window.navigator.vibrate([10, 50, 10, 50, 10]); break;
         case 'warning': window.navigator.vibrate([100, 50, 100]); break;
+        case 'pulse': window.navigator.vibrate([10, 100, 10]); break;
+        case 'breath': window.navigator.vibrate([5, 800, 5]); break;
     }
 }
 
@@ -59,9 +62,24 @@ export function updateGreeting() {
 export function updateAuraMood(view) {
     const aura = document.getElementById('aura-system');
     if (!aura) return;
-    let mood = (view === 'diario') ? 'introspection' : (view === 'ejercicio') ? 'energy' : (view === 'zen') ? 'calm' : 'default';
+    
+    let mood = 'default';
+    let speed = '25s';
+    let blur = '120px';
+
+    if (view === 'diario') { mood = 'introspection'; speed = '45s'; blur = '180px'; }
+    else if (view === 'ejercicio') { mood = 'energy'; speed = '12s'; blur = '80px'; }
+    else if (view === 'zen') { mood = 'calm'; speed = '35s'; blur = '150px'; }
+
     aura.setAttribute('data-mood', mood);
-    triggerHaptic(view === 'ejercicio' ? 'medium' : 'light');
+    aura.style.setProperty('--aura-speed', speed);
+    aura.style.setProperty('--aura-blur', blur);
+    
+    triggerHaptic(view === 'ejercicio' ? 'medium' : 'feather');
+    
+    // Snappy Title Update
+    const viewNames = { inicio: 'Inicio', ejercicio: 'Salud', avisos: 'Avisos', diario: 'Diario', mensajes: 'Conversar', zen: 'Zen' };
+    document.title = `${userData.jadeName} | ${viewNames[view] || ''}`;
 }
 
 export function initTabs() {
@@ -97,7 +115,7 @@ export function initTabs() {
                         currentView.style.display = 'none';
                     }
                     isTransitioning = false;
-                }, 600);
+                }, 450); // Faster cycle
             });
         });
     });
