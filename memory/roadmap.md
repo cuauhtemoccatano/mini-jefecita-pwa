@@ -1,6 +1,6 @@
 # Hoja de Ruta Estratégica (Roadmap)
 
-La evolución de Jade se divide en fases de madurez técnica y sensorial. Actualmente operando en **v3.3.0 (Master Modular Edition)**.
+La evolución de Jade se divide en fases de madurez técnica y sensorial. Actualmente operando en **v3.4.0 (Identity Edition)**.
 
 ## Historial de Evolución (Logros)
 
@@ -36,16 +36,25 @@ La evolución de Jade se divide en fases de madurez técnica y sensorial. Actual
 - [x] Detección profunda de Hardware (M2/M3/RAM).
 - [x] Elevación automática a nivel **ULTRA**.
 
-## Próximas Misiones (Visión v3.4+)
+### Fase 9: Consciencia Histórica (The Vault)
+- [x] **Neural History**: Persistencia de hilos de chat entre sesiones.
+- [x] **Biometric Context**: Jade reconoce pasos y HRV en tiempo real.
 
-### Fase 9: Percepción Atmosférica
+### Fase 10: El Despertar Neuronal (The Baptism)
+- [x] **Awakening Ceremony**: Onboarding cinemático tipo "Void".
+- [x] **Baptism Ritual**: Personalización bidireccional (Nombres del usuario e IA).
+- [x] **Identity Lock**: Nodo de identidad vinculado al estado persistente.
+
+## Próximas Misiones (Visión v3.5+)
+
+### Fase 11: Percepción Atmosférica
 - [ ] **Holographic Perspective**: Movimiento de cristales basado en Giroscopio.
 - [ ] **Aura Reactiva**: Sincronización de color con luz ambiental y hora.
 
-### Fase 10: Persistencia Cognitiva (The Vault)
-- [ ] **Intelligence Vault**: Base de datos vectorial local (RAG).
-- [ ] **Neural Memory**: Jade recuerda conversaciones y tendencias históricas.
-
-### Fase 11: Orquestación Bio-Feedback
+### Fase 12: Orquestación Bio-Feedback
 - [ ] **Haptic Synesthesia**: Lenguaje de vibraciones Taptic Engine (latidos ai).
 - [ ] **Neural Acoustics**: Paisajes sonoros generativos basados en HRV.
+
+### Fase 13: Inteligencia Predictiva (Oracle)
+- [ ] **Rhythms Prediction**: Anticipación de estados de fatiga.
+- [ ] **Adaptive Nudges**: Micro-interacciones proactivas basadas en patrones históricos.

@@ -11,3 +11,5 @@
 
 ## Historial de Sesiones
 - **2026-03-29**: Finalización del 100% de la documentación técnica del proyecto (9 módulos).
+- **2026-04-02**: Consagración de la **Fase 10 (El Bautismo)**. Decisión de vincular la identidad a un ritual de naming para consolidar el "Identity Node".
+- **2026-04-02**: Implementación de la **Bóveda de Inteligencia**. Decisión de persistir el hilo de chat (`chatHistory`) en el `userData` federado.
