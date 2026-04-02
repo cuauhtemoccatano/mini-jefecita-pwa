@@ -296,6 +296,32 @@ function releaseWakeLock() {
     }
 }
 
+async function requestPersistentStorage() {
+    if (navigator.storage && navigator.storage.persist) {
+        const isPersisted = await navigator.storage.persist();
+        console.log(`💾 Almacenamiento Persistente: ${isPersisted ? 'ACTIVADO' : 'DENEGADO'}`);
+        return isPersisted;
+    }
+    return false;
+}
+
+async function checkModelCache(modelName) {
+    if (!('caches' in window)) return false;
+    try {
+        // Transformers.js v3 usa 'transformers-cache'
+        const cacheNames = await caches.keys();
+        if (cacheNames.includes('transformers-cache')) {
+            const cache = await caches.open('transformers-cache');
+            const keys = await cache.keys();
+            // Si hay más de 5 archivos guardados, asumimos que el modelo está "cristalizado"
+            return keys.length > 5;
+        }
+    } catch (e) {
+        return false;
+    }
+    return false;
+}
+
 async function initAI(retryCount = 0) {
     // Si ya existe un generador, primero lo limpiamos para evitar fugas de memoria
     if (generator) {
@@ -310,12 +336,29 @@ async function initAI(retryCount = 0) {
     const bgStatus = document.getElementById('ai-bg-status');
 
     try {
+        await requestPersistentStorage();
+        const level = userData.brain || 'PRO';
+        
+        // Mapeo optimizado por jerarquía de hardware
+        const modelMappings = {
+            'MASTER': 'onnx-community/Llama-3.2-1B-Instruct',
+            'ULTRA':  'onnx-community/Qwen2.5-0.5B-Instruct',
+            'PRO':    'onnx-community/Qwen2.5-0.5B-Instruct',
+            'NORMAL': 'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA'
+        };
+        const modelName = modelMappings[level] || modelMappings['NORMAL'];
+
+        const isCached = await checkModelCache(modelName);
+        console.log(`🧠 Jade: Evaluando cerebro... Cristalizado: ${isCached}`);
+
+        if (bgDownloader) {
+            bgDownloader.classList.remove('hidden');
+            if (isCached) bgStatus.textContent = "Sintonizando consciencia cristalizada...";
+        }
+
         console.log('💎 Evolucionando motor de consciencia (v3 + WebGPU)...');
         await requestWakeLock();
         
-        // Mostrar barra de progreso en segundo plano
-        if (bgDownloader) bgDownloader.classList.remove('hidden');
-
         // Cargamos la versión 3 que soporta WebGPU y Streamers
         const { pipeline, env, TextStreamer } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
         
@@ -334,17 +377,6 @@ async function initAI(retryCount = 0) {
             console.warn("WebGPU no disponible, usando WASM como respaldo.");
         }
 
-        const level = userData.brain || 'PRO';
-        
-        // Mapeo optimizado por jerarquía de hardware (Mac M2 / iPhone 15 Pro / iPhone 14 Pro)
-        const modelMappings = {
-            'MASTER': 'onnx-community/Llama-3.2-1B-Instruct',       // Para Mac M2 (Razonamiento Superior)
-            'ULTRA':  'onnx-community/Qwen2.5-0.5B-Instruct',        // Para iPhone 15 Pro Max (8GB RAM)
-            'PRO':    'onnx-community/Qwen2.5-0.5B-Instruct',        // Para iPhone 14 Pro (6GB RAM)
-            'NORMAL': 'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA' // Fallback universal (Ligero)
-        };
-
-        const modelName = modelMappings[level] || modelMappings['NORMAL'];
         const hardwareName = device === 'webgpu' ? 'Aceleración Neuronal' : 'Núcleo de Calma';
         
         console.log(`🧠 Jade: ${hardwareName} | Modelo: ${modelName}`);
@@ -364,28 +396,17 @@ async function initAI(retryCount = 0) {
             progress_callback: (progress) => {
                 if (progress.status === 'progress') {
                     const pct = progress.progress.toFixed(0);
-                    
-                    // Actualizar barra de segundo plano con lenguaje poético
                     if (bgProgress) bgProgress.style.width = `${pct}%`;
                     if (bgStatus) bgStatus.textContent = `${initialPhrase}... ${pct}%`;
-
-                    // Actualizar chat si está en proceso
-                    const aiMessages = document.querySelectorAll('.message.ai');
-                    const lastAI = aiMessages[aiMessages.length - 1];
-                    if (lastAI && lastAI.textContent.includes('consciencia')) {
-                        lastAI.textContent = `${initialPhrase} (${hardwareName})... ${pct}% ✨`;
-                    }
                 }
             }
         });
 
         console.log(`IA Lista y Cargada con ${device.toUpperCase()} ✅`);
         if (bgDownloader) {
-            bgStatus.textContent = `Conexión plena establecida (${hardwareName})`;
-            // Transición elegante y lenta para evitar flasheos
+            bgStatus.textContent = isCached ? `Cristalización intacta (${hardwareName})` : `Conexión plena establecida (${hardwareName})`;
             setTimeout(() => {
                 bgDownloader.style.opacity = '0';
-                bgDownloader.style.transform = 'translateY(-100%)';
                 setTimeout(() => bgDownloader.classList.add('hidden'), 800);
             }, 2000);
         }
@@ -396,11 +417,13 @@ async function initAI(retryCount = 0) {
         isDownloadingAI = false;
         releaseWakeLock();
 
+        const errorMsg = e.message?.includes('quota') ? "Falta de espacio en disco" : "Red restringida o inestable";
+        
         if (retryCount < 2) {
-            if (bgStatus) bgStatus.textContent = "Reintentando sintonización...";
-            setTimeout(() => initAI(retryCount + 1), 3000);
+            if (bgStatus) bgStatus.textContent = `Reintentando: ${errorMsg}...`;
+            setTimeout(() => initAI(retryCount + 1), 5000);
         } else {
-            if (bgStatus) bgStatus.textContent = "Error en sincronización";
+            if (bgStatus) bgStatus.textContent = `Error: ${errorMsg}`;
         }
     }
 }
