@@ -1,6 +1,6 @@
 # Hoja de Ruta Estratégica (Roadmap)
 
-La evolución de Jade se divide en fases de madurez técnica y sensorial. Actualmente operando en **v3.4.0 (Identity Edition)**.
+La evolución de Jade se divide en fases de madurez técnica y sensorial. Actualmente operando en **v3.5.1 (Spatial Edition)**.
 
 ## Historial de Evolución (Logros)
 
@@ -55,11 +55,21 @@ La evolución de Jade se divide en fases de madurez técnica y sensorial. Actual
 - [x] **Cognitive Metabolism**: Pulso del aura durante inferencia de IA.
 - [x] **Atmospheric Heartbeat**: Actualización autónoma cada 60s.
 
-## Próximas Misiones (Visión v3.5+)
+### Fase 13: Percepción Atmosférica (Holographic Perspective)
+- [x] **Holographic Perspective**: Movimiento de cristales basado en Giroscopio (Throttled 60fps).
+- [x] **Aura Reactiva**: Sincronización de color con luz ambiental y hora circadiana.
 
-### Fase 13: Percepción Atmosférica
-- [ ] **Holographic Perspective**: Movimiento de cristales basado en Giroscopio.
-- [ ] **Aura Reactiva**: Sincronización de color con luz ambiental y hora.
+### Fase 14: Ingeniería Espacial (Responsive Topology)
+- [x] **Mobile-First Core**: Optimización ergonómica para iPhone mini/Pro.
+- [x] **iPad Side-Rail**: Transición a navegación lateral profesional en tablets.
+- [x] **Fluid Grids**: Rejillas estadísticas adaptativas.
+
+### Fase 15: Estabilidad Neuronal (Stability Hardening)
+- [x] **Lazy Neural Activation**: Carga de IA diferida para protección de RAM en iOS.
+- [x] **Persistence Reload Guard**: Evitar bucles de actualización mediante `sessionStorage`.
+- [x] **Modular Asset Manifest**: Sincronización total de sw.js con la nueva arquitectura.
+
+## Próximas Misiones (Visión v3.6+)
 
 ### Fase 14: Orquestación Bio-Feedback
 - [ ] **Haptic Synesthesia**: Lenguaje de vibraciones Taptic Engine (latidos ai).
