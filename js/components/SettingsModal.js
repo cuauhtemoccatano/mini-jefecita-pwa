@@ -41,7 +41,7 @@ export const SettingsModal = {
 
             <div class="set-section">
                 <label>Sistema <i data-lucide="rocket" style="width: 14px;"></i></label>
-                <p class="settings-title">Configuración <span id="app-version-label" style="font-size: 0.7em; opacity: 0.5;">v3.2.0</span></p>
+                <p class="settings-title">Configuración <span id="app-version-label" style="font-size: 0.7em; opacity: 0.5;">v${localStorage.getItem('app_version') || '3.5.0'}</span></p>
                 <div id="silicon-tier-label" style="font-size: 9px; opacity: 0.4; margin-top: 4px; display: none;">Detectando hardware...</div>
                 <button id="btn-reset-ai" class="btn-secondary-full" style="background: rgba(255, 69, 0, 0.1); border-color: rgba(255, 69, 0, 0.2); margin-top: 8px;">Re-sintonizar Cerebro <i data-lucide="refresh-cw" style="width: 14px;"></i></button>
                 <button id="btn-check-updates" class="btn-secondary-full">Buscar Actualizaciones <i data-lucide="download" style="width: 14px;"></i></button>
