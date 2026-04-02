@@ -753,10 +753,45 @@ async function initHolographicPerspective() {
 }
 
 // ---------------------------------------------------------
+// 7. ORQUESTRACIÓN DE VERSIÓN (v3.2.0)
+// ---------------------------------------------------------
+async function syncAppVersion() {
+    try {
+        const response = await fetch('./package.json?t=' + Date.now());
+        const pkg = await response.json();
+        const currentVersion = pkg.version;
+        const savedVersion = localStorage.getItem('app_version');
+
+        // Actualizar UI
+        const label = document.getElementById('app-version-label');
+        if (label) label.textContent = `v${currentVersion}`;
+
+        console.log(`📡 Sistema Mini Jefecita: [Local: ${savedVersion}] [Source: ${currentVersion}]`);
+
+        if (savedVersion && savedVersion !== currentVersion) {
+            console.log("🔥 Version Mismatch! Forzando armonización de caché...");
+            localStorage.setItem('app_version', currentVersion);
+            
+            // Notificar al usuario (Opcional, pero recomendado para UX de lujo)
+            if (window.MQA) console.log("🛡️ MQA: Sincronizando nueva arquitectura...");
+            
+            // Forzar recarga dura ignorando caché
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            localStorage.setItem('app_version', currentVersion);
+        }
+    } catch (e) {
+        console.warn("No se pudo verificar la versión contra package.json", e);
+    }
+}
+
+// ---------------------------------------------------------
 // 7. INICIALIZACIÓN FINAL MAESTRA
 // ---------------------------------------------------------
-function initApp() {
-    console.log("💎 Mini Jefecita v3.0.0: Sentient Edition Activa.");
+async function initApp() {
+    console.log("🌊 Jade despertando... Mini Jefecita v3.0.0: Sentient Edition Activa.");
     
     try {
         applyPersonalization();
@@ -773,6 +808,7 @@ function initApp() {
         updateHealthUI();
         initAI(); // Carga en segundo plano (v3.0.4)
         initHolographicPerspective(); // SmartScales 2 Bridge
+        await syncAppVersion(); // Fuente de Verdad v3.2.0
     } catch (err) {
         console.error("Fallo crítico en inicialización:", err);
     }
