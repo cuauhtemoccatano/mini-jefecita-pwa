@@ -40,14 +40,22 @@ self.onmessage = async (e) => {
             const streamer = new TextStreamer(generator.tokenizer, {
                 skip_prompt: true,
                 callback_function: (chunk) => {
-                    accumulated += chunk.replace('<|im_end|>', '');
+                    // Clean unwanted artifacts
+                    const cleaned = chunk
+                        .replace('<|im_end|>', '')
+                        .replace('<|eot_id|>', '')
+                        .replace('<|end_of_text|>', '');
+                    
+                    accumulated += cleaned;
                     self.postMessage({ type: 'chunk', data: accumulated });
                 }
             });
 
             await generator(fullPrompt, { 
                 ...settings,
-                streamer: streamer 
+                streamer: streamer,
+                // Hard stops
+                stop: ['<|im_end|>', '<|eot_id|>', '<|end_of_text|>', 'user\n', 'assistant\n']
             });
 
             self.postMessage({ type: 'complete', data: accumulated });

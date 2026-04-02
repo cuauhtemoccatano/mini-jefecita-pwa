@@ -7,11 +7,11 @@ export let healthData = null;
 
 export function loadState() {
     try {
-        userData = JSON.parse(localStorage.getItem('user_settings') || '{"name": "Jade", "jadeName": "Jefecita", "color": "#00C4B4", "vibe": "💚", "brain": "PRO", "streak": 7, "remindersCount": 3}');
+        userData = JSON.parse(localStorage.getItem('user_settings') || '{"name": "Jade", "jadeName": "Jefecita", "color": "#00C4B4", "vibe": "💚", "brain": "PRO", "streak": 7, "remindersCount": 3, "chatHistory": []}');
         healthData = JSON.parse(localStorage.getItem('health_data') || '{"steps": 0, "energy": 0, "hrv": 50}');
     } catch (e) {
         console.warn("🛡️ MQA: Re-armonizando datos de estado...");
-        userData = {"name": "Jade", "jadeName": "Jefecita", "color": "#00C4B4", "vibe": "💚", "brain": "PRO", "streak": 0, "remindersCount": 0};
+        userData = {"name": "Jade", "jadeName": "Jefecita", "color": "#00C4B4", "vibe": "💚", "brain": "PRO", "streak": 0, "remindersCount": 0, "chatHistory": []};
         healthData = {"steps": 0, "energy": 0, "hrv": 50};
     }
 }
@@ -22,4 +22,9 @@ export const saveHealth = () => localStorage.setItem('health_data', JSON.stringi
 export function saveAll() {
     saveSettings();
     saveHealth();
+}
+
+export function clearChatHistory() {
+    userData.chatHistory = [];
+    saveSettings();
 }
