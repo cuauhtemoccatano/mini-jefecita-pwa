@@ -48,6 +48,11 @@ async function initApp() {
         await syncAppVersion();
         if (window.lucide) lucide.createIcons();
 
+        // Atmospheric Heartbeat (Autonomous Adaptation)
+        setInterval(() => {
+            import('./js/ui_engine.js').then(m => m.syncNeuralAtmosphere());
+        }, 60000);
+
         // Perspectiva Holográfica (Sigue en app.js por simplicidad de listeners)
         initHolographic();
 

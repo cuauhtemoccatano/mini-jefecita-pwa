@@ -50,16 +50,19 @@ La evolución de Jade se divide en fases de madurez técnica y sensorial. Actual
 - [x] **Atmospheric Leakage**: Brillos y sombras dinámicas basados en el aura.
 - [x] **System Chrome Sync**: Sincronización con `theme-color` del OS.
 
+### Fase 12: Sincronización Neuronal (Phase 14)
+- [x] **Spectral Core**: Algoritmo autónomo (Circadiano + Biométrico).
+- [x] **Cognitive Metabolism**: Pulso del aura durante inferencia de IA.
+- [x] **Atmospheric Heartbeat**: Actualización autónoma cada 60s.
+
 ## Próximas Misiones (Visión v3.5+)
 
-### Fase 12: Percepción Atmosférica
+### Fase 13: Percepción Atmosférica
 - [ ] **Holographic Perspective**: Movimiento de cristales basado en Giroscopio.
 - [ ] **Aura Reactiva**: Sincronización de color con luz ambiental y hora.
 
-### Fase 13: Orquestación Bio-Feedback
+### Fase 14: Orquestación Bio-Feedback
 - [ ] **Haptic Synesthesia**: Lenguaje de vibraciones Taptic Engine (latidos ai).
 - [ ] **Neural Acoustics**: Paisajes sonoros generativos basados en HRV.
-
-### Fase 14: Inteligencia Predictiva (Oracle)
 - [ ] **Rhythms Prediction**: Anticipación de estados de fatiga.
 - [ ] **Adaptive Nudges**: Micro-interacciones proactivas basadas en patrones históricos.
