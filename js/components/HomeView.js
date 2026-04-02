@@ -6,7 +6,7 @@ export const HomeView = {
         <header class="home-header">
             <div class="header-main">
                 <p id="greeting" class="caption">Cargando...</p>
-                <h1><span class="user-name-label">${userData.name}</span> <span id="user-vibe-label">${userData.vibe}</span></h1>
+                <h1><span class="user-name-label">${userData.name}</span> <span id="user-vibe-label"><i data-lucide="sparkles" style="width: 24px; color: var(--primary)"></i></span></h1>
             </div>
             <div class="header-actions">
                 <button id="btn-zen-portal" class="btn-zen-trigger" aria-label="Momento de Calma" title="Momento de Calma"><i data-lucide="sparkles"></i></button>

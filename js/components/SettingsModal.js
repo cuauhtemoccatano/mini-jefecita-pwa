@@ -13,8 +13,8 @@ export const SettingsModal = {
                 <input type="text" id="set-jade-name" placeholder="Ej: Jade, Alexa, Minerva..." value="${userData.jadeName}">
             </div>
             <div class="set-group">
-                <label for="set-vibe">Aura de IA (Emoji)</label>
-                <input type="text" id="set-vibe" placeholder="Ej: 💚, ✨, 🤖" value="${userData.vibe}">
+                <label for="set-vibe">Aura de IA <i data-lucide="palette" style="width: 14px;"></i></label>
+                <input type="text" id="set-vibe" placeholder="Color o palabra clave (ej: esmeralda)..." value="${userData.vibe}">
             </div>
             <div class="set-group">
                 <label>Color de la app</label>

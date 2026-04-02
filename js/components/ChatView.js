@@ -11,7 +11,7 @@ export const ChatView = {
         <div id="chat-container">
             <div id="chat-messages">
                 <div class="message ai">
-                    ¡Hola Jade! 💚 Soy tu asistente. Puedo ayudarte con tus entrenamientos, recordatorios o simplemente motivarte. ¿En qué piensas hoy?
+                    Hola. Soy tu asistente sensorial. Puedo ayudarte con tus entrenamientos, recordatorios o simplemente escucharte. ¿En qué piensas hoy?
                 </div>
             </div>
         </div>
