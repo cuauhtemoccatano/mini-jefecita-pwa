@@ -837,19 +837,33 @@ async function getHardwareProfile() {
     let profile = { tier: 'Standard', name: 'Generic' };
     
     try {
-        if (!navigator.gpu) return profile;
+        if (!navigator.gpu) {
+            // Heurística para dispositivos sin WebGPU visible pero potentes
+            if (navigator.hardwareConcurrency >= 8) profile.tier = 'Premium';
+            return profile;
+        }
         
-        const adapter = await navigator.gpu.requestAdapter();
+        const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
         if (!adapter) return profile;
         
-        const info = await adapter.requestAdapterInfo();
+        // requestAdapterInfo puede ser bloqueado o retornar string vacío en Safari
+        let info = {};
+        try {
+            info = await adapter.requestAdapterInfo();
+        } catch(e) {}
+        
         const renderer = info.description || info.vendor || '';
-        profile.name = renderer;
+        const cores = navigator.hardwareConcurrency || 4;
+        profile.name = renderer || (cores >= 8 ? 'Apple Silicon (Heuristic)' : 'Mobile GPU');
 
-        // Detección de Apple Silicon (M1, M2, M3)
-        if (renderer.toLowerCase().includes('apple')) {
-            profile.tier = 'Premium';
-            if (renderer.toLowerCase().includes('m2') || renderer.toLowerCase().includes('m3')) {
+        // Neural Fingerprinting (Heurísticas de Silicio)
+        const isApple = renderer.toLowerCase().includes('apple') || (navigator.platform && navigator.platform.match(/iPhone|iPad|Mac/));
+        
+        if (isApple) {
+            profile.tier = 'Premium'; // Base M1 / A-series
+            // Heurística M2/M3: Concurrencia de hardware alta + RAM estimada
+            // Los iPads/Macs con M2 reportan hardwareConcurrency de 8 o superior
+            if (cores >= 8) {
                 profile.tier = 'Elite';
             }
         } else if (renderer.toLowerCase().includes('nvidia') || renderer.toLowerCase().includes('amd')) {
