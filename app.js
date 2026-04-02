@@ -6,7 +6,7 @@ import { renderAllViews, applyPersonalization, updateGreeting, initTabs, trigger
 import { initAI, initChat, initCommandPortal } from './js/ai_engine.js';
 import { initHealthSync, updateHealthUI } from './js/health_engine.js';
 import { initZenMode } from './js/santuario.js';
-import { syncAppVersion, initIdleManager } from './js/system.js';
+import { syncAppVersion, initIdleManager, initConnectivityAwareness, initInstallManager } from './js/system.js';
 
 async function initApp() {
     console.log("🌊 Orquestación Modular Iniciada: Jade despertando...");
@@ -25,6 +25,8 @@ async function initApp() {
         initChat();
         initCommandPortal();
         initIdleManager();
+        initConnectivityAwareness();
+        initInstallManager();
         
         initAI(); // Carga de IA en segundo plano
         
