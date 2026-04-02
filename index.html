@@ -6,6 +6,7 @@
     <title>Mini Jefecita</title>
     <link rel="stylesheet" href="style.css?v=3.2.2">
     <link rel="manifest" href="manifest.json">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <meta name="theme-color" content="#00C4B4">
     <link rel="apple-touch-icon" href="icons/icon-192.png">
 </head>
@@ -276,33 +277,33 @@
                     </div>
 
                     <div class="set-section">
-                        <label>Potencia de IA 🧠</label>
+                        <label>Potencia de IA <i data-lucide="brain" style="width: 14px;"></i></label>
                         <p class="set-desc">Modelos grandes son más listos pero pueden cerrar la app en móvil.</p>
                         <select id="set-brain-level" class="set-select">
                             <option value="NORMAL">Esencial (Ligero)</option>
                             <option value="PRO">Avanzado (Equilibrado)</option>
-                            <option value="ULTRA">Experto (Nivel Pro)</option>
-                            <option value="MASTER">Maestro (Solo Mac/PC)</option>
+                            <option value="ULTRA">Pro (Nivel Pro)</option>
+                            <option value="MASTER"> Ultra (Solo Mac/PC)</option>
                         </select>
                     </div>
 
                     <div class="set-section">
-                        <label>Sincronización de Salud 🍎</label>
+                        <label>Sincronización de Salud <i data-lucide="apple" style="width: 14px;"></i></label>
                         <p class="set-desc">Activa este Atajo en iOS para ver tus pasos aquí.</p>
                         <div class="shortcut-steps">
                             <div class="step">1. Crea Atajo "Jade Health"</div>
                             <div class="step">2. Acción: "Buscar Pasos"</div>
                             <div class="step">3. Acción: "Abrir URL" (Copia abajo)</div>
                         </div>
-                        <button id="btn-copy-shortcut" class="btn-secondary-full">Copiar Enlace de Atajo 📋</button>
+                        <button id="btn-copy-shortcut" class="btn-secondary-full">Copiar Enlace de Atajo <i data-lucide="copy" style="width: 14px;"></i></button>
                     </div>
 
                     <div class="set-section">
-                        <label>Sistema 🚀</label>
+                        <label>Sistema <i data-lucide="rocket" style="width: 14px;"></i></label>
                         <p class="settings-title">Configuración <span id="app-version-label" style="font-size: 0.7em; opacity: 0.5;">v3.2.0</span></p>
                         <div id="silicon-tier-label" style="font-size: 9px; opacity: 0.4; margin-top: 4px; display: none;">Detectando hardware...</div>
-                        <button id="btn-reset-ai" class="btn-secondary-full" style="background: rgba(255, 69, 0, 0.1); border-color: rgba(255, 69, 0, 0.2); margin-top: 8px;">Re-sintonizar Cerebro 🧠</button>
-                        <button id="btn-check-updates" class="btn-secondary-full">Buscar Actualizaciones 🔄</button>
+                        <button id="btn-reset-ai" class="btn-secondary-full" style="background: rgba(255, 69, 0, 0.1); border-color: rgba(255, 69, 0, 0.2); margin-top: 8px;">Re-sintonizar Cerebro <i data-lucide="refresh-cw" style="width: 14px;"></i></button>
+                        <button id="btn-check-updates" class="btn-secondary-full">Buscar Actualizaciones <i data-lucide="download" style="width: 14px;"></i></button>
                     </div>
 
                     <div class="modal-actions">
@@ -315,24 +316,24 @@
         <!-- Tab Bar -->
         <nav id="tab-bar">
             <button class="tab-item active" data-view="inicio">
-                <span class="icon">❤️</span>
+                <i class="icon" data-lucide="layout-dashboard"></i>
                 <span class="label">Inicio</span>
             </button>
             <button class="tab-item" data-view="ejercicio">
-                <span class="icon">🏃</span>
-                <span class="label">Ejercicio</span>
+                <i class="icon" data-lucide="activity"></i>
+                <span class="label">Salud</span>
             </button>
             <button class="tab-item" data-view="avisos">
-                <span class="icon">🔔</span>
-                <span class="label">Avisos</span>
+                <i class="icon" data-lucide="bell"></i>
+                <span class="label">Recordatorios</span>
             </button>
             <button class="tab-item" data-view="diario">
-                <span class="icon">📔</span>
+                <i class="icon" data-lucide="book-open"></i>
                 <span class="label">Diario</span>
             </button>
             <button class="tab-item" data-view="mensajes">
-                <span class="icon">💬</span>
-                <span class="label">Mensajes</span>
+                <i class="icon" data-lucide="message-square"></i>
+                <span class="label">Jade</span>
             </button>
         </nav>
     </div>

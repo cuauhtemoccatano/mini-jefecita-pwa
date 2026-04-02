@@ -422,6 +422,7 @@ async function initAI(retryCount = 0) {
                         chatBox.parentElement.scrollTop = chatBox.parentElement.scrollHeight;
                     }
                     if (window.navigator.vibrate) window.navigator.vibrate([20, 100, 20]);
+                    if (window.lucide) lucide.createIcons();
                 }, 3000);
 
                 isDownloadingAI = false;
@@ -901,6 +902,8 @@ async function initApp() {
         initAI(); // Carga en segundo plano (v3.0.4)
         initHolographicPerspective(); // SmartScales 2 Bridge
         await syncAppVersion(); // Fuente de Verdad v3.2.0
+        
+        if (window.lucide) lucide.createIcons();
     } catch (err) {
         console.error("Fallo crítico en inicialización:", err);
     }
