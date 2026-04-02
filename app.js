@@ -60,8 +60,8 @@ function updateGreeting() {
 function updateHealthUI() {
     try {
         const data = JSON.parse(localStorage.getItem('health_data') || '{"steps": 0, "energy": 0, "hrv": 50}');
-        const stepsEl = document.getElementById('health-steps-val');
-        const calsEl = document.getElementById('health-energy-val');
+        const stepsEl = document.getElementById('health-steps');
+        const calsEl = document.getElementById('health-cals');
         
         if (stepsEl) stepsEl.textContent = (data.steps || 0).toLocaleString();
         if (calsEl) calsEl.textContent = data.energy || 0;
@@ -74,27 +74,71 @@ function updateHealthUI() {
 }
 
 // ---------------------------------------------------------
+// 2.5 MOTOR DE ATMÓSFERA (AURA)
+// ---------------------------------------------------------
+function updateAuraMood(view) {
+    const aura = document.getElementById('aura-system');
+    if (!aura) return;
+
+    let mood = 'default';
+    if (view === 'diario') mood = 'introspection';
+    if (view === 'ejercicio') mood = 'energy';
+    if (view === 'zen') mood = 'calm';
+
+    aura.setAttribute('data-mood', mood);
+    console.log(`🌌 Aura Mood: ${mood}`);
+}
+
+// ---------------------------------------------------------
 // 3. GESTIÓN DE PESTAÑAS (FIABLE)
 // ---------------------------------------------------------
 function initTabs() {
-    // IMPORTANTE: Aseguramos que el selector coincida con el HTML (tab-item)
     const tabs = document.querySelectorAll('.tab-item');
     const views = document.querySelectorAll('.view');
+    let isTransitioning = false;
     
     tabs.forEach(tab => {
         tab.addEventListener('click', (e) => {
             e.preventDefault();
+            if (isTransitioning) return;
+            
             const target = tab.getAttribute('data-view');
+            const currentView = document.querySelector('.view.active');
+            const nextView = document.getElementById(`view-${target}`);
+
+            if (!nextView || currentView === nextView) return;
+
+            isTransitioning = true;
             console.log('Navegando a:', target);
             
-            views.forEach(v => v.classList.remove('active'));
-            tabs.forEach(t => t.classList.remove('active'));
-            
-            const targetView = document.getElementById(`view-${target}`);
-            if (targetView) {
-                targetView.classList.add('active');
-                tab.classList.add('active');
+            // 1. Preparar salida
+            if (currentView) {
+                currentView.classList.add('exiting');
+                currentView.classList.remove('active');
             }
+
+            // 2. Preparar entrada
+            nextView.classList.add('entering');
+            nextView.style.display = 'block';
+
+            // 3. Sincronizar Aura
+            updateAuraMood(target);
+
+            // 4. Ejecutar Transición
+            requestAnimationFrame(() => {
+                nextView.classList.remove('entering');
+                nextView.classList.add('active');
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                setTimeout(() => {
+                    if (currentView) {
+                        currentView.classList.remove('exiting');
+                        currentView.style.display = 'none';
+                    }
+                    isTransitioning = false;
+                }, 600); // Sincronizado con el CSS transition duration
+            });
         });
     });
 }

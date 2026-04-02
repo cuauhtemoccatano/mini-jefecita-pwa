@@ -39,7 +39,13 @@ body {
     overflow: hidden;
     pointer-events: none;
     background: radial-gradient(circle at 50% 50%, #121212 0%, #000 100%);
+    transition: background 1.5s ease;
 }
+
+/* Aura Moods */
+[data-mood="introspection"] { --aura-1: rgba(149, 117, 205, 0.15); --aura-2: rgba(49, 27, 146, 0.2); --aura-speed: 40s; }
+[data-mood="energy"] { --aura-1: rgba(255, 112, 67, 0.15); --aura-2: rgba(255, 167, 38, 0.1); --aura-speed: 15s; }
+[data-mood="calm"] { --aura-1: rgba(0, 196, 180, 0.2); --aura-2: rgba(129, 212, 250, 0.15); --aura-speed: 30s; --aura-blur: 160px; }
 
 .aura-blob {
     position: absolute;
@@ -197,16 +203,30 @@ body {
 
 .view {
     display: none;
-    animation: fadeIn 0.3s ease-out;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .view.active {
     display: block;
+    opacity: 1;
+    transform: translateY(0);
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+.view.exiting {
+    display: block;
+    position: absolute;
+    width: calc(100% - 40px); /* Ajuste según padding de #content */
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-20px) scale(0.98);
+}
+
+.view.entering {
+    display: block;
+    opacity: 0;
+    transform: translateY(30px);
 }
 
 /* Header */
