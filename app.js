@@ -14,6 +14,7 @@ try {
 
 let generatorWorker = null; // SmartScales Worker Bridge
 let isDownloadingAI = false;
+let hardwareProfile = { tier: 'Standard', name: 'Unknown' };
 let wakeLock = null;
 
 // Helpers
@@ -337,6 +338,17 @@ async function initAI(retryCount = 0) {
 
     try {
         await requestPersistentStorage();
+        
+        // Silicon Audit (v3.2.1)
+        hardwareProfile = await getHardwareProfile();
+        console.log(`🛡️ Hardware Audit: [${hardwareProfile.name}] [Tier: ${hardwareProfile.tier}]`);
+        
+        // Autocompletar nivel si no existe y es hardware potente
+        if (!userData.brain && (hardwareProfile.tier === 'Premium' || hardwareProfile.tier === 'Elite')) {
+            console.log("✨ Hardware Elite detectado. Desbloqueando nivel MASTER por defecto.");
+            userData.brain = 'MASTER';
+        }
+
         const level = userData.brain || 'PRO';
         
         const modelMappings = {
@@ -361,7 +373,7 @@ async function initAI(retryCount = 0) {
         // Detección de WebGPU para pasar al worker
         let device = 'wasm';
         if (navigator.gpu) {
-            const adapter = await navigator.gpu.requestAdapter();
+            const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
             if (adapter) device = 'webgpu';
         }
 
@@ -819,8 +831,43 @@ async function syncAppVersion() {
 }
 
 // ---------------------------------------------------------
-// 7. INICIALIZACIÓN FINAL MAESTRA
+// 8. AUDITORÍA DE HARDWARE (M2 Parity)
 // ---------------------------------------------------------
+async function getHardwareProfile() {
+    let profile = { tier: 'Standard', name: 'Generic' };
+    
+    try {
+        if (!navigator.gpu) return profile;
+        
+        const adapter = await navigator.gpu.requestAdapter();
+        if (!adapter) return profile;
+        
+        const info = await adapter.requestAdapterInfo();
+        const renderer = info.description || info.vendor || '';
+        profile.name = renderer;
+
+        // Detección de Apple Silicon (M1, M2, M3)
+        if (renderer.toLowerCase().includes('apple')) {
+            profile.tier = 'Premium';
+            if (renderer.toLowerCase().includes('m2') || renderer.toLowerCase().includes('m3')) {
+                profile.tier = 'Elite';
+            }
+        } else if (renderer.toLowerCase().includes('nvidia') || renderer.toLowerCase().includes('amd')) {
+            profile.tier = 'HighPerformance';
+        }
+
+        // Mostrar en UI de configuración
+        const siliconLabel = document.getElementById('silicon-tier-label');
+        if (siliconLabel) {
+            siliconLabel.textContent = `Silicon: ${profile.tier} (${profile.name})`;
+            siliconLabel.style.display = 'block';
+        }
+
+        return profile;
+    } catch (e) {
+        return profile;
+    }
+}
 async function initApp() {
     console.log("🌊 Jade despertando... Mini Jefecita v3.0.0: Sentient Edition Activa.");
     
