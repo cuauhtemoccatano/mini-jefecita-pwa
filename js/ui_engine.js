@@ -1,7 +1,14 @@
 // ---------------------------------------------------------
-// js/ui_engine.js - Estética y Navegación
+// js/ui_engine.js - Estética y Orquestación de Vistas
 // ---------------------------------------------------------
 import { userData } from './state.js';
+import { HomeView } from './components/HomeView.js';
+import { ChatView } from './components/ChatView.js';
+import { ExerciseView } from './components/ExerciseView.js';
+import { RemindersView } from './components/RemindersView.js';
+import { JournalView } from './components/JournalView.js';
+import { ZenView } from './components/ZenView.js';
+import { SettingsModal } from './components/SettingsModal.js';
 
 export function triggerHaptic(type = 'light') {
     if (!window.navigator || !window.navigator.vibrate) return;
@@ -13,6 +20,21 @@ export function triggerHaptic(type = 'light') {
     }
 }
 
+export function renderAllViews() {
+    console.log("🎨 MQA: Renderizando componentes líquidos...");
+    
+    document.getElementById('view-inicio').innerHTML = HomeView.render(userData);
+    document.getElementById('view-mensajes').innerHTML = ChatView.render(userData);
+    document.getElementById('view-ejercicio').innerHTML = ExerciseView.render();
+    document.getElementById('view-avisos').innerHTML = RemindersView.render();
+    document.getElementById('view-diario').innerHTML = JournalView.render();
+    document.getElementById('view-zen').innerHTML = ZenView.render();
+    document.getElementById('settings-modal').innerHTML = SettingsModal.render(userData);
+
+    // Initial icon bloom
+    [HomeView, ChatView, ExerciseView, RemindersView, JournalView, ZenView, SettingsModal].forEach(v => v.init());
+}
+
 export function applyPersonalization() {
     const nameLabel = document.querySelector('.user-name-label');
     if (nameLabel) nameLabel.textContent = userData.name;
@@ -21,11 +43,9 @@ export function applyPersonalization() {
     document.documentElement.style.setProperty('--primary', userData.color);
     document.documentElement.style.setProperty('--aura-1', `${userData.color}26`);
 
+    // Actualizar elementos dinámicos después del render
     const streakEl = document.getElementById('home-streak-val');
     if (streakEl) streakEl.textContent = userData.streak || 0;
-
-    const remCountEl = document.getElementById('home-reminders-val');
-    if (remCountEl) remCountEl.textContent = userData.remindersCount || 0;
 }
 
 export function updateGreeting() {

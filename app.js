@@ -2,7 +2,7 @@
 // app.js - Orquestador Maestro (Modular v3.3.0)
 // ---------------------------------------------------------
 import { loadState, userData, saveSettings } from './js/state.js';
-import { applyPersonalization, updateGreeting, initTabs, triggerHaptic } from './js/ui_engine.js';
+import { renderAllViews, applyPersonalization, updateGreeting, initTabs, triggerHaptic } from './js/ui_engine.js';
 import { initAI, initChat, initCommandPortal } from './js/ai_engine.js';
 import { initHealthSync, updateHealthUI } from './js/health_engine.js';
 import { initZenMode } from './js/santuario.js';
@@ -13,6 +13,7 @@ async function initApp() {
     
     try {
         loadState();
+        renderAllViews();
         applyPersonalization();
         updateGreeting();
         
