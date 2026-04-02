@@ -61,37 +61,62 @@ export function updateGreeting() {
     el.textContent = `${text} ${userData.name}`;
 }
 
-export function updateAuraMood(view) {
+export function syncNeuralAtmosphere(overridingView = null) {
     const aura = document.getElementById('aura-system');
     if (!aura) return;
-    
+
+    // 1. Circadian Baseline
+    const hour = new Date().getHours();
+    let color = '#00C4B4'; // Default Jade
     let mood = 'default';
     let speed = '25s';
     let blur = '120px';
-    let color = '#00C4B4';
 
-    if (view === 'diario') { mood = 'introspection'; speed = '45s'; blur = '180px'; color = '#9575CD'; }
-    else if (view === 'ejercicio') { mood = 'energy'; speed = '12s'; blur = '80px'; color = '#FF7043'; }
-    else if (view === 'zen') { mood = 'calm'; speed = '35s'; blur = '150px'; color = '#00C4B4'; }
-    else if (view === 'avisos') { mood = 'warning'; speed = '20s'; blur = '100px'; color = '#81D4FA'; }
-    else { color = '#00C4B4'; }
+    if (hour >= 6 && hour < 12) { color = '#00E5FF'; mood = 'morning'; speed = '20s'; } // Aurora Fresh
+    else if (hour >= 12 && hour < 18) { color = '#FFB300'; mood = 'energy'; speed = '15s'; } // Solar Active
+    else if (hour >= 18 && hour < 22) { color = '#9575CD'; mood = 'introspection'; speed = '35s'; } // Twilight
+    else { color = '#1A237E'; mood = 'calm'; speed = '45s'; blur = '160px'; } // Obsidian Night
 
+    // 2. Biometric Nudge (Stress Recovery)
+    // Low HRV forces calm state regardless of time
+    const healthData = window.healthData || { hrv: 70 };
+    if (healthData.hrv < 45) {
+        color = '#00C4B4'; 
+        mood = 'calm'; 
+        speed = '50s';
+        blur = '200px';
+    }
+
+    // 3. UX Influence (View override)
+    const view = overridingView || document.querySelector('.tab-item.active')?.getAttribute('data-view');
+    if (view === 'diario') { color = '#7E57C2'; mood = 'introspection'; speed = '40s'; }
+    if (view === 'ejercicio') { color = '#FF7043'; mood = 'energy'; speed = '10s'; blur = '80px'; }
+    if (view === 'zen') { color = '#00C4B4'; mood = 'calm'; speed = '40s'; }
+
+    // 4. Neural Activity (Thinking State)
+    if (document.body.classList.contains('brain-thinking')) {
+        speed = '2s'; // Fast cognitive pulse
+        blur = '100px';
+    }
+
+    // Apply Real-time Synthesis
     aura.setAttribute('data-mood', mood);
     aura.style.setProperty('--aura-speed', speed);
     aura.style.setProperty('--aura-blur', blur);
-
-    // Apply Chromatic Leakage
     document.documentElement.style.setProperty('--primary', color);
     document.documentElement.style.setProperty('--aura-glow', `${color}33`);
     
-    // Sync System Chrome
+    // OS Sync
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
-    
-    triggerHaptic(view === 'ejercicio' ? 'medium' : 'feather');
-    
+
     // Snappy Title Update
     const viewNames = { inicio: 'Inicio', ejercicio: 'Salud', avisos: 'Avisos', diario: 'Diario', mensajes: 'Conversar', zen: 'Zen' };
-    document.title = `${userData.jadeName} | ${viewNames[view] || ''}`;
+    if (view) document.title = `${userData.jadeName} | ${viewNames[view] || ''}`;
+}
+
+export function updateAuraMood(view) {
+    syncNeuralAtmosphere(view);
+    triggerHaptic(view === 'ejercicio' ? 'medium' : 'feather');
 }
 
 export function initTabs() {

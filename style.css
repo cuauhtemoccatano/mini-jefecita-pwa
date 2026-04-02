@@ -105,6 +105,17 @@ body::after {
     100% { transform: translate(0, 0) rotate(360deg) scale(1); }
 }
 
+/* Cognitive Metabolism (Thinking Overrides) */
+.brain-thinking .aura-blob {
+    animation-duration: 2s !important;
+    opacity: 1;
+    filter: blur(80px);
+}
+
+.brain-thinking .aura-container {
+    background: radial-gradient(circle at 50% 50%, #1a1a1a 0%, #000 100%);
+}
+
 /* Background Downloader Bar */
 .ai-bg-downloader {
     background: rgba(26, 26, 26, 0.8);
