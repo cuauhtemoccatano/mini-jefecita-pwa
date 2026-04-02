@@ -68,6 +68,7 @@ export function updateAuraMood(view) {
     let mood = 'default';
     let speed = '25s';
     let blur = '120px';
+    let color = '#00C4B4';
 
     if (view === 'diario') { mood = 'introspection'; speed = '45s'; blur = '180px'; color = '#9575CD'; }
     else if (view === 'ejercicio') { mood = 'energy'; speed = '12s'; blur = '80px'; color = '#FF7043'; }
