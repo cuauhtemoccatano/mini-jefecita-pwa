@@ -417,10 +417,19 @@ async function initAI(retryCount = 0) {
             }
 
             if (type === 'error') {
-                console.error("Worker Neural Error:", data);
+                console.error("🛡️ Forensics: Neural Failure Detected", data);
                 isDownloadingAI = false;
-                if (bgStatus) bgStatus.textContent = "Error en sintonización";
                 releaseWakeLock();
+
+                // CASCADA DE INTELIGENCIA (Fallback)
+                if (userData.brain !== 'NORMAL' && type === 'error') {
+                    console.warn(`⚠️ Falló el nivel [${userData.brain}]. Bajando a nivel NORMAL para resonancia básica...`);
+                    if (bgStatus) bgStatus.textContent = "Ajustando sintonización básica...";
+                    userData.brain = 'NORMAL';
+                    setTimeout(() => initAI(), 2000); // Reintento con modelo ligero
+                } else {
+                    if (bgStatus) bgStatus.textContent = `Vínculo roto: ${data.message || 'Error desconocido'}`;
+                }
             }
         };
 

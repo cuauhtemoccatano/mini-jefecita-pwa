@@ -10,7 +10,12 @@ self.onmessage = async (e) => {
     try {
         if (type === 'init') {
             const { modelName, device } = data;
-            const { pipeline, env, TextStreamer } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
+            
+            // Auditoría Forense: Verificar entorno de Worker
+            const hasGPU = !!navigator.gpu;
+            console.log(`🧠 Worker: Iniciando [${modelName}] en [${device}]. GPU Disponible: ${hasGPU}`);
+
+            const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
             
             env.allowLocalModels = false;
             env.useBrowserCache = true;
@@ -22,14 +27,11 @@ self.onmessage = async (e) => {
                 }
             });
 
-            self.postMessage({ type: 'ready', data: { modelName, device } });
+            self.postMessage({ type: 'ready', data: { modelName, device, hasGPU } });
         }
 
         if (type === 'generate') {
-            if (!generator) {
-                self.postMessage({ type: 'error', data: "Cerebro no inicializado." });
-                return;
-            }
+            if (!generator) throw new Error("Cerebro no inicializado.");
 
             const { fullPrompt, settings } = data;
             const { TextStreamer } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
@@ -51,6 +53,15 @@ self.onmessage = async (e) => {
             self.postMessage({ type: 'complete', data: accumulated });
         }
     } catch (err) {
-        self.postMessage({ type: 'error', data: err.message });
+        console.error("💥 Fatal Worker Error:", err);
+        self.postMessage({ 
+            type: 'error', 
+            data: {
+                message: err.message,
+                name: err.name,
+                stack: err.stack,
+                context: type
+            } 
+        });
     }
 };
