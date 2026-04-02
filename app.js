@@ -904,9 +904,88 @@ async function initApp() {
         await syncAppVersion(); // Fuente de Verdad v3.2.0
         
         if (window.lucide) lucide.createIcons();
+        initCommandPortal();
     } catch (err) {
         console.error("Fallo crítico en inicialización:", err);
     }
+}
+
+function initCommandPortal() {
+    const core = document.getElementById('liquid-core');
+    const portal = document.getElementById('command-portal');
+    const closeBtn = document.getElementById('btn-close-portal');
+    const sendBtn = document.getElementById('btn-portal-send');
+    const input = document.getElementById('portal-input');
+    const messages = document.getElementById('portal-messages');
+
+    const togglePortal = () => {
+        const active = portal.classList.toggle('active');
+        core.classList.toggle('active');
+        if (active) {
+            triggerHaptic('medium');
+            input.focus();
+        } else {
+            triggerHaptic('light');
+        }
+    };
+
+    core?.addEventListener('click', togglePortal);
+    closeBtn?.addEventListener('click', togglePortal);
+
+    const handleSend = async () => {
+        const text = input.value.trim();
+        if (!text) return;
+
+        // Visual User
+        const uMsg = document.createElement('div');
+        uMsg.className = 'message user';
+        uMsg.textContent = text;
+        messages.appendChild(uMsg);
+        input.value = '';
+        messages.scrollTop = messages.scrollHeight;
+
+        // Neural Aura Sync
+        document.body.classList.add('brain-thinking');
+
+        await processGlobalAI(text, (chunk) => {
+            let lastAI = messages.querySelector('.message.ai:last-child');
+            if (!lastAI || lastAI.className.includes('user')) {
+                lastAI = document.createElement('div');
+                lastAI.className = 'message ai';
+                messages.appendChild(lastAI);
+            }
+            lastAI.textContent = chunk;
+            messages.scrollTop = messages.scrollHeight;
+        }, () => {
+            document.body.classList.remove('brain-thinking');
+            triggerHaptic('light');
+        });
+    };
+
+    sendBtn?.addEventListener('click', handleSend);
+    input?.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });
+}
+
+async function processGlobalAI(prompt, onChunk, onComplete) {
+    if (!generatorWorker) return;
+
+    const handler = (e) => {
+        const { type, data } = e.data;
+        if (type === 'chunk') onChunk(data);
+        if (type === 'complete' || type === 'error') {
+            onComplete();
+            generatorWorker.removeEventListener('message', handler);
+        }
+    };
+
+    generatorWorker.addEventListener('message', handler);
+    generatorWorker.postMessage({
+        type: 'generate',
+        data: {
+            fullPrompt: prompt,
+            settings: { max_new_tokens: 200, temperature: 0.7 }
+        }
+    });
 }
 
 // Ejecución segura
