@@ -12,7 +12,8 @@ self.onmessage = async (e) => {
             const { modelName, device } = data;
             
             // Auditoría Forense: Verificar entorno de Worker
-            const hasGPU = !!navigator.gpu;
+            let hasGPU = false;
+            try { hasGPU = !!self.navigator?.gpu; } catch(_) {}
             console.log(`🧠 Worker: Iniciando [${modelName}] en [${device}]. GPU Disponible: ${hasGPU}`);
 
             const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');

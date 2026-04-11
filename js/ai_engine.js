@@ -33,12 +33,18 @@ export async function initAI() {
         const modelName = modelMappings[level] || modelMappings['ESENCIAL'];
         
         let device = 'wasm';
-        if (navigator.gpu) {
-            const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
-            if (adapter) device = 'webgpu';
+        try {
+            if (typeof navigator !== 'undefined' && navigator.gpu) {
+                const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
+                if (adapter) device = 'webgpu';
+            }
+        } catch (_gpuErr) {
+            console.warn('⚠️ WebGPU no disponible, usando wasm.');
+            device = 'wasm';
         }
 
-        generatorWorker = new Worker('ai_worker.js', { type: 'module' });
+        const workerUrl = new URL('../ai_worker.js', import.meta.url);
+        generatorWorker = new Worker(workerUrl, { type: 'module' });
         syncHistoryFromState();
         
         generatorWorker.onmessage = (e) => {

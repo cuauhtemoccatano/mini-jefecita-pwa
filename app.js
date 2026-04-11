@@ -41,9 +41,10 @@ async function initApp() {
             const autoTier = await predictOptimalBrainTier();
             console.log(`✨ Silicón Elevation: Aplicando nivel ${autoTier} de forma automática.`);
             userData.brain = autoTier;
+            saveSettings();
         }
         
-        // initAI(); // [DEFERRED] Neutral awareness is now lazy to prevent iOS memory crashes
+        initAI(); // Inicializar modelo después de detectar hardware
         
         await syncAppVersion();
         if (window.lucide) lucide.createIcons();
