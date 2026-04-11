@@ -99,6 +99,9 @@ function initSettings() {
     
     document.getElementById('btn-save-settings')?.addEventListener('click', () => {
         userData.name = document.getElementById('set-name').value;
+        userData.jadeName = document.getElementById('set-jade-name').value;
+        userData.auraPreset = document.getElementById('set-aura-preset').value;
+        userData.auraColor = document.getElementById('set-aura-hex').value;
         userData.brain = document.getElementById('set-brain-level').value;
         saveSettings();
         modal.style.display = 'none';

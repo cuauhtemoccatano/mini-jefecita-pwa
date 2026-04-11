@@ -103,15 +103,32 @@ export function syncNeuralAtmosphere(overridingView = null) {
     aura.setAttribute('data-mood', mood);
     aura.style.setProperty('--aura-speed', speed);
     aura.style.setProperty('--aura-blur', blur);
-    document.documentElement.style.setProperty('--primary', color);
-    document.documentElement.style.setProperty('--aura-glow', `${color}33`);
+
+    const primaryColor = userData.auraColor || color;
+    document.documentElement.style.setProperty('--primary', primaryColor);
+    document.documentElement.style.setProperty('--aura-glow', `${primaryColor}33`);
     
+    // Contrast Awareness (Adaptive Typography)
+    const rgb = hexToRgb(primaryColor);
+    const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
+    const contrastColor = brightness > 125 ? '#000000' : '#FFFFFF';
+    document.documentElement.style.setProperty('--primary-contrast', contrastColor);
+
     // OS Sync
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', color);
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', primaryColor);
 
     // Snappy Title Update
     const viewNames = { inicio: 'Inicio', ejercicio: 'Salud', avisos: 'Avisos', diario: 'Diario', mensajes: 'Conversar', zen: 'Zen' };
     if (view) document.title = `${userData.jadeName} | ${viewNames[view] || ''}`;
+}
+
+function hexToRgb(hex) {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+        r: parseInt(result[1], 16),
+        g: parseInt(result[2], 16),
+        b: parseInt(result[3], 16)
+    } : { r: 0, g: 196, b: 180 };
 }
 
 export function updateAuraMood(view) {
@@ -144,6 +161,15 @@ export function initTabs() {
             // Lazy Neural Trigger
             if (target === 'mensajes') {
                 import('./ai_engine.js').then(m => m.initAI());
+            }
+
+            // Privacy Handshake (Force Re-lock)
+            if (target === 'diario') {
+                import('./components/JournalView.js').then(m => {
+                    document.getElementById('diario-lock-screen').style.display = 'flex';
+                    document.getElementById('diario-content').style.display = 'none';
+                    m.JournalView.init();
+                });
             }
 
             requestAnimationFrame(() => {

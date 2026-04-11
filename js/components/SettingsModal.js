@@ -12,10 +12,23 @@ export const SettingsModal = {
                 <label for="set-jade-name">Nombre de tu IA</label>
                 <input type="text" id="set-jade-name" placeholder="Ej: Jade, Alexa, Minerva..." value="${userData.jadeName}">
             </div>
-            <div class="set-group">
-                <label for="set-vibe">Aura de IA <i data-lucide="palette" style="width: 14px;"></i></label>
-                <input type="text" id="set-vibe" placeholder="Color o palabra clave (ej: esmeralda)..." value="${userData.vibe}">
-                <p class="set-desc" style="font-size: 10px; margin-top: 4px; opacity: 0.6;">Jade modula su tono según tu energía vital.</p>
+            <div class="set-section">
+                <label>Personalización de Aura <i data-lucide="palette" style="width: 14px;"></i></label>
+                <p class="set-desc">Jade modula su atmósfera según tu elección sensorial.</p>
+                <div class="aura-presets">
+                    <button class="aura-chip ${userData.auraPreset === 'jade' ? 'active' : ''}" data-color="#00C4B4" data-preset="jade" style="--chip-color: #00C4B4"></button>
+                    <button class="aura-chip ${userData.auraPreset === 'zafiro' ? 'active' : ''}" data-color="#1E88E5" data-preset="zafiro" style="--chip-color: #1E88E5"></button>
+                    <button class="aura-chip ${userData.auraPreset === 'amatista' ? 'active' : ''}" data-color="#8E24AA" data-preset="amatista" style="--chip-color: #8E24AA"></button>
+                    <button class="aura-chip ${userData.auraPreset === 'obsidiana' ? 'active' : ''}" data-color="#37474F" data-preset="obsidiana" style="--chip-color: #37474F"></button>
+                    <button class="aura-chip ${userData.auraPreset === 'oro' ? 'active' : ''}" data-color="#FFB300" data-preset="oro" style="--chip-color: #FFB300"></button>
+                    <button class="aura-chip ${userData.auraPreset === 'ambar' ? 'active' : ''}" data-color="#FB8C00" data-preset="ambar" style="--chip-color: #FB8C00"></button>
+                    <div class="aura-custom-wrapper">
+                        <input type="color" id="set-aura-color" value="${userData.auraColor || '#00C4B4'}" title="Color personalizado">
+                        <i data-lucide="plus" style="width: 12px; pointer-events: none;"></i>
+                    </div>
+                </div>
+                <input type="hidden" id="set-aura-preset" value="${userData.auraPreset || 'jade'}">
+                <input type="hidden" id="set-aura-hex" value="${userData.auraColor || '#00C4B4'}">
             </div>
 
             <div class="set-section">
@@ -55,6 +68,28 @@ export const SettingsModal = {
     `,
     init: async () => {
         if (window.lucide) lucide.createIcons();
+        
+        const chips = document.querySelectorAll('.aura-chip');
+        const colorInput = document.getElementById('set-aura-color');
+        const presetInput = document.getElementById('set-aura-preset');
+        const hexInput = document.getElementById('set-aura-hex');
+
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+                presetInput.value = chip.dataset.preset;
+                hexInput.value = chip.dataset.color;
+                colorInput.value = chip.dataset.color;
+            });
+        });
+
+        colorInput?.addEventListener('input', (e) => {
+            chips.forEach(c => c.classList.remove('active'));
+            presetInput.value = 'custom';
+            hexInput.value = e.target.value;
+        });
+
         if (!userData.brain || userData.brain === 'AUTO') {
             document.getElementById('hardware-badge')?.setAttribute('style', 'font-size: 10px; color: var(--primary); margin-top: 4px; display: block;');
         }

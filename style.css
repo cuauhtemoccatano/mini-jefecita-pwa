@@ -514,7 +514,7 @@ body::after {
 /* Common Components */
 .btn-primary {
     background: linear-gradient(135deg, var(--primary), #00a598);
-    color: white;
+    color: var(--primary-contrast, white);
     border: none;
     padding: 14px 28px;
     border-radius: 40px 15px 40px 15px; /* Botón asimétrico orgánico */
@@ -523,6 +523,10 @@ body::after {
     cursor: pointer;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), 0 0 15px var(--aura-glow);
     transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-primary i {
+    color: var(--primary-contrast, white);
 }
 
 .btn-primary:active {
@@ -1426,3 +1430,151 @@ body.brain-thinking .aura-orb {
     filter: blur(180px);
     opacity: 0.8;
 }
+
+/* Aura Presets & Personalization */
+.aura-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 15px;
+    padding: 5px;
+}
+
+.aura-chip {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    background: var(--chip-color);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.aura-chip.active {
+    border-color: white;
+    transform: scale(1.2);
+    box-shadow: 0 0 15px var(--chip-color);
+}
+
+.aura-custom-wrapper {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255,255,255,0.05);
+}
+
+#set-aura-color {
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+}
+
+/* Modal Polish */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(20px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal-content {
+    background: rgba(30, 30, 30, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(40px);
+    border-radius: 32px;
+    padding: 32px;
+    width: 100%;
+    max-width: 450px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+}
+
+.set-group label, .set-section label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.set-group input, .set-select {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 14px;
+    color: white;
+    font-size: 16px;
+    outline: none;
+    transition: border 0.3s ease;
+}
+
+.set-group input:focus, .set-select:focus {
+    border-color: var(--primary);
+}
+
+.btn-secondary-full {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary-full:active {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Journal Lock Screen */
+.lock-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(30px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px;
+}
+
+.lock-content h2 {
+    margin: 20px 0 10px;
+    font-size: 24px;
+}
+
+.lock-content p {
+    color: var(--text-secondary);
+    margin-bottom: 30px;
+}
+

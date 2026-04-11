@@ -64,14 +64,15 @@ La evolución de Jade se divide en fases de madurez técnica y sensorial. Actual
 - [x] **iPad Side-Rail**: Transición a navegación lateral profesional en tablets.
 - [x] **Fluid Grids**: Rejillas estadísticas adaptativas.
 
-### Fase 15: Estabilidad Neuronal (Stability Hardening)
-- [x] **Lazy Neural Activation**: Carga de IA diferida para protección de RAM en iOS.
-- [x] **Persistence Reload Guard**: Evitar bucles de actualización mediante `sessionStorage`.
-- [x] **Modular Asset Manifest**: Sincronización total de sw.js con la nueva arquitectura.
+### Fase 15: Optimización Cristal (Crystal Edition)
+- [x] **Aura Multi-Sensorial**: Sistema de 6 preajustes y selector de color personalizado.
+- [x] **Adaptive Contrast**: Lógica APCA/WCAG para legibilidad dinámica de tipografía.
+- [x] **Privacy Shield (FaceID)**: Bloqueo biométrico obligatorio cada vez que se accede al diario.
+- [x] **Neural Context Fix**: Reparación de referencias cruzadas (`healthData`) en el motor de diálogo.
 
-## Próximas Misiones (Visión v3.6+)
+## Próximas Misiones (Visión v3.7+)
 
-### Fase 14: Orquestación Bio-Feedback
+### Fase 16: Orquestación Bio-Feedback
 - [ ] **Haptic Synesthesia**: Lenguaje de vibraciones Taptic Engine (latidos ai).
 - [ ] **Neural Acoustics**: Paisajes sonoros generativos basados en HRV.
 - [ ] **Rhythms Prediction**: Anticipación de estados de fatiga.

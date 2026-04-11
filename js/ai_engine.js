@@ -1,7 +1,7 @@
 // ---------------------------------------------------------
 // js/ai_engine.js - Cerebro y Portal Global (Contextual)
 // ---------------------------------------------------------
-import { userData, saveSettings } from './state.js';
+import { userData, healthData, saveSettings } from './state.js';
 import { triggerHaptic, applyPersonalization, updateGreeting } from './ui_engine.js';
 
 let generatorWorker = null;

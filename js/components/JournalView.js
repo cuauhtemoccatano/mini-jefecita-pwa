@@ -31,7 +31,51 @@ export const JournalView = {
             </div>
         </div>
     `,
-    init: () => {
+    init: async () => {
         if (window.lucide) lucide.createIcons();
+        
+        const btnUnlock = document.getElementById('btn-unlock-diario');
+        const lockScreen = document.getElementById('diario-lock-screen');
+        const content = document.getElementById('diario-content');
+
+        const triggerBioAuth = async () => {
+            if (!window.PublicKeyCredential) {
+                console.warn("🛡️ MQA: WebAuthn no soportado. Usando fallback...");
+                lockScreen.style.display = 'none';
+                content.style.display = 'block';
+                return;
+            }
+
+            try {
+                // Generar desafío dummy para autenticación local
+                const challenge = new Uint8Array(32);
+                window.crypto.getRandomValues(challenge);
+
+                const options = {
+                    publicKey: {
+                        challenge: challenge,
+                        timeout: 60000,
+                        allowCredentials: [], // Permitir cualquier credencial registrada en el dispositivo
+                        userVerification: "required",
+                    }
+                };
+
+                // En Safari/iOS, esto activará FaceID/TouchID directamente
+                await navigator.credentials.get(options);
+                
+                lockScreen.style.display = 'none';
+                content.style.display = 'block';
+                import('../ui_engine.js').then(m => m.triggerHaptic('success'));
+
+            } catch (err) {
+                console.error("🔐 Error de autenticación:", err);
+                import('../ui_engine.js').then(m => m.triggerHaptic('warning'));
+            }
+        };
+
+        btnUnlock?.addEventListener('click', triggerBioAuth);
+        
+        // Auto-trigger on init
+        triggerBioAuth();
     }
 };
