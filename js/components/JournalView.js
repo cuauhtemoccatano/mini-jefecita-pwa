@@ -47,21 +47,44 @@ export const JournalView = {
             }
 
             try {
-                // Generar desafío dummy para autenticación local
                 const challenge = new Uint8Array(32);
                 window.crypto.getRandomValues(challenge);
+                const credIdBase64 = localStorage.getItem('mqa_journal_cred_id');
 
-                const options = {
-                    publicKey: {
-                        challenge: challenge,
-                        timeout: 60000,
-                        allowCredentials: [], // Permitir cualquier credencial registrada en el dispositivo
-                        userVerification: "required",
+                if (!credIdBase64) {
+                    // --- FLUJO DE REGISTRO (Primer uso) ---
+                    const options = {
+                        publicKey: {
+                            rp: { name: "Mini Jefecita", id: window.location.hostname },
+                            user: { 
+                                id: new Uint8Array([1, 2, 3, 4]), 
+                                name: "jade_user", 
+                                displayName: "Usuario Jefecita" 
+                            },
+                            challenge: challenge,
+                            pubKeyCredParams: [{ type: "public-key", alg: -7 }], // ES256
+                            authenticatorSelection: { authenticatorAttachment: "platform", userVerification: "required" }
+                        }
+                    };
+
+                    const credential = await navigator.credentials.create(options);
+                    if (credential) {
+                        const id64 = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
+                        localStorage.setItem('mqa_journal_cred_id', id64);
+                        console.log("💎 MQA: FaceID vinculado.");
                     }
-                };
-
-                // En Safari/iOS, esto activará FaceID/TouchID directamente
-                await navigator.credentials.get(options);
+                } else {
+                    // --- FLUJO DE AUTENTICACION (Recurrente) ---
+                    const rawId = Uint8Array.from(atob(credIdBase64), c => c.charCodeAt(0));
+                    const options = {
+                        publicKey: {
+                            challenge: challenge,
+                            allowCredentials: [{ id: rawId, type: 'public-key' }],
+                            userVerification: "required"
+                        }
+                    };
+                    await navigator.credentials.get(options);
+                }
                 
                 lockScreen.style.display = 'none';
                 content.style.display = 'block';
