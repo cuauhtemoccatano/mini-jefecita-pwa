@@ -8,6 +8,7 @@
     --safe-area-bottom: env(safe-area-inset-bottom, 24px);
     --safe-area-left: env(safe-area-inset-left, 0px);
     --safe-area-right: env(safe-area-inset-right, 0px);
+    --font-main: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
     /* Typography Polish */
     --f-weight-light: 300;
@@ -28,10 +29,11 @@
     padding: 0;
     box-sizing: border-box;
     -webkit-tap-highlight-color: transparent;
+    font-family: var(--font-main);
 }
 
 body {
-    font-family: "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: var(--font-main);
     background-color: var(--background);
     color: var(--text);
     overflow: hidden;
@@ -828,37 +830,44 @@ input[type="number"]:focus {
 /* Biometric Lock Overlay */
 .lock-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(18, 18, 18, 0.95);
+    inset: 0;
+    background: rgba(10, 15, 20, 0.85);
     backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-    z-index: 110;
+    z-index: 100;
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
     border-radius: 20px;
 }
 
+.lock-content {
+    text-align: center;
+    padding: 40px;
+    max-width: 300px;
+}
+
 .lock-content .icon {
-    font-size: 50px;
+    display: block;
     margin-bottom: 20px;
+    color: var(--primary);
+    filter: drop-shadow(0 0 10px var(--primary-glow));
+    font-size: 50px;
 }
 
 .lock-content h2 {
-    font-size: 22px;
-    font-weight: 700;
-    margin-bottom: 8px;
+    font-size: 1.4rem;
+    margin-bottom: 10px;
     color: white;
 }
 
 .lock-content p {
-    opacity: 0.6;
+    font-size: 0.9rem;
+    color: var(--text-dim);
     margin-bottom: 30px;
-    font-size: 14px;
+}
+
+.locked-content {
+    transition: opacity 0.5s ease;
 }
 
 /* Journal Styles */
@@ -1245,6 +1254,60 @@ input[type="number"]:focus {
     opacity: 0.4;
     pointer-events: none;
     font-weight: 600;
+}
+
+/* --- AURA SELECTOR (Crystal) --- */
+.aura-presets {
+    display: flex;
+    gap: 12px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.aura-chip {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--glass-border);
+    cursor: pointer;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+    padding: 0;
+    overflow: hidden;
+}
+
+.aura-chip.active {
+    border-color: white;
+    transform: scale(1.15);
+}
+
+.aura-chip span {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.aura-chip.jade span { background: #00C4B4; }
+.aura-chip.sapphire span { background: #00E5FF; }
+.aura-chip.amethyst span { background: #9575CD; }
+.aura-chip.obsidian span { background: #1A237E; }
+.aura-chip.gold span { background: #FFD54F; }
+.aura-chip.amber span { background: #FF7043; }
+
+.custom-aura {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+    color: var(--text-dim);
+}
+
+#set-aura-hex {
+    padding: 0;
+    width: 40px;
+    height: 25px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
 }
 
 /* Draggable Blocks (Crystals) */

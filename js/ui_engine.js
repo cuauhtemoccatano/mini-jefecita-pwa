@@ -108,13 +108,14 @@ export function syncNeuralAtmosphere(overridingView = null) {
     document.documentElement.style.setProperty('--primary', primaryColor);
     document.documentElement.style.setProperty('--aura-glow', `${primaryColor}33`);
     
-    // Contrast Awareness (Adaptive Typography)
+    // Algorithm Crystal: Adaptive Contrast (APCA-lite)
     const rgb = hexToRgb(primaryColor);
     const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
-    const contrastColor = brightness > 125 ? '#000000' : '#FFFFFF';
+    const contrastColor = brightness > 165 ? '#000000' : '#FFFFFF';
     document.documentElement.style.setProperty('--primary-contrast', contrastColor);
+    document.documentElement.style.setProperty('--secondary-text', brightness > 165 ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)');
 
-    // OS Sync
+    // OS & Platform Sync
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', primaryColor);
 
     // Snappy Title Update

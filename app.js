@@ -1,5 +1,5 @@
 // ---------------------------------------------------------
-// app.js - Orquestador Maestro (Modular v3.3.0)
+// app.js - Orquestador Maestro (Crystal Edition v3.6.0)
 // ---------------------------------------------------------
 import { OnboardingCeremony } from './js/components/OnboardingCeremony.js';
 import { loadState, userData, saveSettings } from './js/state.js';

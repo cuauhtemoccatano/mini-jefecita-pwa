@@ -15,11 +15,7 @@ export function syncHistoryFromState() {
 export function getWorker() { return generatorWorker; }
 
 export async function initAI() {
-    if (generatorWorker) {
-        generatorWorker.terminate();
-        generatorWorker = null;
-    }
-    if (isDownloadingAI) return;
+    if (generatorWorker || isDownloadingAI) return; // [RESILIENTE] No interrumpir ciclo activo
 
     const bgStatus = document.getElementById('ai-bg-status');
     const bgProgress = document.getElementById('ai-bg-progress');
