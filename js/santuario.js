@@ -44,9 +44,20 @@ export function initZenMode() {
     });
 }
 
-function init3DScene() {
+async function init3DScene() {
     const canvas = document.getElementById('zen-3d-canvas');
     if (!canvas) return;
+
+    // Lazy load Three.js solo cuando se necesita
+    if (!window.THREE) {
+        await new Promise((resolve, reject) => {
+            const s = document.createElement('script');
+            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
+        });
+    }
     zen3DScene = new THREE.Scene();
     zen3DCamera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
     zen3DCamera.position.z = 5;

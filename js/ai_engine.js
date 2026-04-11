@@ -135,8 +135,8 @@ export async function processGlobalAI(onChunk, onComplete) {
         if (type === 'complete' || type === 'error') {
             if (type === 'complete') {
                 messageHistory.push({ role: 'assistant', content: data });
-                if (messageHistory.length > 20) messageHistory.shift(); 
-                userData.chatHistory = [...messageHistory];
+                if (messageHistory.length > 20) messageHistory.shift();
+                userData.chatHistory = messageHistory.slice(-20); // límite también en localStorage
                 saveSettings();
             }
             onComplete();

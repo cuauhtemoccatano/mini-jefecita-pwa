@@ -2,6 +2,7 @@
 // js/ui_engine.js - Estética y Orquestación de Vistas
 // ---------------------------------------------------------
 import { userData } from './state.js';
+import { healthData } from './state.js';
 import { HomeView } from './components/HomeView.js';
 import { ChatView } from './components/ChatView.js';
 import { ExerciseView } from './components/ExerciseView.js';
@@ -78,9 +79,8 @@ export function syncNeuralAtmosphere(overridingView = null) {
     else { color = '#1A237E'; mood = 'calm'; speed = '45s'; blur = '160px'; } // Obsidian Night
 
     // 2. Biometric Nudge (Stress Recovery)
-    // Low HRV forces calm state regardless of time
-    const healthData = window.healthData || { hrv: 70 };
-    if (healthData.hrv < 45) {
+    const currentHRV = healthData?.hrv ?? 70;
+    if (currentHRV < 45) {
         color = '#00C4B4'; 
         mood = 'calm'; 
         speed = '50s';
@@ -164,13 +164,18 @@ export function initTabs() {
                 import('./ai_engine.js').then(m => m.initAI());
             }
 
-            // Privacy Handshake (Force Re-lock)
+            // Privacy Handshake (Re-lock solo si el contenido estaba abierto)
             if (target === 'diario') {
-                import('./components/JournalView.js').then(m => {
-                    document.getElementById('diario-lock-screen').style.display = 'flex';
-                    document.getElementById('diario-content').style.display = 'none';
-                    m.JournalView.init();
-                });
+                const content = document.getElementById('diario-content');
+                const lockScreen = document.getElementById('diario-lock-screen');
+                const alreadyUnlocked = content?.style.display === 'block';
+                if (!alreadyUnlocked) {
+                    import('./components/JournalView.js').then(m => {
+                        lockScreen.style.display = 'flex';
+                        content.style.display = 'none';
+                        m.JournalView.init();
+                    });
+                }
             }
 
             requestAnimationFrame(() => {
