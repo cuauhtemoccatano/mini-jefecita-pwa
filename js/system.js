@@ -123,9 +123,17 @@ export function initIdleManager() {
     window.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'hidden') {
             console.log("🌙 Jade en reposo profundo. Guardando neuronas...");
-            // Trigger a quick state save if needed
+            if (window._atmosphereInterval) {
+                clearInterval(window._atmosphereInterval);
+                window._atmosphereInterval = null;
+            }
         } else {
             console.log("☀️ Jade despertando.");
+            if (!window._atmosphereInterval) {
+                window._atmosphereInterval = setInterval(() => {
+                    import('./ui_engine.js').then(m => m.syncNeuralAtmosphere());
+                }, 60000);
+            }
         }
     });
 }

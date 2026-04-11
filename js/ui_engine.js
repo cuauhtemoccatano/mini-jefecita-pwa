@@ -24,19 +24,24 @@ export function triggerHaptic(type = 'light') {
     }
 }
 
-export function renderAllViews() {
-    console.log("🎨 MQA: Renderizando componentes líquidos...");
-    
-    document.getElementById('view-inicio').innerHTML = HomeView.render(userData);
-    document.getElementById('view-mensajes').innerHTML = ChatView.render(userData);
-    document.getElementById('view-ejercicio').innerHTML = ExerciseView.render();
-    document.getElementById('view-avisos').innerHTML = RemindersView.render();
-    document.getElementById('view-diario').innerHTML = JournalView.render();
-    document.getElementById('view-zen').innerHTML = ZenView.render();
-    document.getElementById('settings-modal').innerHTML = SettingsModal.render(userData);
+// Registro de vistas ya inicializadas
+const _initializedViews = new Set();
 
-    // Initial icon bloom
-    [HomeView, ChatView, ExerciseView, RemindersView, JournalView, ZenView, SettingsModal].forEach(v => v.init());
+export function renderView(viewId, component, renderArg) {
+    if (_initializedViews.has(viewId)) return;
+    const el = document.getElementById(viewId);
+    if (!el) return;
+    el.innerHTML = renderArg !== undefined ? component.render(renderArg) : component.render();
+    component.init();
+    _initializedViews.add(viewId);
+    if (window.lucide) lucide.createIcons();
+}
+
+export function renderAllViews() {
+    console.log("🎨 MQA: Renderizando vistas críticas...");
+    // Solo inicio y modal de settings al arrancar
+    renderView('view-inicio', HomeView, userData);
+    renderView('settings-modal', SettingsModal, userData);
 }
 
 export function applyPersonalization() {
@@ -155,14 +160,22 @@ export function initTabs() {
                 currentView.classList.add('exiting');
                 currentView.classList.remove('active');
             }
+
+            // Lazy render de vista si aún no se ha inicializado
+            const viewComponentMap = {
+                'mensajes':  () => renderView('view-mensajes', ChatView, userData),
+                'ejercicio': () => renderView('view-ejercicio', ExerciseView),
+                'avisos':    () => renderView('view-avisos', RemindersView),
+                'diario':    () => renderView('view-diario', JournalView),
+                'zen':       () => renderView('view-zen', ZenView),
+            };
+            viewComponentMap[target]?.();
+
             nextView.classList.add('entering');
             nextView.style.display = 'block';
             updateAuraMood(target);
 
-            // Lazy Neural Trigger
-            if (target === 'mensajes') {
-                import('./ai_engine.js').then(m => m.initAI());
-            }
+            // AI ya inicializada en app.js — guard interno en initAI() previene duplicados
 
             // Privacy Handshake (Re-lock solo si el contenido estaba abierto)
             if (target === 'diario') {

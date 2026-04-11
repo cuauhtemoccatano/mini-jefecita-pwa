@@ -45,6 +45,7 @@ async function initApp() {
         }
         
         initAI(); // Inicializar modelo después de detectar hardware
+        saveSettings(); // evitar doble llamada desde tabs
         
         await syncAppVersion();
         if (window.lucide) lucide.createIcons();
@@ -52,10 +53,12 @@ async function initApp() {
         // Clear the refresh guard after successful initialization
         sessionStorage.removeItem('mqa_refreshing');
 
-        // Atmospheric Heartbeat (Autonomous Adaptation)
-        setInterval(() => {
-            import('./js/ui_engine.js').then(m => m.syncNeuralAtmosphere());
-        }, 60000);
+        // Atmospheric Heartbeat — con guard para evitar múltiples intervals
+        if (!window._atmosphereInterval) {
+            window._atmosphereInterval = setInterval(() => {
+                import('./js/ui_engine.js').then(m => m.syncNeuralAtmosphere());
+            }, 60000);
+        }
 
         // Perspectiva Holográfica (Sigue en app.js por simplicidad de listeners)
         initHolographic();
