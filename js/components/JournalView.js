@@ -98,7 +98,10 @@ export const JournalView = {
 
         btnUnlock?.addEventListener('click', triggerBioAuth);
         
-        // Auto-trigger on init
-        triggerBioAuth();
+        // Solo auto-trigger si ya hay credencial registrada (no primer uso)
+        const hasCredential = localStorage.getItem('mqa_journal_cred_id');
+        if (hasCredential) {
+            triggerBioAuth();
+        }
     }
 };

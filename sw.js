@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mini-jefecita-v3.6.0';
+const CACHE_NAME = 'mini-jefecita-v3.6.1';
 const ASSETS = [
   '/',
   '/index.html',
@@ -42,7 +42,6 @@ self.addEventListener('message', event => {
 self.addEventListener('activate', event => {
   event.waitUntil(
     Promise.all([
-      self.clients.claim(),
       caches.keys().then(cacheNames => {
         return Promise.all(
           cacheNames.map(cacheName => {

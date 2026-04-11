@@ -1,9 +1,10 @@
 {
   "name": "mini-jefecita",
-  "version": "3.6.0",
+  "version": "3.6.1",
   "private": true,
   "description": "Sentient Personal Assistant PWA - Crystal Edition (v3.6.0)",
   "scripts": {
-    "start": "python3 -m http.server 8080"
+    "start": "python3 -m http.server 8080",
+    "ship": "npx vercel --prod --yes"
   }
 }
