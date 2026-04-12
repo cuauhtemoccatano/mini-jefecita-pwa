@@ -1,6 +1,29 @@
 // ---------------------------------------------------------
-// app.js - Orquestador Maestro (Crystal Edition v3.6.0)
+// main.js - Orquestador Maestro
 // ---------------------------------------------------------
+import './assets/css/style.css';
+import './assets/css/awakening.css';
+import { 
+    createIcons, 
+    LayoutDashboard, 
+    Activity, 
+    Bell, 
+    BookOpen, 
+    MessageSquare, 
+    Sparkles, 
+    X, 
+    Send, 
+    Settings, 
+    Bot, 
+    Brain, 
+    Flame, 
+    Footprints, 
+    ListChecks, 
+    Lock, 
+    Palette, 
+    Trash2, 
+    Zap 
+} from 'lucide';
 import { OnboardingCeremony } from './components/OnboardingCeremony.js';
 import { loadState, userData, saveSettings, healthData } from './js/state.js';
 import { renderAllViews, applyPersonalization, updateGreeting, initTabs, triggerHaptic } from './js/ui_engine.js';
@@ -30,7 +53,8 @@ async function initApp() {
     }
     
     if (!userData.onboarded) {
-        document.body.innerHTML = OnboardingCeremony.render();
+        const app = document.getElementById('app');
+        if (app) app.innerHTML = OnboardingCeremony.render();
         OnboardingCeremony.init();
         return;
     }
@@ -72,7 +96,29 @@ async function initApp() {
         }
         
         await syncAppVersion();
-        if (window.lucide) lucide.createIcons();
+        
+        createIcons({
+            icons: {
+                LayoutDashboard,
+                Activity,
+                Bell,
+                BookOpen,
+                MessageSquare,
+                Sparkles,
+                X,
+                Send,
+                Settings,
+                Bot,
+                Brain,
+                Flame,
+                Footprints,
+                ListChecks,
+                Lock,
+                Palette,
+                Trash2,
+                Zap
+            }
+        });
 
         // Clear the refresh guard after successful initialization
         sessionStorage.removeItem('mqa_refreshing');

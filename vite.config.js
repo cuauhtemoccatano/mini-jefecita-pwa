@@ -10,7 +10,8 @@ export default defineConfig({
       registerType: 'prompt',
       injectManifest: {
         swDest: 'dist/sw.js',
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}'],
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5MB para pesos ligeros
       },
       manifest: {
         name: 'Mini Jefecita',
