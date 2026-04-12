@@ -43,10 +43,10 @@ export const SettingsModal = {
                 </select>
             </div>
 
-            <div class="modal-actions">
                 <button id="btn-save-settings" class="btn-primary">Sincronizar</button>
                 <button id="btn-close-settings" class="btn-secondary">Cerrar</button>
             </div>
+            <div class="modal-version">v3.7.2 (Stabilized Edition)</div>
         </div>
     `,
     init: async () => {

@@ -12,14 +12,17 @@ let _cryptoKey = null;
 // ---------------------------------------------------------
 // Derivar llave desde password (PBKDF2) para recuperación
 // ---------------------------------------------------------
-export async function deriveKeyFromPassword(password) {
+export async function deriveKeyFromPassword(password, salt = null) {
     const encoder = new TextEncoder();
     const pwKey = await crypto.subtle.importKey(
         'raw', encoder.encode(password), 'PBKDF2', false, ['deriveKey']
     );
 
-    // Sal fija para la app (podría ser más dinámica, pero para recuperación basta)
-    const salt = encoder.encode('mini-jefecita-quantum-salt'); 
+    // Si no hay sal, se genera una nueva (modo creación)
+    if (!salt) {
+        salt = crypto.getRandomValues(new Uint8Array(16));
+        localStorage.setItem('mqa_crypto_salt', btoa(String.fromCharCode(...salt)));
+    }
 
     _cryptoKey = await crypto.subtle.deriveKey(
         { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
@@ -56,7 +59,13 @@ export async function initCrypto(password = null) {
     } 
     
     if (!_cryptoKey && password) {
-        await deriveKeyFromPassword(password);
+        // Al derivar, primero buscamos si ya existe una sal persistida
+        const storedSalt = localStorage.getItem('mqa_crypto_salt');
+        const salt = storedSalt 
+            ? Uint8Array.from(atob(storedSalt), c => c.charCodeAt(0))
+            : null; // deriveKeyFromPassword generará una si es null
+
+        await deriveKeyFromPassword(password, salt);
     }
 
     if (!_cryptoKey) {

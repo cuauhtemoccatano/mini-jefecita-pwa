@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 import { userData, saveSettings } from '../js/state.js';
 import { deriveKeyFromPassword } from '../js/crypto_engine.js';
+import { restoreProfile } from '../js/rag_engine.js';
 
 export const OnboardingCeremony = {
     render: () => `
@@ -86,7 +87,7 @@ export const OnboardingCeremony = {
         });
 
         // Phase 4: Vault Security
-        const finishCeremony = async () => {
+        const finishCeremony = async (isRecovery = false) => {
             const val = document.getElementById('vault-key-input').value.trim();
             if(!val || val.length < 4) {
                 alert("La llave debe ser más profunda (mínimo 4 caracteres)");
@@ -94,9 +95,20 @@ export const OnboardingCeremony = {
             }
             
             try {
-                // Derivar llave y proteger v3.7 local
+                // Derivar llave
                 await deriveKeyFromPassword(val);
                 
+                // Si es recuperación, verificar que la llave es correcta intentando restaurar
+                if (isRecovery) {
+                    const restored = await restoreProfile();
+                    if (!restored) {
+                        alert("No pudimos recuperar tu memoria. Es probable que la contraseña sea incorrecta o no existan datos en la nube.");
+                        return;
+                    }
+                    // Si restauró bien, mezclar con userData
+                    Object.assign(userData, restored);
+                }
+
                 userData.onboarded = true;
                 saveSettings();
 
@@ -108,6 +120,7 @@ export const OnboardingCeremony = {
                     location.reload(); 
                 }, 1000);
             } catch (err) {
+                console.error("Ceremony Error:", err);
                 alert("Error al sellar el vínculo cósmico. Intenta de nuevo.");
             }
         };
@@ -123,7 +136,7 @@ export const OnboardingCeremony = {
                  alert("Ingresa tu contraseña de siempre para recuperar tu memoria.");
                  return;
              }
-             finishCeremony();
+             finishCeremony(true); // Flag de recuperación
         });
     }
 };

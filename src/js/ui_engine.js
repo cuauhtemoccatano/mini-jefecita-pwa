@@ -54,16 +54,23 @@ export function renderAllViews() {
  * NO llama a la atmósfera para evitar ciclos.
  */
 export function updateUIPersonalization() {
+    // 1. Labels de usuario y IA
     const nameLabel = document.getElementById('global-title');
     if (nameLabel) {
         nameLabel.innerHTML = `<span class="user-name-label">${userData.name}</span> <span id="user-vibe-label"><i data-lucide="sparkles" style="width: 24px; color: var(--primary)"></i></span>`;
     }
     
     document.querySelectorAll('.jade-name-display').forEach(el => el.textContent = userData.jadeName);
+    document.querySelectorAll('.user-name-label').forEach(el => el.textContent = userData.name);
     
+    // 2. Elementos de estadísticas
     const streakEl = document.getElementById('home-streak-val');
     if (streakEl) streakEl.textContent = userData.streak || 0;
     
+    const brainLevelEl = document.getElementById('set-brain-level');
+    if (brainLevelEl) brainLevelEl.value = userData.brain;
+
+    // 4. Re-inicializar iconos de Lucide en todo el documento
     createIcons({ icons: { Sparkles, Settings, LayoutDashboard, Activity, Bell, BookOpen, MessageSquare, X, Send } });
 }
 
@@ -138,7 +145,6 @@ export function syncAtmosphereMatrix(overridingView = null) {
             const gCaption = document.getElementById('global-greeting');
             
             if (view === 'inicio') {
-                updateUIPersonalization();
                 updateGreeting();
             } else if (gTitle && gCaption) {
                 gTitle.textContent = viewNames[view];
@@ -148,7 +154,8 @@ export function syncAtmosphereMatrix(overridingView = null) {
     } catch (e) {
         console.warn("🛡️ MQA: Sincronización de matriz interrumpida:", e);
     } finally {
-        setTimeout(() => { window.__MQA_ATMOSPHERE_LOCKED__ = false; }, 10);
+        // Reducir lock a lo mínimo indispensable para evitar "drops" de eventos
+        window.__MQA_ATMOSPHERE_LOCKED__ = false; 
     }
 }
 

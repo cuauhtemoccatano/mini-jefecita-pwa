@@ -1596,16 +1596,26 @@ body.brain-thinking .aura-orb {
 
 .modal-content {
     background: rgba(30, 30, 30, 0.6);
-    border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(40px);
     border-radius: 32px;
     padding: 32px;
     width: 100%;
-    max-width: 450px;
-    max-height: 90vh;
-    overflow-y: auto;
-    box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    max-width: 440px;
+    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.6);
+    position: relative;
 }
+
+.modal-version {
+    position: absolute;
+    bottom: 12px;
+    right: 24px;
+    font-size: 10px;
+    color: var(--text-secondary);
+    opacity: 0.4;
+    letter-spacing: 1px;
+    font-weight: 700;
+}
+
 
 .set-group label, .set-section label {
     display: block;

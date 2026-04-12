@@ -1,3 +1,5 @@
+import './assets/css/style.css';
+import './assets/css/awakening.css';
 import { 
     LayoutDashboard, 
     Activity, 
@@ -48,8 +50,7 @@ async function initApp() {
     }
     
     if (!userData.onboarded) {
-        const app = document.getElementById('app');
-        if (app) app.innerHTML = OnboardingCeremony.render();
+        document.body.innerHTML = OnboardingCeremony.render();
         OnboardingCeremony.init();
         return;
     }
@@ -131,6 +132,7 @@ function initSettings() {
         saveSettings();
         modal.style.display = 'none';
         updateUIPersonalization();
+        syncAtmosphereMatrix(); // Forzar actualización de aura
         initAI(); 
     });
 }
