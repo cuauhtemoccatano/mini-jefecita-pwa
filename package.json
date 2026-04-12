@@ -1,9 +1,9 @@
 {
   "name": "mini-jefecita",
-  "version": "3.7.0",
+  "version": "3.7.1",
   "type": "module",
   "private": true,
-  "description": "Sentient Personal Assistant PWA - Crystal Edition (v3.6.0)",
+  "description": "Sentient Personal Assistant PWA - Crystal Edition (v3.7.1)",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,7 +14,7 @@
     "@huggingface/transformers": "^4.0.1",
     "@supabase/supabase-js": "^2.103.0",
     "animejs": "^3.2.1",
-    "lucide": "^1.8.0",
+    "lucide": "^0.474.0",
     "three": "^0.183.2"
   },
   "devDependencies": {
