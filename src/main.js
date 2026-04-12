@@ -35,7 +35,6 @@ import { initCrypto } from './js/crypto_engine.js';
 import { syncProfile, restoreProfile, syncReminders, syncHealth, isSupabaseConfigured } from './js/rag_engine.js';
 
 async function initApp() {
-    console.log("🌊 Orquestación Modular Iniciada: Jade despertando...");
 
     // Inicializar crypto siempre primero
     await initCrypto();
@@ -43,12 +42,11 @@ async function initApp() {
     loadState();
 
     // Si localStorage fue borrado por Safari, restaurar desde Supabase
-    if (!userData.onboarded && isSupabaseConfigured()) {
+    if (isSupabaseConfigured() && !userData.onboarded) {
         const restored = await restoreProfile();
         if (restored) {
             Object.assign(userData, restored);
             saveSettings();
-            console.log('✨ Perfil restaurado desde Supabase.');
         }
     }
     
@@ -72,6 +70,7 @@ async function initApp() {
         initZenMode();
         initChat();
         initCommandPortal();
+        initSettings(); // Vinculación después de renderView
         initIdleManager();
         initConnectivityAwareness();
         initInstallManager();
@@ -79,7 +78,6 @@ async function initApp() {
         // Auto-Elevation Ceremony
         if (!userData.brain || userData.brain === 'AUTO') {
             const autoTier = await predictOptimalBrainTier();
-            console.log(`✨ Silicón Elevation: Aplicando nivel ${autoTier} de forma automática.`);
             userData.brain = autoTier;
             saveSettings();
         }
@@ -97,28 +95,32 @@ async function initApp() {
         
         await syncAppVersion();
         
-        createIcons({
-            icons: {
-                LayoutDashboard,
-                Activity,
-                Bell,
-                BookOpen,
-                MessageSquare,
-                Sparkles,
-                X,
-                Send,
-                Settings,
-                Bot,
-                Brain,
-                Flame,
-                Footprints,
-                ListChecks,
-                Lock,
-                Palette,
-                Trash2,
-                Zap
-            }
-        });
+        try {
+            createIcons({
+                icons: {
+                    LayoutDashboard,
+                    Activity,
+                    Bell,
+                    BookOpen,
+                    MessageSquare,
+                    Sparkles,
+                    X,
+                    Send,
+                    Settings,
+                    Bot,
+                    Brain,
+                    Flame,
+                    Footprints,
+                    ListChecks,
+                    Lock,
+                    Palette,
+                    Trash2,
+                    Zap
+                }
+            });
+        } catch (e) {
+            console.warn("⚠️ MQA: Fallo parcial al renderizar iconos:", e);
+        }
 
         // Clear the refresh guard after successful initialization
         sessionStorage.removeItem('mqa_refreshing');
@@ -188,9 +190,7 @@ function initSettings() {
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initApp();
-        initSettings();
     });
 } else {
     initApp();
-    initSettings();
 }

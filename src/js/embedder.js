@@ -4,6 +4,8 @@
 // Corre completamente en el dispositivo
 // ---------------------------------------------------------
 
+import { pipeline, env } from '@huggingface/transformers';
+
 let _pipeline = null;
 let _isLoading = false;
 
@@ -22,7 +24,6 @@ export async function initEmbedder() {
 
     try {
         _isLoading = true;
-        const { pipeline, env } = await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.3.3');
         env.allowLocalModels = false;
         env.useBrowserCache = true;
 

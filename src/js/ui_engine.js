@@ -28,9 +28,14 @@ export function triggerHaptic(type = 'light') {
 const _initializedViews = new Set();
 
 export function renderView(viewId, component, renderArg) {
-    if (_initializedViews.has(viewId)) return;
     const el = document.getElementById(viewId);
     if (!el) return;
+    
+    if (_initializedViews.has(viewId)) {
+        if (window.lucide) lucide.createIcons();
+        return;
+    }
+    
     el.innerHTML = renderArg !== undefined ? component.render(renderArg) : component.render();
     component.init();
     _initializedViews.add(viewId);
@@ -38,8 +43,6 @@ export function renderView(viewId, component, renderArg) {
 }
 
 export function renderAllViews() {
-    console.log("🎨 MQA: Renderizando vistas críticas...");
-    // Solo inicio y modal de settings al arrancar
     renderView('view-inicio', HomeView, userData);
     renderView('settings-modal', SettingsModal, userData);
 }
@@ -50,11 +53,9 @@ export function applyPersonalization() {
     
     document.querySelectorAll('.jade-name-display').forEach(el => el.textContent = userData.jadeName);
     
-    // Sovereign Aura Foundation
     const activeView = document.querySelector('.tab-item.active')?.getAttribute('data-view') || 'inicio';
     updateAuraMood(activeView);
 
-    // Actualizar elementos dinámicos después del render
     const streakEl = document.getElementById('home-streak-val');
     if (streakEl) streakEl.textContent = userData.streak || 0;
 }
@@ -71,19 +72,17 @@ export function syncNeuralAtmosphere(overridingView = null) {
     const aura = document.getElementById('aura-system');
     if (!aura) return;
 
-    // 1. Circadian Baseline
     const hour = new Date().getHours();
-    let color = '#00C4B4'; // Default Jade
+    let color = '#00C4B4'; 
     let mood = 'default';
     let speed = '25s';
     let blur = '120px';
 
-    if (hour >= 6 && hour < 12) { color = '#00E5FF'; mood = 'morning'; speed = '20s'; } // Aurora Fresh
-    else if (hour >= 12 && hour < 18) { color = '#FFB300'; mood = 'energy'; speed = '15s'; } // Solar Active
-    else if (hour >= 18 && hour < 22) { color = '#9575CD'; mood = 'introspection'; speed = '35s'; } // Twilight
-    else { color = '#1A237E'; mood = 'calm'; speed = '45s'; blur = '160px'; } // Obsidian Night
+    if (hour >= 6 && hour < 12) { color = '#00E5FF'; mood = 'morning'; speed = '20s'; }
+    else if (hour >= 12 && hour < 18) { color = '#FFB300'; mood = 'energy'; speed = '15s'; }
+    else if (hour >= 18 && hour < 22) { color = '#9575CD'; mood = 'introspection'; speed = '35s'; }
+    else { color = '#1A237E'; mood = 'calm'; speed = '45s'; blur = '160px'; }
 
-    // 2. Biometric Nudge (Stress Recovery)
     const currentHRV = healthData?.hrv ?? 70;
     if (currentHRV < 45) {
         color = '#00C4B4'; 
@@ -92,19 +91,16 @@ export function syncNeuralAtmosphere(overridingView = null) {
         blur = '200px';
     }
 
-    // 3. UX Influence (View override)
     const view = overridingView || document.querySelector('.tab-item.active')?.getAttribute('data-view');
     if (view === 'diario') { color = '#7E57C2'; mood = 'introspection'; speed = '40s'; }
     if (view === 'ejercicio') { color = '#FF7043'; mood = 'energy'; speed = '10s'; blur = '80px'; }
     if (view === 'zen') { color = '#00C4B4'; mood = 'calm'; speed = '40s'; }
 
-    // 4. Neural Activity (Thinking State)
     if (document.body.classList.contains('brain-thinking')) {
-        speed = '2s'; // Fast cognitive pulse
+        speed = '2s';
         blur = '100px';
     }
 
-    // Apply Real-time Synthesis
     aura.setAttribute('data-mood', mood);
     aura.style.setProperty('--aura-speed', speed);
     aura.style.setProperty('--aura-blur', blur);
@@ -113,17 +109,14 @@ export function syncNeuralAtmosphere(overridingView = null) {
     document.documentElement.style.setProperty('--primary', primaryColor);
     document.documentElement.style.setProperty('--aura-glow', `${primaryColor}33`);
     
-    // Algorithm Crystal: Adaptive Contrast (APCA-lite)
     const rgb = hexToRgb(primaryColor);
     const brightness = (rgb.r * 299 + rgb.g * 587 + rgb.b * 114) / 1000;
     const contrastColor = brightness > 165 ? '#000000' : '#FFFFFF';
     document.documentElement.style.setProperty('--primary-contrast', contrastColor);
     document.documentElement.style.setProperty('--secondary-text', brightness > 165 ? 'rgba(0,0,0,0.6)' : 'rgba(255,255,255,0.7)');
 
-    // OS & Platform Sync
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', primaryColor);
 
-    // Snappy Title Update
     const viewNames = { inicio: 'Inicio', ejercicio: 'Salud', avisos: 'Avisos', diario: 'Diario', mensajes: 'Conversar', zen: 'Zen' };
     if (view) document.title = `${userData.jadeName} | ${viewNames[view] || ''}`;
 }
@@ -150,18 +143,21 @@ export function initTabs() {
         tab.addEventListener('click', (e) => {
             e.preventDefault();
             if (isTransitioning) return;
+            
             const target = tab.getAttribute('data-view');
             const currentView = document.querySelector('.view.active');
             const nextView = document.getElementById(`view-${target}`);
+            
             if (!nextView || currentView === nextView) return;
 
             isTransitioning = true;
+            triggerHaptic('feather');
+
             if (currentView) {
-                currentView.classList.add('exiting');
                 currentView.classList.remove('active');
+                currentView.classList.add('exiting');
             }
 
-            // Lazy render de vista si aún no se ha inicializado
             const viewComponentMap = {
                 'mensajes':  () => renderView('view-mensajes', ChatView, userData),
                 'ejercicio': () => renderView('view-ejercicio', ExerciseView),
@@ -171,38 +167,27 @@ export function initTabs() {
             };
             viewComponentMap[target]?.();
 
-            nextView.classList.add('entering');
             nextView.style.display = 'block';
+            nextView.classList.add('entering');
+            
             updateAuraMood(target);
 
-            // AI ya inicializada en app.js — guard interno en initAI() previene duplicados
-
-            // Privacy Handshake (Re-lock solo si el contenido estaba abierto)
-            if (target === 'diario') {
-                const content = document.getElementById('diario-content');
-                const lockScreen = document.getElementById('diario-lock-screen');
-                const alreadyUnlocked = content?.style.display === 'block';
-                if (!alreadyUnlocked) {
-                    import('../components/JournalView.js').then(m => {
-                        lockScreen.style.display = 'flex';
-                        content.style.display = 'none';
-                        m.JournalView.init();
-                    });
-                }
-            }
-
             requestAnimationFrame(() => {
-                nextView.classList.remove('entering');
-                nextView.classList.add('active');
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
                 setTimeout(() => {
-                    if (currentView) {
-                        currentView.classList.remove('exiting');
-                        currentView.style.display = 'none';
-                    }
-                    isTransitioning = false;
-                }, 450); // Faster cycle
+                    nextView.classList.remove('entering');
+                    nextView.classList.add('active');
+                    
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+
+                    setTimeout(() => {
+                        if (currentView) {
+                            currentView.classList.remove('exiting');
+                            currentView.style.display = 'none';
+                        }
+                        isTransitioning = false;
+                    }, 400); 
+                }, 20);
             });
         });
     });

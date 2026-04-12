@@ -70,6 +70,9 @@ La evolución de Jade se divide en fases de madurez técnica y sensorial. Actual
 - [x] **Privacy Shield (FaceID)**: Bloqueo biométrico obligatorio cada vez que se accede al diario.
 - [x] **Neural Context Fix**: Reparación de referencias cruzadas (`healthData`) en el motor de diálogo.
 - [x] **Vite Migration**: Transformación total a arquitectura basada en bundler (Vite + Workbox).
+- [x] **Integrity Audit**: Auditoría de integridad post-migración (Supabase Headers, Local AI, Security Logs).
+- [x] **Data Resilience**: Implementación de Master Password (PBKDF2) para recuperación de desastres.
+- [x] **UI/UX ProMax Refinement**: Fix de apilamiento de vistas, Glassmorphism de 30px y optimización de transiciones.
 
 
 ## Próximas Misiones (Visión v3.7+)

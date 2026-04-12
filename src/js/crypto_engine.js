@@ -10,20 +10,47 @@ const STORAGE_KEY = 'mqa_crypto_key';
 let _cryptoKey = null;
 
 // ---------------------------------------------------------
+// Derivar llave desde password (PBKDF2) para recuperación
+// ---------------------------------------------------------
+export async function deriveKeyFromPassword(password) {
+    const encoder = new TextEncoder();
+    const pwKey = await crypto.subtle.importKey(
+        'raw', encoder.encode(password), 'PBKDF2', false, ['deriveKey']
+    );
+
+    // Sal fija para la app (podría ser más dinámica, pero para recuperación basta)
+    const salt = encoder.encode('mini-jefecita-quantum-salt'); 
+
+    _cryptoKey = await crypto.subtle.deriveKey(
+        { name: 'PBKDF2', salt, iterations: 100000, hash: 'SHA-256' },
+        pwKey,
+        { name: ALGO, length: KEY_LENGTH },
+        true,
+        ['encrypt', 'decrypt']
+    );
+
+    // Persistir para evitar re-derivación constante
+    const exported = await crypto.subtle.exportKey('raw', _cryptoKey);
+    localStorage.setItem(STORAGE_KEY, btoa(String.fromCharCode(...new Uint8Array(exported))));
+
+    return _cryptoKey;
+}
+
+// ---------------------------------------------------------
 // Derivar o recuperar la llave de encriptación
 // ---------------------------------------------------------
-export async function initCrypto() {
+export async function initCrypto(password = null) {
     if (_cryptoKey) return _cryptoKey;
 
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-        // Recuperar llave existente
         const raw = Uint8Array.from(atob(stored), c => c.charCodeAt(0));
         _cryptoKey = await crypto.subtle.importKey(
             'raw', raw, { name: ALGO }, false, ['encrypt', 'decrypt']
         );
+    } else if (password) {
+        await deriveKeyFromPassword(password);
     } else {
-        // Generar nueva llave
         _cryptoKey = await crypto.subtle.generateKey(
             { name: ALGO, length: KEY_LENGTH }, true, ['encrypt', 'decrypt']
         );
