@@ -1,6 +1,4 @@
-// ---------------------------------------------------------
-// js/ui_engine.js - Estética y Orquestación de Vistas
-// ---------------------------------------------------------
+import { createIcons, Sparkles } from 'lucide';
 import { userData } from './state.js';
 import { healthData } from './state.js';
 import { HomeView } from '../components/HomeView.js';
@@ -38,7 +36,7 @@ export function renderView(viewId, component, renderArg) {
     if (!el) return;
     
     if (_initializedViews.has(viewId)) {
-        if (window.lucide) lucide.createIcons();
+    createIcons({ icons: { Sparkles } });
         return;
     }
     

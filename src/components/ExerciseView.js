@@ -1,6 +1,5 @@
 // ---------------------------------------------------------
-// js/components/ExerciseView.js
-// ---------------------------------------------------------
+import { createIcons, Flame } from 'lucide';
 export const ExerciseView = {
     render: () => `
         <div class="exercise-streak-card">
@@ -28,6 +27,6 @@ export const ExerciseView = {
         </div>
     `,
     init: () => {
-        if (window.lucide) lucide.createIcons();
+        createIcons({ icons: { Flame } });
     }
 };

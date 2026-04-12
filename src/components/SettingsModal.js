@@ -1,6 +1,5 @@
 // ---------------------------------------------------------
-// js/components/SettingsModal.js - Crystal Edition v3.6.0
-// ---------------------------------------------------------
+import { createIcons, Palette, Brain } from 'lucide';
 export const SettingsModal = {
     render: (userData) => `
         <div class="modal-content">
@@ -51,7 +50,7 @@ export const SettingsModal = {
         </div>
     `,
     init: async () => {
-        if (window.lucide) lucide.createIcons();
+        createIcons({ icons: { Palette, Brain } });
         
         const chips = document.querySelectorAll('.aura-chip');
         const presetInput = document.getElementById('set-aura-preset');

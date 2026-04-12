@@ -37,7 +37,12 @@ import { initMagneticSpells } from './js/spells_engine.js';
 async function initApp() {
 
     // Inicializar crypto siempre primero
-    await initCrypto();
+    try {
+        await initCrypto();
+    } catch (e) {
+        if (e.message !== 'CRYPTO_REQUIRED') throw e;
+        // Usuario nuevo — crypto se inicializa en onboarding
+    }
 
     loadState();
 
@@ -144,7 +149,6 @@ async function initApp() {
         initHolographic();
 
         // Forzar el fin de la carga para evitar hangs en UI
-        const bgDownloader = document.getElementById('ai-bg-downloader');
         if (bgDownloader) {
             setTimeout(() => bgDownloader.classList.add('hidden'), 500);
         }

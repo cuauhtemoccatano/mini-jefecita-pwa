@@ -33,6 +33,12 @@ export default defineConfig({
       }
     })
   ],
+  optimizeDeps: {
+    exclude: ['@huggingface/transformers']
+  },
+  worker: {
+    format: 'es'
+  },
   server: {
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin',

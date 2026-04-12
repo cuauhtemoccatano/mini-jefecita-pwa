@@ -74,6 +74,7 @@ La evolución de Jade se divide en fases de madurez técnica y sensorial. Actual
 - [x] **Data Resilience**: Implementación de Master Password (PBKDF2) para recuperación de desastres.
 - [x] **UI/UX ProMax Refinement**: Fix de apilamiento de vistas, Glassmorphism de 30px y optimización de transiciones.
 - [x] **Simetría y Navegación Inteligente**: Corrección del *stats-grid* y arquitectura de Encabezado Global Contextual (v3.7.1).
+- [x] **Estabilización Post-Vite (v3.7.1)**: Fix de `bgDownloader`, flujo de crypto permisivo y migración total a Lucide ESM.
 
 
 ## Próximas Misiones (Visión v3.7+)

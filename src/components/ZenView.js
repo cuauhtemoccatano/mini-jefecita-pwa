@@ -1,6 +1,5 @@
 // ---------------------------------------------------------
-// js/components/ZenView.js
-// ---------------------------------------------------------
+import { createIcons, X } from 'lucide';
 export const ZenView = {
     render: () => `
         <div class="zen-container">
@@ -25,6 +24,6 @@ export const ZenView = {
         </div>
     `,
     init: () => {
-        if (window.lucide) lucide.createIcons();
+        createIcons({ icons: { X } });
     }
 };

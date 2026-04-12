@@ -1,6 +1,5 @@
 // ---------------------------------------------------------
-// js/components/HomeView.js
-// ---------------------------------------------------------
+import { createIcons, Flame, ListChecks, Footprints, Zap } from 'lucide';
 export const HomeView = {
     render: (userData) => `
         <div class="motivational-card">
@@ -49,7 +48,7 @@ export const HomeView = {
         </div>
     `,
     init: () => {
-        if (window.lucide) lucide.createIcons();
+        createIcons({ icons: { Flame, ListChecks, Footprints, Zap } });
 
         // Cargar próximos 2 recordatorios desde localStorage
         try {

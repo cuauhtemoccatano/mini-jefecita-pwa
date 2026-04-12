@@ -1,6 +1,5 @@
 // ---------------------------------------------------------
-// js/components/ChatView.js
-// ---------------------------------------------------------
+import { createIcons, Bot, Trash2, Send } from 'lucide';
 export const ChatView = {
     render: (userData) => `
         <header class="view-header" style="flex-direction: row; justify-content: space-between; align-items: center; padding-right: 20px;">
@@ -35,7 +34,7 @@ export const ChatView = {
         </div>
     `,
     init: () => {
-        if (window.lucide) lucide.createIcons();
+        createIcons({ icons: { Bot, Trash2, Send } });
 
         // Sanitizador simple anti-XSS
         const sanitize = (str) => str
@@ -52,7 +51,7 @@ export const ChatView = {
                     document.getElementById('chat-messages').innerHTML = `
                         <div class="message ai">Hilos de memoria disueltos. Estoy lista de nuevo.</div>
                     `;
-                    if (window.lucide) lucide.createIcons();
+                    if (window.lucide) createIcons({ icons: { Bot, Trash2, Send } });
                 });
             }
         });

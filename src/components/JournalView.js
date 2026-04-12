@@ -1,6 +1,7 @@
 // ---------------------------------------------------------
 // js/components/JournalView.js
 // ---------------------------------------------------------
+import { createIcons, BookOpen, Lock } from 'lucide';
 import { saveMemory } from '../js/rag_engine.js';
 
 const JOURNAL_KEY = 'mqa_journal_entries';
@@ -64,7 +65,7 @@ export const JournalView = {
     `,
 
     init: async () => {
-        if (window.lucide) lucide.createIcons();
+        createIcons({ icons: { BookOpen, Lock } });
 
         const btnUnlock  = document.getElementById('btn-unlock-diario');
         const lockScreen = document.getElementById('diario-lock-screen');

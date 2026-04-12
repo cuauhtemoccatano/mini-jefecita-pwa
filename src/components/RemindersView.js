@@ -1,6 +1,4 @@
-// ---------------------------------------------------------
-// js/components/RemindersView.js
-// ---------------------------------------------------------
+import { createIcons, Bell, Sparkles, X } from 'lucide';
 import { userData, saveSettings } from '../js/state.js';
 
 function loadReminders() {
@@ -81,7 +79,7 @@ function renderList(list) {
             </button>
         </div>`;
     }).join('');
-    if (window.lucide) lucide.createIcons();
+    createIcons({ icons: { Bell, Sparkles, X } });
 
     // Listeners de borrado
     container.querySelectorAll('.btn-delete-reminder').forEach(btn => {
@@ -122,7 +120,7 @@ export const RemindersView = {
         </div>
     `,
     init: () => {
-        if (window.lucide) lucide.createIcons();
+        createIcons({ icons: { Bell, Sparkles, X } });
 
         const list = loadReminders();
         renderList(list);
