@@ -2,16 +2,32 @@
 // app.js - Orquestador Maestro (Crystal Edition v3.6.0)
 // ---------------------------------------------------------
 import { OnboardingCeremony } from './js/components/OnboardingCeremony.js';
-import { loadState, userData, saveSettings } from './js/state.js';
+import { loadState, userData, saveSettings, healthData } from './js/state.js';
 import { renderAllViews, applyPersonalization, updateGreeting, initTabs, triggerHaptic } from './js/ui_engine.js';
 import { initAI, initChat, initCommandPortal } from './js/ai_engine.js';
 import { initHealthSync, updateHealthUI } from './js/health_engine.js';
 import { initZenMode } from './js/santuario.js';
 import { syncAppVersion, initIdleManager, initConnectivityAwareness, initInstallManager, predictOptimalBrainTier } from './js/system.js';
+import { initCrypto } from './js/crypto_engine.js';
+import { syncProfile, restoreProfile, syncReminders, syncHealth, isSupabaseConfigured } from './js/rag_engine.js';
 
 async function initApp() {
     console.log("🌊 Orquestación Modular Iniciada: Jade despertando...");
+
+    // Inicializar crypto siempre primero
+    await initCrypto();
+
     loadState();
+
+    // Si localStorage fue borrado por Safari, restaurar desde Supabase
+    if (!userData.onboarded && isSupabaseConfigured()) {
+        const restored = await restoreProfile();
+        if (restored) {
+            Object.assign(userData, restored);
+            saveSettings();
+            console.log('✨ Perfil restaurado desde Supabase.');
+        }
+    }
     
     if (!userData.onboarded) {
         document.body.innerHTML = OnboardingCeremony.render();
@@ -45,7 +61,15 @@ async function initApp() {
         }
         
         initAI(); // Inicializar modelo después de detectar hardware
-        saveSettings(); // evitar doble llamada desde tabs
+        saveSettings();
+
+        // Sync con Supabase en background (no bloquea UI)
+        if (isSupabaseConfigured()) {
+            syncProfile().catch(() => {});
+            syncHealth(healthData).catch(() => {});
+            const reminders = JSON.parse(localStorage.getItem('mqa_reminders') || '[]');
+            syncReminders(reminders).catch(() => {});
+        }
         
         await syncAppVersion();
         if (window.lucide) lucide.createIcons();

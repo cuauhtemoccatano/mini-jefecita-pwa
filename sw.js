@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mini-jefecita-v3.7.0';
+const CACHE_NAME = 'mini-jefecita-v3.7.2';
 const ASSETS = [
   '/',
   '/index.html',
@@ -13,6 +13,11 @@ const ASSETS = [
   '/js/health_engine.js',
   '/js/santuario.js',
   '/js/system.js',
+  '/js/supabase.js',
+  '/js/config.js',
+  '/js/crypto_engine.js',
+  '/js/embedder.js',
+  '/js/rag_engine.js',
   '/js/components/HomeView.js',
   '/js/components/ChatView.js',
   '/js/components/ExerciseView.js',

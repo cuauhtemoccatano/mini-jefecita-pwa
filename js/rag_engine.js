@@ -5,8 +5,10 @@
 
 import { supabase, isSupabaseConfigured } from './supabase.js';
 import { embed } from './embedder.js';
-import { encrypt, decrypt, encryptJSON, decryptJSON } from './crypto_engine.js';
+import { encrypt, decrypt } from './crypto_engine.js';
 import { userData } from './state.js';
+
+export { isSupabaseConfigured };
 
 // device_id único y persistente por dispositivo
 function getDeviceId() {
@@ -22,25 +24,18 @@ function getDeviceId() {
 // Guardar memoria (journal, chat, health, insight)
 // ---------------------------------------------------------
 export async function saveMemory({ type, content, metadata = {} }) {
-    if (!isSupabaseConfigured()) return;
-    if (!content?.trim()) return;
+    if (!isSupabaseConfigured() || !content?.trim()) return;
 
     try {
-        const deviceId = getDeviceId();
-
-        // Generar embedding del contenido original (no encriptado)
+        const deviceId  = getDeviceId();
         const embedding = await embed(content);
+        const encrypted = await encrypt(content);
+        const preview   = content.substring(0, 30) + (content.length > 30 ? '...' : '');
 
-        // Encriptar contenido antes de enviar a Supabase
-        const encryptedContent = await encrypt(content);
-
-        // Preview sin encriptar (primeras 30 chars) para debug
-        const preview = content.substring(0, 30) + (content.length > 30 ? '...' : '');
-
-        const { error } = await (await supabase.from('memories')).insert({
-            device_id: deviceId,
+        await supabase.insert('memories', {
+            device_id:       deviceId,
             type,
-            content: encryptedContent,
+            content:         encrypted,
             content_preview: preview,
             embedding,
             metadata: {
@@ -49,10 +44,8 @@ export async function saveMemory({ type, content, metadata = {} }) {
                 brain: userData?.brain
             }
         });
-
-        if (error) console.warn('⚠️ RAG: Error guardando memoria:', error);
     } catch (e) {
-        console.warn('⚠️ RAG: saveMemory falló silenciosamente:', e.message);
+        console.warn('⚠️ RAG saveMemory:', e.message);
     }
 }
 
@@ -63,21 +56,20 @@ export async function retrieveMemories(query, { type = null, limit = 5, threshol
     if (!isSupabaseConfigured()) return [];
 
     try {
-        const deviceId = getDeviceId();
+        const deviceId      = getDeviceId();
         const queryEmbedding = await embed(query);
         if (!queryEmbedding) return [];
 
         const results = await supabase.rpc('match_memories', {
-            p_device_id: deviceId,
-            query_embedding: queryEmbedding,
-            match_threshold: threshold,
-            match_count: limit,
-            filter_type: type
+            p_device_id:      deviceId,
+            query_embedding:  queryEmbedding,
+            match_threshold:  threshold,
+            match_count:      limit,
+            filter_type:      type
         });
 
-        if (!results || results.error) return [];
+        if (!Array.isArray(results)) return [];
 
-        // Desencriptar resultados
         const decrypted = await Promise.all(
             results.map(async (r) => {
                 const text = await decrypt(r.content);
@@ -87,7 +79,7 @@ export async function retrieveMemories(query, { type = null, limit = 5, threshol
 
         return decrypted.filter(Boolean);
     } catch (e) {
-        console.warn('⚠️ RAG: retrieveMemories falló silenciosamente:', e.message);
+        console.warn('⚠️ RAG retrieveMemories:', e.message);
         return [];
     }
 }
@@ -99,24 +91,14 @@ export async function buildRAGContext(userMessage) {
     if (!isSupabaseConfigured()) return '';
 
     try {
-        const memories = await retrieveMemories(userMessage, {
-            limit: 5,
-            threshold: 0.65
-        });
-
+        const memories = await retrieveMemories(userMessage, { limit: 5, threshold: 0.65 });
         if (!memories.length) return '';
 
         const formatted = memories.map(m => {
-            const date = new Date(m.created_at).toLocaleDateString('es-MX', {
+            const date  = new Date(m.created_at).toLocaleDateString('es-MX', {
                 weekday: 'short', month: 'short', day: 'numeric'
             });
-            const label = {
-                journal: '📓 Diario',
-                chat: '💬 Conversación',
-                health: '💚 Salud',
-                insight: '✨ Insight'
-            }[m.type] || m.type;
-
+            const label = { journal: '📓 Diario', chat: '💬 Conversación', health: '💚 Salud', insight: '✨ Insight' }[m.type] || m.type;
             return `[${label} — ${date}]: ${m.content}`;
         }).join('\n');
 
@@ -133,20 +115,19 @@ export async function syncProfile() {
     if (!isSupabaseConfigured() || !userData) return;
 
     try {
-        const deviceId = getDeviceId();
-        await (await supabase.from('profiles')).upsert({
-            device_id: deviceId,
-            name: userData.name,
-            jade_name: userData.jadeName,
+        await supabase.upsert('profiles', {
+            device_id:  getDeviceId(),
+            name:       userData.name,
+            jade_name:  userData.jadeName,
             aura_color: userData.auraColor,
             aura_preset: userData.auraPreset,
             brain_level: userData.brain,
-            streak: userData.streak,
-            onboarded: userData.onboarded,
+            streak:     userData.streak,
+            onboarded:  userData.onboarded,
             updated_at: new Date().toISOString()
         }, 'device_id');
     } catch (e) {
-        console.warn('⚠️ RAG: syncProfile falló silenciosamente:', e.message);
+        console.warn('⚠️ RAG syncProfile:', e.message);
     }
 }
 
@@ -157,22 +138,22 @@ export async function restoreProfile() {
     if (!isSupabaseConfigured()) return null;
 
     try {
-        const deviceId = getDeviceId();
-        const client = await supabase.from('profiles');
-        const data = await client.select('*', { device_id: `eq.${deviceId}` });
+        const data = await supabase.select('profiles', {
+            filters: { device_id: `eq.${getDeviceId()}` }
+        });
 
-        if (!data?.length) return null;
+        if (!Array.isArray(data) || !data.length) return null;
 
         const p = data[0];
         return {
-            name: p.name,
-            jadeName: p.jade_name,
-            auraColor: p.aura_color,
-            auraPreset: p.aura_preset,
-            brain: p.brain_level,
-            streak: p.streak,
-            onboarded: p.onboarded,
-            chatHistory: [],
+            name:           p.name,
+            jadeName:       p.jade_name,
+            auraColor:      p.aura_color,
+            auraPreset:     p.aura_preset,
+            brain:          p.brain_level,
+            streak:         p.streak,
+            onboarded:      p.onboarded,
+            chatHistory:    [],
             remindersCount: 0
         };
     } catch (e) {
@@ -188,21 +169,18 @@ export async function syncReminders(reminders) {
 
     try {
         const deviceId = getDeviceId();
-        const client = await supabase.from('reminders');
-
-        // Borrar los existentes y reinsertar
-        await client.delete({ device_id: `eq.${deviceId}` });
+        await supabase.delete('reminders', { device_id: `eq.${deviceId}` });
 
         if (reminders.length) {
-            await client.insert(reminders.map(r => ({
-                device_id: deviceId,
-                label: r.label,
+            await supabase.insert('reminders', reminders.map(r => ({
+                device_id:    deviceId,
+                label:        r.label,
                 scheduled_at: r.date,
-                completed: r.completed || false
+                completed:    r.completed || false
             })));
         }
     } catch (e) {
-        console.warn('⚠️ RAG: syncReminders falló silenciosamente:', e.message);
+        console.warn('⚠️ RAG syncReminders:', e.message);
     }
 }
 
@@ -213,24 +191,22 @@ export async function syncHealth(healthData) {
     if (!isSupabaseConfigured() || !healthData) return;
 
     try {
-        const deviceId = getDeviceId();
-        await (await supabase.from('health_data')).upsert({
-            device_id: deviceId,
-            steps: healthData.steps,
-            energy: healthData.energy,
-            hrv: healthData.hrv,
+        await supabase.upsert('health_data', {
+            device_id:   getDeviceId(),
+            steps:       healthData.steps,
+            energy:      healthData.energy,
+            hrv:         healthData.hrv,
             recorded_at: new Date().toISOString().split('T')[0]
         }, 'device_id,recorded_at');
 
-        // También guardar como memoria para RAG
         if (healthData.steps > 0 || healthData.hrv > 0) {
             await saveMemory({
-                type: 'health',
+                type:    'health',
                 content: `Pasos: ${healthData.steps}, HRV: ${healthData.hrv}ms, Energía: ${healthData.energy}kcal`,
                 metadata: { steps: healthData.steps, hrv: healthData.hrv, energy: healthData.energy }
             });
         }
     } catch (e) {
-        console.warn('⚠️ RAG: syncHealth falló silenciosamente:', e.message);
+        console.warn('⚠️ RAG syncHealth:', e.message);
     }
 }
