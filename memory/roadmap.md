@@ -1,6 +1,6 @@
 # Hoja de Ruta Estratégica (Roadmap)
 
-La evolución de Jade se divide en fases de madurez técnica y sensorial. Actualmente operando en **v3.5.1 (Spatial Edition)**.
+La evolución de Jade se divide en fases de madurez técnica y sensorial. Actualmente operando en **v3.7.0 (Vite Edition)**.
 
 ## Historial de Evolución (Logros)
 
@@ -69,6 +69,8 @@ La evolución de Jade se divide en fases de madurez técnica y sensorial. Actual
 - [x] **Adaptive Contrast**: Lógica APCA/WCAG para legibilidad dinámica de tipografía.
 - [x] **Privacy Shield (FaceID)**: Bloqueo biométrico obligatorio cada vez que se accede al diario.
 - [x] **Neural Context Fix**: Reparación de referencias cruzadas (`healthData`) en el motor de diálogo.
+- [x] **Vite Migration**: Transformación total a arquitectura basada en bundler (Vite + Workbox).
+
 
 ## Próximas Misiones (Visión v3.7+)
 

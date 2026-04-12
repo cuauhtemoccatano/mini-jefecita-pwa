@@ -46,9 +46,9 @@ export const ChatView = {
         
         document.getElementById('btn-clear-chat')?.addEventListener('click', () => {
             if (confirm("¿Estás seguro de que quieres borrar mi memoria de esta conversación?")) {
-                import('../state.js').then(m => {
+                import('../js/state.js').then(m => {
                     m.clearChatHistory();
-                    import('../ai_engine.js').then(ai => ai.syncHistoryFromState());
+                    import('../js/ai_engine.js').then(ai => ai.syncHistoryFromState());
                     document.getElementById('chat-messages').innerHTML = `
                         <div class="message ai">Hilos de memoria disueltos. Estoy lista de nuevo.</div>
                     `;

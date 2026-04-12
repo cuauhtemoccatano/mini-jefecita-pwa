@@ -1,7 +1,7 @@
 // ---------------------------------------------------------
 // js/components/OnboardingCeremony.js
 // ---------------------------------------------------------
-import { userData, saveSettings } from '../state.js';
+import { userData, saveSettings } from '../js/state.js';
 
 export const OnboardingCeremony = {
     render: () => `

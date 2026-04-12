@@ -1,7 +1,7 @@
 // ---------------------------------------------------------
 // js/components/JournalView.js
 // ---------------------------------------------------------
-import { saveMemory } from '../rag_engine.js';
+import { saveMemory } from '../js/rag_engine.js';
 
 const JOURNAL_KEY = 'mqa_journal_entries';
 
@@ -114,11 +114,11 @@ export const JournalView = {
                 lockScreen.style.display = 'none';
                 content.style.display = 'block';
                 renderEntries(loadEntries());
-                import('../ui_engine.js').then(m => m.triggerHaptic('success'));
+                import('../js/ui_engine.js').then(m => m.triggerHaptic('success'));
 
             } catch (err) {
                 console.error('🔐 Auth error:', err);
-                import('../ui_engine.js').then(m => m.triggerHaptic('warning'));
+                import('../js/ui_engine.js').then(m => m.triggerHaptic('warning'));
             }
         };
 
@@ -147,7 +147,7 @@ export const JournalView = {
                 metadata: { date: entry.date }
             }).catch(() => {});
 
-            import('../ui_engine.js').then(m => m.triggerHaptic('success'));
+            import('../js/ui_engine.js').then(m => m.triggerHaptic('success'));
         });
     }
 };

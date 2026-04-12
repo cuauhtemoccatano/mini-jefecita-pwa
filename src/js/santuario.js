@@ -1,6 +1,7 @@
-// ---------------------------------------------------------
-// js/santuario.js - Inmersión 3D y Sonido
-// ---------------------------------------------------------
+/**
+ * src/js/santuario.js - Inmersión 3D y Sonido
+ * Refactorizado para Vite con carga diferida ESM.
+ */
 import { triggerHaptic } from './ui_engine.js';
 
 export const ZenAudio = {
@@ -48,24 +49,20 @@ async function init3DScene() {
     const canvas = document.getElementById('zen-3d-canvas');
     if (!canvas) return;
 
-    // Lazy load Three.js solo cuando se necesita
-    if (!window.THREE) {
-        await new Promise((resolve, reject) => {
-            const s = document.createElement('script');
-            s.src = 'https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js';
-            s.onload = resolve;
-            s.onerror = reject;
-            document.head.appendChild(s);
-        });
-    }
+    // Carga diferida nativa de Vite
+    const THREE = await import('three');
+    
     zen3DScene = new THREE.Scene();
     zen3DCamera = new THREE.PerspectiveCamera(75, canvas.clientWidth / canvas.clientHeight, 0.1, 1000);
     zen3DCamera.position.z = 5;
     zen3DRenderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
     zen3DRenderer.setSize(canvas.clientWidth, canvas.clientHeight);
     
-    // Simple icosahedron logic from legacy
-    const mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1,0), new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 }));
+    // Simple icosahedron logic
+    const mesh = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(1, 0), 
+        new THREE.MeshPhongMaterial({ color: 0xffffff, transparent: true, opacity: 0.6 })
+    );
     zen3DScene.add(mesh);
     zen3DScene.add(new THREE.AmbientLight(0x404040, 2));
     crystals.push(mesh);

@@ -1,7 +1,7 @@
 // ---------------------------------------------------------
 // app.js - Orquestador Maestro (Crystal Edition v3.6.0)
 // ---------------------------------------------------------
-import { OnboardingCeremony } from './js/components/OnboardingCeremony.js';
+import { OnboardingCeremony } from './components/OnboardingCeremony.js';
 import { loadState, userData, saveSettings, healthData } from './js/state.js';
 import { renderAllViews, applyPersonalization, updateGreeting, initTabs, triggerHaptic } from './js/ui_engine.js';
 import { initAI, initChat, initCommandPortal } from './js/ai_engine.js';

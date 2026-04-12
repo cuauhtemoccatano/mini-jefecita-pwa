@@ -1,7 +1,7 @@
 // ---------------------------------------------------------
 // js/components/RemindersView.js
 // ---------------------------------------------------------
-import { userData, saveSettings } from '../state.js';
+import { userData, saveSettings } from '../js/state.js';
 
 function loadReminders() {
     try {

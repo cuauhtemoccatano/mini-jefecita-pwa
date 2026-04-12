@@ -3,13 +3,13 @@
 // ---------------------------------------------------------
 import { userData } from './state.js';
 import { healthData } from './state.js';
-import { HomeView } from './components/HomeView.js';
-import { ChatView } from './components/ChatView.js';
-import { ExerciseView } from './components/ExerciseView.js';
-import { RemindersView } from './components/RemindersView.js';
-import { JournalView } from './components/JournalView.js';
-import { ZenView } from './components/ZenView.js';
-import { SettingsModal } from './components/SettingsModal.js';
+import { HomeView } from '../components/HomeView.js';
+import { ChatView } from '../components/ChatView.js';
+import { ExerciseView } from '../components/ExerciseView.js';
+import { RemindersView } from '../components/RemindersView.js';
+import { JournalView } from '../components/JournalView.js';
+import { ZenView } from '../components/ZenView.js';
+import { SettingsModal } from '../components/SettingsModal.js';
 
 export function triggerHaptic(type = 'light') {
     if (!window.navigator || !window.navigator.vibrate) return;
@@ -183,7 +183,7 @@ export function initTabs() {
                 const lockScreen = document.getElementById('diario-lock-screen');
                 const alreadyUnlocked = content?.style.display === 'block';
                 if (!alreadyUnlocked) {
-                    import('./components/JournalView.js').then(m => {
+                    import('../components/JournalView.js').then(m => {
                         lockScreen.style.display = 'flex';
                         content.style.display = 'none';
                         m.JournalView.init();

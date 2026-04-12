@@ -1,9 +1,10 @@
-// ---------------------------------------------------------
-// js/rag_engine.js - Retrieval Augmented Generation
-// Memoria semántica para conversaciones personalizadas
-// ---------------------------------------------------------
+/**
+ * src/js/rag_engine.js - Retrieval Augmented Generation
+ * Memoria semántica para conversaciones personalizadas
+ */
 
-import { supabase, isSupabaseConfigured } from './supabase.js';
+import { supabase } from './supabase.js';
+import { isSupabaseConfigured } from '../lib/env.js';
 import { embed } from './embedder.js';
 import { encrypt, decrypt } from './crypto_engine.js';
 import { userData } from './state.js';
@@ -32,7 +33,7 @@ export async function saveMemory({ type, content, metadata = {} }) {
         const encrypted = await encrypt(content);
         const preview   = content.substring(0, 30) + (content.length > 30 ? '...' : '');
 
-        await supabase.insert('memories', {
+        await supabase.from('memories').insert({
             device_id:       deviceId,
             type,
             content:         encrypted,
@@ -60,7 +61,7 @@ export async function retrieveMemories(query, { type = null, limit = 5, threshol
         const queryEmbedding = await embed(query);
         if (!queryEmbedding) return [];
 
-        const results = await supabase.rpc('match_memories', {
+        const { data: results, error } = await supabase.rpc('match_memories', {
             p_device_id:      deviceId,
             query_embedding:  queryEmbedding,
             match_threshold:  threshold,
@@ -68,7 +69,7 @@ export async function retrieveMemories(query, { type = null, limit = 5, threshol
             filter_type:      type
         });
 
-        if (!Array.isArray(results)) return [];
+        if (error || !Array.isArray(results)) return [];
 
         const decrypted = await Promise.all(
             results.map(async (r) => {
@@ -115,7 +116,7 @@ export async function syncProfile() {
     if (!isSupabaseConfigured() || !userData) return;
 
     try {
-        await supabase.upsert('profiles', {
+        await supabase.from('profiles').upsert({
             device_id:  getDeviceId(),
             name:       userData.name,
             jade_name:  userData.jadeName,
@@ -125,7 +126,7 @@ export async function syncProfile() {
             streak:     userData.streak,
             onboarded:  userData.onboarded,
             updated_at: new Date().toISOString()
-        }, 'device_id');
+        });
     } catch (e) {
         console.warn('⚠️ RAG syncProfile:', e.message);
     }
@@ -138,11 +139,12 @@ export async function restoreProfile() {
     if (!isSupabaseConfigured()) return null;
 
     try {
-        const data = await supabase.select('profiles', {
-            filters: { device_id: `eq.${getDeviceId()}` }
-        });
+        const { data, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('device_id', getDeviceId());
 
-        if (!Array.isArray(data) || !data.length) return null;
+        if (error || !Array.isArray(data) || !data.length) return null;
 
         const p = data[0];
         return {
@@ -169,10 +171,10 @@ export async function syncReminders(reminders) {
 
     try {
         const deviceId = getDeviceId();
-        await supabase.delete('reminders', { device_id: `eq.${deviceId}` });
+        await supabase.from('reminders').delete().eq('device_id', deviceId);
 
         if (reminders.length) {
-            await supabase.insert('reminders', reminders.map(r => ({
+            await supabase.from('reminders').insert(reminders.map(r => ({
                 device_id:    deviceId,
                 label:        r.label,
                 scheduled_at: r.date,
@@ -191,13 +193,13 @@ export async function syncHealth(healthData) {
     if (!isSupabaseConfigured() || !healthData) return;
 
     try {
-        await supabase.upsert('health_data', {
+        await supabase.from('health_data').upsert({
             device_id:   getDeviceId(),
             steps:       healthData.steps,
             energy:      healthData.energy,
             hrv:         healthData.hrv,
             recorded_at: new Date().toISOString().split('T')[0]
-        }, 'device_id,recorded_at');
+        });
 
         if (healthData.steps > 0 || healthData.hrv > 0) {
             await saveMemory({
