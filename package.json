@@ -1,9 +1,9 @@
 {
   "name": "mini-jefecita",
-  "version": "3.7.1",
+  "version": "3.7.2",
   "type": "module",
   "private": true,
-  "description": "Sentient Personal Assistant PWA - Crystal Edition (v3.7.1)",
+  "description": "Sentient Personal Assistant PWA - Crystal Edition (v3.7.2)",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
