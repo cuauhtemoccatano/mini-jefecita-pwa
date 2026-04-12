@@ -5,6 +5,8 @@ import { userData, healthData, saveSettings } from './state.js';
 import { triggerHaptic, applyPersonalization, updateGreeting } from './ui_engine.js';
 import { buildRAGContext, saveMemory, syncProfile } from './rag_engine.js';
 
+// spells_engine se maneja vía eventos para desacoplar el core
+
 let generatorWorker = null;
 let isDownloadingAI = false;
 let messageHistory = []; 
@@ -56,8 +58,16 @@ export async function initAI() {
         // Mostrar UI de descarga
         if (bgDownloader) {
             bgDownloader.classList.remove('hidden');
-            if (bgStatus) bgStatus.textContent = `Cargando ${level} (${device.toUpperCase()})...`;
+            if (bgStatus) bgStatus.textContent = `Sincronizando ${level} (${device.toUpperCase()})...`;
             if (bgProgress) bgProgress.style.width = '0%';
+            
+            // Timeout de seguridad: Si en 15s no hay respuesta, ocultar para no bloquear UI
+            setTimeout(() => {
+                if (isDownloadingAI) {
+                    console.warn("🕒 MQA: Carga de IA lenta, continuando en background.");
+                    bgDownloader.classList.add('hidden');
+                }
+            }, 15000);
         }
         
         generatorWorker.onmessage = (e) => {
@@ -168,7 +178,10 @@ export async function processGlobalAI(onChunk, onComplete, userMessage = null) {
     }
 
     const fullPrompt = buildChatPrompt(messageHistory, modelName, ragContext);
-
+    
+    // El feedback sensorial se activa por estado en el DOM
+    document.body.classList.add('brain-thinking');
+    
     const handler = (e) => {
         const { type, data } = e.data;
         if (type === 'chunk') onChunk(data);
@@ -217,11 +230,13 @@ export function initCommandPortal() {
     const input = document.getElementById('portal-input');
     const messages = document.getElementById('portal-messages');
 
-    core?.addEventListener('click', () => {
+    core?.addEventListener('click', (e) => {
+        e.stopPropagation();
+        console.log("💎 MQA: Portal Activado");
         const active = portal.classList.toggle('active');
         core.classList.toggle('active');
         if (active) {
-            initAI(); // Awakening neural engine on portal demand
+            initAI(); 
             input.focus();
         }
     });
@@ -252,6 +267,7 @@ export function initCommandPortal() {
             messages.scrollTop = messages.scrollHeight;
         }, () => {
             document.body.classList.remove('brain-thinking');
+            document.getElementById('liquid-core')?.classList.remove('pulse-neural');
         }, text); // pasar texto para RAG
     });
 }

@@ -7,7 +7,7 @@
  * Hace que los elementos marcados con .btn-zen-trigger tengan atracción magnética.
  */
 export function initMagneticSpells() {
-    const targets = document.querySelectorAll('.btn-zen-trigger, .btn-icon');
+    const targets = document.querySelectorAll('.btn-zen-trigger, .btn-icon, .liquid-button');
     
     targets.forEach(btn => {
         btn.addEventListener('mousemove', (e) => {
@@ -38,12 +38,12 @@ export function initMagneticSpells() {
 
 /**
  * Design Spell: Neural Pulse
- * Crea un pulso visual en el aura cuando hay actividad de IA.
+ * Crea un pulso visual orgánico cuando hay actividad de IA.
  */
 export function castPulseSpell() {
-    const core = document.querySelector('.btn-zen-trigger');
+    const core = document.getElementById('liquid-core');
     if (!core) return;
 
-    core.classList.add('pulse-active');
-    setTimeout(() => core.classList.remove('pulse-active'), 2000);
+    core.classList.add('pulse-neural');
+    // La duración y el loop se gestionan vía CSS para estabilidad total
 }

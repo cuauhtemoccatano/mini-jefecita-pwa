@@ -12,15 +12,21 @@ import { ZenView } from '../components/ZenView.js';
 import { SettingsModal } from '../components/SettingsModal.js';
 
 export function triggerHaptic(type = 'light') {
-    if (!window.navigator || !window.navigator.vibrate) return;
-    switch (type) {
-        case 'feather': window.navigator.vibrate(5); break;
-        case 'light': window.navigator.vibrate(10); break;
-        case 'medium': window.navigator.vibrate([15, 30, 15]); break;
-        case 'success': window.navigator.vibrate([10, 50, 10, 50, 10]); break;
-        case 'warning': window.navigator.vibrate([100, 50, 100]); break;
-        case 'pulse': window.navigator.vibrate([10, 100, 10]); break;
-        case 'breath': window.navigator.vibrate([5, 800, 5]); break;
+    try {
+        if (!window.navigator || !window.navigator.vibrate) return;
+        switch (type) {
+            case 'feather': window.navigator.vibrate(5); break;
+            case 'light': window.navigator.vibrate(10); break;
+            case 'medium': window.navigator.vibrate([15, 30, 15]); break;
+            case 'heartbeat': window.navigator.vibrate([15, 100, 10]); break;
+            case 'focus': window.navigator.vibrate([10, 50, 10, 50, 10]); break;
+            case 'success': window.navigator.vibrate([10, 50, 10, 50, 10]); break;
+            case 'warning': window.navigator.vibrate([100, 50, 100]); break;
+            case 'pulse': window.navigator.vibrate([10, 100, 10]); break;
+            case 'breath': window.navigator.vibrate([5, 800, 5]); break;
+        }
+    } catch (e) {
+        // Silenciar errores de permisos (User Gesture) para evitar parada del script
     }
 }
 
@@ -208,4 +214,24 @@ export function initTabs() {
             });
         });
     });
+}
+// ---------------------------------------------------------
+// Orquestador de Bio-Feedback (Somatic Loop)
+// ---------------------------------------------------------
+let _neuralHeartbeat = null;
+
+export function initSomaticOrchestrator() {
+    if (_neuralHeartbeat) return;
+
+    _neuralHeartbeat = setInterval(() => {
+        const isThinking = document.body.classList.contains('brain-thinking');
+        const core = document.getElementById('liquid-core');
+
+        if (isThinking) {
+            triggerHaptic('heartbeat');
+            if (core) core.classList.add('pulse-neural');
+        } else {
+            if (core) core.classList.remove('pulse-neural');
+        }
+    }, 1500);
 }

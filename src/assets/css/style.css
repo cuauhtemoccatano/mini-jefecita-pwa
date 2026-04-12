@@ -323,6 +323,19 @@ body::after {
     50% { transform: scale(1.1); box-shadow: 0 0 15px rgba(255,255,255,0.2); }
 }
 
+/* Neural Pulse (IA Thinking) */
+.pulse-neural {
+    animation: neuralPulseWave 1.5s infinite ease-in-out !important;
+    border-color: var(--primary) !important;
+    box-shadow: 0 0 20px var(--aura-glow) !important;
+}
+
+@keyframes neuralPulseWave {
+    0% { transform: scale(1); opacity: 0.8; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); opacity: 0.8; }
+}
+
 /* Motivational Card (High-Fidelity) */
 .motivational-card {
     background: rgba(255, 255, 255, 0.03);

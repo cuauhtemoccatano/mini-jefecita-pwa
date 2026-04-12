@@ -1,8 +1,7 @@
 // ---------------------------------------------------------
 // main.js - Orquestador Maestro
 // ---------------------------------------------------------
-import './assets/css/style.css';
-import './assets/css/awakening.css';
+// CSS cargado vía index.html por estabilidad MIME
 import { 
     createIcons, 
     LayoutDashboard, 
@@ -26,7 +25,7 @@ import {
 } from 'lucide';
 import { OnboardingCeremony } from './components/OnboardingCeremony.js';
 import { loadState, userData, saveSettings, healthData } from './js/state.js';
-import { renderAllViews, applyPersonalization, updateGreeting, initTabs, triggerHaptic } from './js/ui_engine.js';
+import { initSomaticOrchestrator, renderAllViews, applyPersonalization, updateGreeting, initTabs, triggerHaptic } from './js/ui_engine.js';
 import { initAI, initChat, initCommandPortal } from './js/ai_engine.js';
 import { initHealthSync, updateHealthUI } from './js/health_engine.js';
 import { initZenMode } from './js/santuario.js';
@@ -64,13 +63,13 @@ async function initApp() {
         applyPersonalization();
         updateGreeting();
         
+        initCommandPortal(); // Interacción prioritaria
         initTabs();
         initHealthSync();
         updateHealthUI();
         
         initZenMode();
         initChat();
-        initCommandPortal();
         initSettings(); // Vinculación después de renderView
         initIdleManager();
         initConnectivityAwareness();
@@ -84,7 +83,14 @@ async function initApp() {
             saveSettings();
         }
         
-        initAI(); // Inicializar modelo después de detectar hardware
+        const bgDownloader = document.getElementById('ai-bg-downloader');
+        try {
+            initSomaticOrchestrator();
+            initAI(); 
+        } catch (e) {
+            console.warn("⚠️ MQA: Fallo silenciado en el motor IA:", e);
+            if (bgDownloader) bgDownloader.classList.add('hidden');
+        }
         saveSettings();
 
         // Sync con Supabase en background (no bloquea UI)
@@ -136,6 +142,12 @@ async function initApp() {
 
         // Perspectiva Holográfica (Sigue en app.js por simplicidad de listeners)
         initHolographic();
+
+        // Forzar el fin de la carga para evitar hangs en UI
+        const bgDownloader = document.getElementById('ai-bg-downloader');
+        if (bgDownloader) {
+            setTimeout(() => bgDownloader.classList.add('hidden'), 500);
+        }
 
     } catch (err) {
         console.error("💥 Fallo en la matriz de inicio:", err);
