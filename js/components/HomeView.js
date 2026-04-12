@@ -54,21 +54,32 @@ export const HomeView = {
 
         <div class="reminders-section">
             <h2>Próximos recordatorios</h2>
-            <div class="reminder-list">
-                <div class="reminder-row">
-                    <span class="dot"></span>
-                    <span class="reminder-text">Beber agua</span>
-                    <span class="reminder-time">10:00 AM</span>
-                </div>
-                <div class="reminder-row">
-                    <span class="dot"></span>
-                    <span class="reminder-text">Entrenamiento Mental</span>
-                    <span class="reminder-time">02:00 PM</span>
-                </div>
+            <div id="home-reminders-list" class="reminder-list">
+                <p class="empty-state" style="font-size:13px">Sin avisos próximos.</p>
             </div>
         </div>
     `,
     init: () => {
         if (window.lucide) lucide.createIcons();
+
+        // Cargar próximos 2 recordatorios desde localStorage
+        try {
+            const reminders = JSON.parse(localStorage.getItem('mqa_reminders') || '[]');
+            const upcoming = reminders
+                .filter(r => new Date(r.date) >= new Date())
+                .slice(0, 2);
+            const container = document.getElementById('home-reminders-list');
+            if (container && upcoming.length > 0) {
+                container.innerHTML = upcoming.map(r => {
+                    const d = new Date(r.date);
+                    const timeStr = d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+                    return `<div class="reminder-row">
+                        <span class="dot"></span>
+                        <span class="reminder-text">${r.label}</span>
+                        <span class="reminder-time">${timeStr}</span>
+                    </div>`;
+                }).join('');
+            }
+        } catch(e) {}
     }
 };

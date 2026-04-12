@@ -15,7 +15,7 @@ export const SettingsModal = {
                     <button class="aura-chip jade ${userData.auraPreset === 'jade' ? 'active' : ''}" data-color="#00C4B4" data-preset="jade" title="Jade (Standard)"><span></span></button>
                     <button class="aura-chip sapphire ${userData.auraPreset === 'sapphire' ? 'active' : ''}" data-color="#00E5FF" data-preset="sapphire" title="Zafiro (Energía)"><span></span></button>
                     <button class="aura-chip amethyst ${userData.auraPreset === 'amethyst' ? 'active' : ''}" data-color="#9575CD" data-preset="amethyst" title="Amatista (Calma)"><span></span></button>
-                    <button class="aura-chip obsidian ${userData.auraPreset === 'obsidian' ? 'active' : ''}" data-color="#1A237E" data-preset="obsidiana" title="Obsidiana (Foco)"><span></span></button>
+                    <button class="aura-chip obsidian ${userData.auraPreset === 'obsidian' ? 'active' : ''}" data-color="#1A237E" data-preset="obsidian" title="Obsidiana (Foco)"><span></span></button>
                     <button class="aura-chip gold ${userData.auraPreset === 'gold' ? 'active' : ''}" data-color="#FFB300" data-preset="oro" title="Oro (Claridad)"><span></span></button>
                     <button class="aura-chip amber ${userData.auraPreset === 'amber' ? 'active' : ''}" data-color="#FB8C00" data-preset="ambar" title="Ámbar (Vitalidad)"><span></span></button>
                     
@@ -31,7 +31,7 @@ export const SettingsModal = {
                 <input type="text" id="set-name" placeholder="Tu nombre..." value="${userData.name}">
                 
                 <label for="set-jade-name" style="margin-top: 15px; display: block;">Nombre de tu IA</label>
-                <input type="text" id="set-jade-name" placeholder="Ej: Jade, Alexa..." value="${userData.jadeName}">
+                <input type="text" id="set-jade-name" placeholder="Ej: Jade, Alexa..." value="${userData.jadeName || 'Jade'}">
             </div>
 
             <div class="set-section">

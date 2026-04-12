@@ -16,11 +16,12 @@ export const ChatView = {
         <div id="chat-container">
             <div id="chat-messages">
                 ${userData.chatHistory?.length > 0 ? 
-                    userData.chatHistory.map(m => `
-                        <div class="message ${m.role === 'user' ? 'user' : 'ai'}">
-                            ${m.content}
-                        </div>
-                    `).join('') :
+                    userData.chatHistory.map(m => {
+                        const safe = m.content
+                            .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+                            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+                        return `<div class="message ${m.role === 'user' ? 'user' : 'ai'}">${safe}</div>`;
+                    }).join('') :
                     `<div class="message ai">
                         Hola. Soy tu asistente sensorial. Puedo ayudarte con tus entrenamientos, recordatorios o simplemente escucharte. ¿En qué piensas hoy?
                     </div>`
@@ -35,6 +36,13 @@ export const ChatView = {
     `,
     init: () => {
         if (window.lucide) lucide.createIcons();
+
+        // Sanitizador simple anti-XSS
+        const sanitize = (str) => str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
         
         document.getElementById('btn-clear-chat')?.addEventListener('click', () => {
             if (confirm("¿Estás seguro de que quieres borrar mi memoria de esta conversación?")) {
@@ -49,8 +57,8 @@ export const ChatView = {
             }
         });
 
-        // Initialize scroll
+        // Scroll al final con pequeño delay para esperar render
         const container = document.getElementById('chat-container');
-        if (container) container.scrollTop = container.scrollHeight;
+        if (container) requestAnimationFrame(() => { container.scrollTop = container.scrollHeight; });
     }
 };

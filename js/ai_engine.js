@@ -15,7 +15,12 @@ export function syncHistoryFromState() {
 export function getWorker() { return generatorWorker; }
 
 export async function initAI() {
-    if (generatorWorker || isDownloadingAI) return; // [RESILIENTE] No interrumpir ciclo activo
+    if (isDownloadingAI) return;
+    if (generatorWorker) {
+        // Terminar worker anterior limpiamente
+        generatorWorker.terminate();
+        generatorWorker = null;
+    }
 
     const bgStatus = document.getElementById('ai-bg-status');
     const bgProgress = document.getElementById('ai-bg-progress');
@@ -46,29 +51,57 @@ export async function initAI() {
         const workerUrl = new URL('../ai_worker.js', import.meta.url);
         generatorWorker = new Worker(workerUrl, { type: 'module' });
         syncHistoryFromState();
+
+        // Mostrar UI de descarga
+        if (bgDownloader) {
+            bgDownloader.classList.remove('hidden');
+            if (bgStatus) bgStatus.textContent = `Cargando ${level} (${device.toUpperCase()})...`;
+            if (bgProgress) bgProgress.style.width = '0%';
+        }
         
         generatorWorker.onmessage = (e) => {
             const { type, data } = e.data;
-            if (type === 'progress' && data.status === 'progress') {
-                if (bgProgress) bgProgress.style.width = `${data.progress.toFixed(0)}%`;
+
+            // Todos los estados de progreso de Transformers.js
+            if (type === 'progress') {
+                const s = data.status;
+                if (s === 'initiate' && bgStatus) {
+                    bgStatus.textContent = `Iniciando ${data.name || level}...`;
+                } else if ((s === 'downloading' || s === 'progress') && bgProgress) {
+                    const pct = data.progress != null ? data.progress.toFixed(0) : 0;
+                    bgProgress.style.width = `${pct}%`;
+                    if (bgStatus) bgStatus.textContent = `Descargando modelo ${pct}%`;
+                } else if (s === 'done' && bgStatus) {
+                    bgStatus.textContent = 'Optimizando red neuronal...';
+                    if (bgProgress) bgProgress.style.width = '100%';
+                }
             }
+
             if (type === 'ready') {
                 document.body.classList.add('neural-bonded');
                 if (bgDownloader) {
-                    bgStatus.textContent = "Conexión plena establecida";
-                    setTimeout(() => bgDownloader.classList.add('hidden'), 2000);
+                    if (bgStatus) bgStatus.textContent = `${userData.jadeName} lista · ${level} · ${device.toUpperCase()}`;
+                    setTimeout(() => bgDownloader.classList.add('hidden'), 2500);
                 }
-                setTimeout(() => {
-                    triggerHaptic('medium');
-                }, 1000);
+                triggerHaptic('medium');
                 isDownloadingAI = false;
             }
+
             if (type === 'error') {
                 isDownloadingAI = false;
                 if (userData.brain !== 'ESENCIAL') {
-                    userData.brain = 'ESENCIAL';
+                    const fallback = 'ESENCIAL';
+                    userData.brain = fallback;
                     saveSettings();
+                    if (bgStatus) bgStatus.textContent = `Error — bajando a modelo Esencial...`;
+                    if (bgProgress) bgProgress.style.width = '0%';
                     setTimeout(() => initAI(), 2000);
+                } else {
+                    // Ya en esencial y sigue fallando
+                    if (bgStatus) bgStatus.textContent = 'Error al cargar modelo. Reintentando...';
+                    setTimeout(() => {
+                        if (bgDownloader) bgDownloader.classList.add('hidden');
+                    }, 3000);
                 }
             }
         };
