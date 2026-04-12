@@ -44,18 +44,23 @@ export async function initCrypto(password = null) {
 
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
-        const raw = Uint8Array.from(atob(stored), c => c.charCodeAt(0));
-        _cryptoKey = await crypto.subtle.importKey(
-            'raw', raw, { name: ALGO }, false, ['encrypt', 'decrypt']
-        );
-    } else if (password) {
+        try {
+            const raw = Uint8Array.from(atob(stored), c => c.charCodeAt(0));
+            _cryptoKey = await crypto.subtle.importKey(
+                'raw', raw, { name: ALGO }, false, ['encrypt', 'decrypt']
+            );
+        } catch (e) {
+            console.error('🔐 MQA: Llave corrupta en almacenamiento.');
+            localStorage.removeItem(STORAGE_KEY);
+        }
+    } 
+    
+    if (!_cryptoKey && password) {
         await deriveKeyFromPassword(password);
-    } else {
-        _cryptoKey = await crypto.subtle.generateKey(
-            { name: ALGO, length: KEY_LENGTH }, true, ['encrypt', 'decrypt']
-        );
-        const exported = await crypto.subtle.exportKey('raw', _cryptoKey);
-        localStorage.setItem(STORAGE_KEY, btoa(String.fromCharCode(...new Uint8Array(exported))));
+    }
+
+    if (!_cryptoKey) {
+        throw new Error('CRYPTO_REQUIRED');
     }
 
     return _cryptoKey;

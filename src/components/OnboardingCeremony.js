@@ -32,6 +32,7 @@ export const OnboardingCeremony = {
                     <p class="caption">Crea una Llave Maestra para recuperar tus datos si cambias de dispositivo o borras el navegador.</p>
                     <input type="password" id="vault-key-input" placeholder="Tu contraseña secreta..." autocomplete="new-password">
                     <button id="btn-finish-ceremony" class="btn-ritual">Sellar Vínculo</button>
+                    <p class="recovery-hint" id="recovery-trigger" style="margin-top: 20px; font-size: 12px; opacity: 0.5; cursor: pointer; text-decoration: underline;">Ya tengo una llave (Recuperar Memoria)</p>
                 </div>
             </div>
         </div>
@@ -85,23 +86,44 @@ export const OnboardingCeremony = {
         });
 
         // Phase 4: Vault Security
-        document.getElementById('btn-finish-ceremony').addEventListener('click', async () => {
+        const finishCeremony = async () => {
             const val = document.getElementById('vault-key-input').value.trim();
-            if(!val) return;
+            if(!val || val.length < 4) {
+                alert("La llave debe ser más profunda (mínimo 4 caracteres)");
+                return;
+            }
             
-            // Derivar llave y proteger v3.7 local
-            await deriveKeyFromPassword(val);
-            
-            userData.onboarded = true;
-            saveSettings();
+            try {
+                // Derivar llave y proteger v3.7 local
+                await deriveKeyFromPassword(val);
+                
+                userData.onboarded = true;
+                saveSettings();
 
-            core.style.transform = 'scale(50)';
-            core.style.opacity = '0';
-            document.getElementById('awakening-void').style.background = 'white';
-            
-            setTimeout(() => {
-                location.reload(); 
-            }, 1000);
+                core.style.transform = 'scale(50)';
+                core.style.opacity = '0';
+                document.getElementById('awakening-void').style.background = 'white';
+                
+                setTimeout(() => {
+                    location.reload(); 
+                }, 1000);
+            } catch (err) {
+                alert("Error al sellar el vínculo cósmico. Intenta de nuevo.");
+            }
+        };
+
+        document.getElementById('btn-finish-ceremony').addEventListener('click', finishCeremony);
+        document.getElementById('vault-key-input').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') finishCeremony();
+        });
+
+        document.getElementById('recovery-trigger')?.addEventListener('click', () => {
+             const val = document.getElementById('vault-key-input').value.trim();
+             if(!val) {
+                 alert("Ingresa tu contraseña de siempre para recuperar tu memoria.");
+                 return;
+             }
+             finishCeremony();
         });
     }
 };
