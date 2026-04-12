@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mini-jefecita-v3.6.5';
+const CACHE_NAME = 'mini-jefecita-v3.6.6';
 const ASSETS = [
   '/',
   '/index.html',
@@ -55,31 +55,44 @@ self.addEventListener('activate', event => {
   );
 });
 
+// Archivos críticos que siempre deben ser frescos
+const NETWORK_FIRST = ['/', '/index.html', '/app.js', '/manifest.json'];
+
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // 1. Devolver respuesta de caché inmediatamente (si existe)
-      const fetchPromise = fetch(event.request).then((networkResponse) => {
-        
-        // EXCLUSIÓN: No cachear modelos de AI aquí (ya lo hace Transformers.js localmente)
-        if (event.request.url.includes('huggingface.co')) {
-            return networkResponse;
-        }
+  const url = new URL(event.request.url);
+  const isNetworkFirst = NETWORK_FIRST.some(p => url.pathname === p || url.pathname.endsWith(p));
 
-        // 2. Actualizar el caché en segundo plano con la nueva versión
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache);
-          });
-        }
-        return networkResponse;
-      }).catch(() => {
-        // Fallback si falla la red y no hay caché (offline extremo)
-        return cachedResponse;
-      });
+  // Excluir modelos AI — Transformers.js maneja su propio cache
+  if (event.request.url.includes('huggingface.co') || event.request.url.includes('cdn.jsdelivr.net')) {
+    return;
+  }
 
-      return cachedResponse || fetchPromise;
-    })
-  );
+  if (isNetworkFirst) {
+    // Network-first: siempre intenta red, cae a caché solo si offline
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+  } else {
+    // Cache-first para assets estáticos (CSS, iconos, fuentes)
+    event.respondWith(
+      caches.match(event.request).then((cachedResponse) => {
+        const fetchPromise = fetch(event.request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+            const clone = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          }
+          return networkResponse;
+        }).catch(() => cachedResponse);
+        return cachedResponse || fetchPromise;
+      })
+    );
+  }
 });
