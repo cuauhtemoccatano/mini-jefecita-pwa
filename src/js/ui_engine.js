@@ -48,8 +48,8 @@ export function renderAllViews() {
 }
 
 export function applyPersonalization() {
-    const nameLabel = document.querySelector('.user-name-label');
-    if (nameLabel) nameLabel.textContent = userData.name;
+    const nameLabel = document.getElementById('global-title');
+    if (nameLabel) nameLabel.innerHTML = `<span class="user-name-label">${userData.name}</span> <span id="user-vibe-label"><i data-lucide="sparkles" style="width: 24px; color: var(--primary)"></i></span>`;
     
     document.querySelectorAll('.jade-name-display').forEach(el => el.textContent = userData.jadeName);
     
@@ -58,14 +58,16 @@ export function applyPersonalization() {
 
     const streakEl = document.getElementById('home-streak-val');
     if (streakEl) streakEl.textContent = userData.streak || 0;
+    
+    if (window.lucide) lucide.createIcons();
 }
 
 export function updateGreeting() {
-    const el = document.getElementById('greeting');
+    const el = document.getElementById('global-greeting');
     if (!el) return;
     const hour = new Date().getHours();
-    let text = hour < 12 ? "¡Buenos días!" : hour < 19 ? "¡Buenas tardes!" : "¡Buenas noches!";
-    el.textContent = `${text} ${userData.name}`;
+    const text = hour < 12 ? "¡BUENOS DÍAS!" : hour < 19 ? "¡BUENAS TARDES!" : "¡BUENAS NOCHES!";
+    el.textContent = text;
 }
 
 export function syncNeuralAtmosphere(overridingView = null) {
@@ -118,7 +120,22 @@ export function syncNeuralAtmosphere(overridingView = null) {
     document.querySelector('meta[name="theme-color"]')?.setAttribute('content', primaryColor);
 
     const viewNames = { inicio: 'Inicio', ejercicio: 'Salud', avisos: 'Avisos', diario: 'Diario', mensajes: 'Conversar', zen: 'Zen' };
-    if (view) document.title = `${userData.jadeName} | ${viewNames[view] || ''}`;
+    const viewCaptions = { inicio: null, ejercicio: 'Tu progreso físico', avisos: 'Tus próximas tareas', diario: 'Trazos de consciencia', mensajes: 'Conexión Neuronal', zen: 'Inmersión Total' };
+    
+    if (view) {
+        document.title = `${userData.jadeName} | ${viewNames[view] || ''}`;
+        
+        const gTitle = document.getElementById('global-title');
+        const gCaption = document.getElementById('global-greeting');
+        
+        if (view === 'inicio') {
+            applyPersonalization(); // El saludo estándar (Nombre + Icono)
+            updateGreeting();       // El saludo circadiano (Buenos días...)
+        } else if (gTitle && gCaption) {
+            gTitle.textContent = viewNames[view];
+            gCaption.textContent = viewCaptions[view] || 'Mini Jefecita';
+        }
+    }
 }
 
 function hexToRgb(hex) {

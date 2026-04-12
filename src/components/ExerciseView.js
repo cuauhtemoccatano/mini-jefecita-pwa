@@ -3,11 +3,6 @@
 // ---------------------------------------------------------
 export const ExerciseView = {
     render: () => `
-        <header class="view-header">
-            <h1>Salud <i data-lucide="activity"></i></h1>
-            <p class="caption">Tu progreso físico</p>
-        </header>
-
         <div class="exercise-streak-card">
             <div class="streak-icon"><i data-lucide="flame" style="width: 24px; color: #FF7043"></i></div>
             <div class="streak-details">

@@ -33,6 +33,7 @@ import { initZenMode } from './js/santuario.js';
 import { syncAppVersion, initIdleManager, initConnectivityAwareness, initInstallManager, predictOptimalBrainTier } from './js/system.js';
 import { initCrypto } from './js/crypto_engine.js';
 import { syncProfile, restoreProfile, syncReminders, syncHealth, isSupabaseConfigured } from './js/rag_engine.js';
+import { initMagneticSpells } from './js/spells_engine.js';
 
 async function initApp() {
 
@@ -74,6 +75,7 @@ async function initApp() {
         initIdleManager();
         initConnectivityAwareness();
         initInstallManager();
+        initMagneticSpells(); // Design Spells: Magnetic interaction
         
         // Auto-Elevation Ceremony
         if (!userData.brain || userData.brain === 'AUTO') {

@@ -262,7 +262,7 @@ body::after {
     pointer-events: none;
     opacity: 0;
     transform: translateY(-20px) scale(0.96);
-    z-index: 1;
+    z-index: 1; /* Bajo la nueva vista */
 }
 
 .view.entering {
@@ -390,7 +390,7 @@ body::after {
 /* Stats (Clustered Topology) */
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    grid-template-columns: repeat(2, 1fr); /* Simetría ProMax forzada */
     gap: 16px;
     margin-bottom: 32px;
     perspective: 1000px;
@@ -411,7 +411,7 @@ body::after {
 /* El segundo card del cluster se desfasa sutilmente */
 .stat-card:nth-child(even) {
     margin-top: 12px;
-    border-radius: 60% 40% 50% 50% / 50% 60% 40% 50%;
+    border-radius: 32px 24px 32px 24px; /* Orgánico pero simétrico ProMax */
     transform: translateZ(5px); 
 }
 

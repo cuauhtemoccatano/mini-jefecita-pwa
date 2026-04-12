@@ -10,11 +10,13 @@ Este documento define las reglas de operación de cumplimiento obligatorio para 
 
 ## 🛠 Skills & Herramientas
 - **⚖️ smartscales-model-selector**: Gatekeeper de infraestructura de IA.
-- **💎 quality-guide**: localiza en `.agent/skills/quality-guide/`. Úsalo para validar CUALQUIER cambio visual.
-- **👁️ ui-visual-validator**: Skill de sistema para validación de responsividad y glassmorphism.
-- **🛡️ verification-before-completion**: PROTOCOLO OBLIGATORIO. Prohibido reportar éxito sin pruebas reales.
-- **🚀 browser_subagent**: Herramienta indispensable para validación QA local (`localhost:8080`).
-- **🤖 vercel-ai-sdk-expert**: Localizada en `.agent/skills/vercel-ai-sdk-expert/`. Implementación de IA fluida y estructurada.
+- **🪄 design-spells**: MANDATO ABSOLUTO. Integrar micro-interacciones mágicas y detalles de diseño premium.
+- **✨ animejs-animation**: Motor estándar para transiciones fluidas y feedback sensorial.
+- **👁️ ui-visual-validator**: Auditoría obligatoria de glassmorphism y responsividad ProMax.
+- **💎 quality-guide**: Validación de estándares visuales y coherencia de marca.
+- **🛡️ verification-before-completion**: PROTOCOLO OBLIGATORIO de pruebas reales.
+- **🚀 browser_subagent**: Validación QA en entorno local.
+- **🤖 vercel-ai-sdk-expert**: Implementación de IA estructurada.
 
 ## 📐 Estándares de Plataforma (v3.1.0)
 - **Engine**: Transformers.js v3 + WebGPU (Aceleración Neuronal).

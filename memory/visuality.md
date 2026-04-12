@@ -9,7 +9,7 @@ UI views are not static HTML. They are dynamic functional modules that:
 - **Spectral Core**: Algoritmo que sintetiza el aura basada en el latido biológico (HRV) y el ciclo circadiano.
 - **Side-Rail Topology**: Navegación lateral obligatoria para iPad y Desktop (ancho > 768px) para optimizar el espacio espacial.
 - **Safe-Area Compliance**: Respeto mandatorio de las zonas de exclusión física del OS (notch/home-bar) mediante constantes CSS `env`.
-- **High-Fidelity Fluidity**: Uso de rejillas adaptativas `repeat(auto-fit)` para evitar saltos bruscos entre dispositivos.
+- **ProMax Structural Symmetry**: Uso de rejillas de columnas fijas (`repeat(2, 1fr)`) en elementos críticos de estadísticas para evitar deformaciones asimétricas.
 - Export an `init()` function for post-render event binding and Lucide icon creation.
 
 ## Iconographic Standard: Pure Lucide
