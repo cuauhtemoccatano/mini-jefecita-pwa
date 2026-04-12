@@ -2,7 +2,7 @@
 // js/ai_engine.js - Cerebro y Portal Global (Contextual)
 // ---------------------------------------------------------
 import { userData, healthData, saveSettings } from './state.js';
-import { triggerHaptic, applyPersonalization, updateGreeting } from './ui_engine.js';
+import { triggerHaptic, updateUIPersonalization, updateGreeting } from './ui_engine.js';
 import { buildRAGContext, saveMemory, syncProfile } from './rag_engine.js';
 
 // spells_engine se maneja vía eventos para desacoplar el core

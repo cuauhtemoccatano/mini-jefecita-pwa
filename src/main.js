@@ -1,9 +1,4 @@
-// ---------------------------------------------------------
-// main.js - Orquestador Maestro
-// ---------------------------------------------------------
-// CSS cargado vía index.html por estabilidad MIME
 import { 
-    createIcons, 
     LayoutDashboard, 
     Activity, 
     Bell, 
@@ -21,11 +16,12 @@ import {
     Lock, 
     Palette, 
     Trash2, 
-    Zap 
+    Zap,
+    createIcons
 } from 'lucide';
 import { OnboardingCeremony } from './components/OnboardingCeremony.js';
 import { loadState, userData, saveSettings, healthData } from './js/state.js';
-import { initSomaticOrchestrator, renderAllViews, applyPersonalization, updateGreeting, initTabs, triggerHaptic } from './js/ui_engine.js';
+import { initSomaticOrchestrator, renderAllViews, updateUIPersonalization, updateGreeting, initTabs, triggerHaptic, syncAtmosphereMatrix } from './js/ui_engine.js';
 import { initAI, initChat, initCommandPortal } from './js/ai_engine.js';
 import { initHealthSync, updateHealthUI } from './js/health_engine.js';
 import { initZenMode } from './js/santuario.js';
@@ -35,18 +31,14 @@ import { syncProfile, restoreProfile, syncReminders, syncHealth, isSupabaseConfi
 import { initMagneticSpells } from './js/spells_engine.js';
 
 async function initApp() {
-
-    // Inicializar crypto siempre primero
     try {
         await initCrypto();
     } catch (e) {
         if (e.message !== 'CRYPTO_REQUIRED') throw e;
-        // Usuario nuevo — crypto se inicializa en onboarding
     }
 
     loadState();
 
-    // Si localStorage fue borrado por Safari, restaurar desde Supabase
     if (isSupabaseConfigured() && !userData.onboarded) {
         const restored = await restoreProfile();
         if (restored) {
@@ -65,40 +57,37 @@ async function initApp() {
     try {
         loadState();
         renderAllViews();
-        applyPersonalization();
+        updateUIPersonalization();
         updateGreeting();
         
-        initCommandPortal(); // Interacción prioritaria
+        initCommandPortal();
         initTabs();
         initHealthSync();
         updateHealthUI();
         
         initZenMode();
         initChat();
-        initSettings(); // Vinculación después de renderView
+        initSettings(); 
         initIdleManager();
         initConnectivityAwareness();
         initInstallManager();
-        initMagneticSpells(); // Design Spells: Magnetic interaction
+        initMagneticSpells();
         
-        // Auto-Elevation Ceremony
         if (!userData.brain || userData.brain === 'AUTO') {
             const autoTier = await predictOptimalBrainTier();
             userData.brain = autoTier;
             saveSettings();
         }
         
-        const bgDownloader = document.getElementById('ai-bg-downloader');
         try {
             initSomaticOrchestrator();
             initAI(); 
         } catch (e) {
-            console.warn("⚠️ MQA: Fallo silenciado en el motor IA:", e);
+            const bgDownloader = document.getElementById('ai-bg-downloader');
             if (bgDownloader) bgDownloader.classList.add('hidden');
         }
         saveSettings();
 
-        // Sync con Supabase en background (no bloquea UI)
         if (isSupabaseConfigured()) {
             syncProfile().catch(() => {});
             syncHealth(healthData).catch(() => {});
@@ -107,80 +96,22 @@ async function initApp() {
         }
         
         await syncAppVersion();
-        
-        try {
-            createIcons({
-                icons: {
-                    LayoutDashboard,
-                    Activity,
-                    Bell,
-                    BookOpen,
-                    MessageSquare,
-                    Sparkles,
-                    X,
-                    Send,
-                    Settings,
-                    Bot,
-                    Brain,
-                    Flame,
-                    Footprints,
-                    ListChecks,
-                    Lock,
-                    Palette,
-                    Trash2,
-                    Zap
-                }
-            });
-        } catch (e) {
-            console.warn("⚠️ MQA: Fallo parcial al renderizar iconos:", e);
-        }
+        syncAtmosphereMatrix();
 
-        // Clear the refresh guard after successful initialization
+        createIcons({
+            icons: {
+                LayoutDashboard, Activity, Bell, BookOpen, MessageSquare, Sparkles, X, Send, Settings,
+                Bot, Brain, Flame, Footprints, ListChecks, Lock, Palette, Trash2, Zap
+            }
+        });
+
         sessionStorage.removeItem('mqa_refreshing');
-
-        // Atmospheric Heartbeat — con guard para evitar múltiples intervals
-        if (!window._atmosphereInterval) {
-            window._atmosphereInterval = setInterval(() => {
-                import('./js/ui_engine.js').then(m => m.syncNeuralAtmosphere());
-            }, 60000);
-        }
-
-        // Perspectiva Holográfica (Sigue en app.js por simplicidad de listeners)
-        initHolographic();
-
-        // Forzar el fin de la carga para evitar hangs en UI
-        if (bgDownloader) {
-            setTimeout(() => bgDownloader.classList.add('hidden'), 500);
-        }
 
     } catch (err) {
         console.error("💥 Fallo en la matriz de inicio:", err);
     }
 }
 
-function initHolographic() {
-    if (typeof DeviceOrientationEvent !== 'undefined') {
-        let ticking = false;
-        window.addEventListener('deviceorientation', (e) => {
-            if (!ticking) {
-                requestAnimationFrame(() => {
-                    const x = (e.gamma / 15).toFixed(2);
-                    const y = (e.beta / 15).toFixed(2);
-                    const activeView = document.querySelector('.view.active');
-                    if (activeView) {
-                        activeView.querySelectorAll('.stat-card, .motivational-card').forEach(c => {
-                            c.style.transform = `perspective(1200px) rotateY(${x}deg) rotateX(${-y}deg)`;
-                        });
-                    }
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        });
-    }
-}
-
-// Inicialización de Ajustes (Interacción de Estado Directa)
 function initSettings() {
     const modal = document.getElementById('settings-modal');
     document.getElementById('btn-settings')?.addEventListener('click', () => {
@@ -199,16 +130,13 @@ function initSettings() {
         userData.brain = document.getElementById('set-brain-level').value;
         saveSettings();
         modal.style.display = 'none';
-        applyPersonalization();
-        initAI(); // Reiniciar si cambió nivel
+        updateUIPersonalization();
+        initAI(); 
     });
 }
 
-// Disparar App
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-        initApp();
-    });
+    document.addEventListener('DOMContentLoaded', initApp);
 } else {
     initApp();
 }

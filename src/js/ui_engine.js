@@ -23,14 +23,10 @@ export function triggerHaptic(type = 'light') {
             case 'pulse': window.navigator.vibrate([10, 100, 10]); break;
             case 'breath': window.navigator.vibrate([5, 800, 5]); break;
         }
-    } catch (e) {
-        // Silenciar errores de permisos (User Gesture) para evitar parada del script
-    }
+    } catch (e) {}
 }
 
-// Registro de vistas ya inicializadas e Interruptor de recursión
 const _initializedViews = new Set();
-let _isSyncing = false;
 
 export function renderView(viewId, component, renderArg) {
     const el = document.getElementById(viewId);
@@ -52,13 +48,18 @@ export function renderAllViews() {
     renderView('settings-modal', SettingsModal, userData);
 }
 
-export function applyPersonalization() {
+/**
+ * updateUIPersonalization (Anteriormente applyPersonalization)
+ * Centraliza la actualización de labels globales.
+ * NO llama a la atmósfera para evitar ciclos.
+ */
+export function updateUIPersonalization() {
     const nameLabel = document.getElementById('global-title');
-    if (nameLabel) nameLabel.innerHTML = `<span class="user-name-label">${userData.name}</span> <span id="user-vibe-label"><i data-lucide="sparkles" style="width: 24px; color: var(--primary)"></i></span>`;
+    if (nameLabel) {
+        nameLabel.innerHTML = `<span class="user-name-label">${userData.name}</span> <span id="user-vibe-label"><i data-lucide="sparkles" style="width: 24px; color: var(--primary)"></i></span>`;
+    }
     
     document.querySelectorAll('.jade-name-display').forEach(el => el.textContent = userData.jadeName);
-    
-    // updateAuraMood removido para romper bucle infinito con syncNeuralAtmosphere
     
     const streakEl = document.getElementById('home-streak-val');
     if (streakEl) streakEl.textContent = userData.streak || 0;
@@ -74,9 +75,14 @@ export function updateGreeting() {
     el.textContent = text;
 }
 
-export function syncNeuralAtmosphere(overridingView = null) {
-    if (_isSyncing) return;
-    _isSyncing = true;
+/**
+ * syncAtmosphereMatrix (Anteriormente syncNeuralAtmosphere)
+ * Orquestador principal de auras y visuales.
+ * Usa un bloqueo global en window para prevenir reentrancia absoluta.
+ */
+export function syncAtmosphereMatrix(overridingView = null) {
+    if (window.__MQA_ATMOSPHERE_LOCKED__) return;
+    window.__MQA_ATMOSPHERE_LOCKED__ = true;
     
     try {
         const aura = document.getElementById('aura-system');
@@ -95,10 +101,7 @@ export function syncNeuralAtmosphere(overridingView = null) {
 
         const currentHRV = healthData?.hrv ?? 70;
         if (currentHRV < 45) {
-            color = '#00C4B4'; 
-            mood = 'calm'; 
-            speed = '50s';
-            blur = '200px';
+            color = '#00C4B4'; mood = 'calm'; speed = '50s'; blur = '200px';
         }
 
         const view = overridingView || document.querySelector('.tab-item.active')?.getAttribute('data-view');
@@ -107,8 +110,7 @@ export function syncNeuralAtmosphere(overridingView = null) {
         if (view === 'zen') { color = '#00C4B4'; mood = 'calm'; speed = '40s'; }
 
         if (document.body.classList.contains('brain-thinking')) {
-            speed = '2s';
-            blur = '100px';
+            speed = '2s'; blur = '100px';
         }
 
         aura.setAttribute('data-mood', mood);
@@ -127,17 +129,16 @@ export function syncNeuralAtmosphere(overridingView = null) {
 
         document.querySelector('meta[name="theme-color"]')?.setAttribute('content', primaryColor);
 
-        const viewNames = { inicio: 'Inicio', ejercicio: 'Salud', avisos: 'Avisos', diario: 'Diario', mensajes: 'Conversar', zen: 'Zen' };
+        const viewNames = { inicio: 'Inicio', ejercicio: 'Salud', avisos: 'Avisos', diario: 'Diario', mensajes: 'Conversando', zen: 'Zen' };
         const viewCaptions = { inicio: null, ejercicio: 'Tu progreso físico', avisos: 'Tus próximas tareas', diario: 'Trazos de consciencia', mensajes: 'Conexión Neuronal', zen: 'Inmersión Total' };
         
         if (view) {
             document.title = `${userData.jadeName} | ${viewNames[view] || ''}`;
-            
             const gTitle = document.getElementById('global-title');
             const gCaption = document.getElementById('global-greeting');
             
             if (view === 'inicio') {
-                applyPersonalization();
+                updateUIPersonalization();
                 updateGreeting();
             } else if (gTitle && gCaption) {
                 gTitle.textContent = viewNames[view];
@@ -145,9 +146,9 @@ export function syncNeuralAtmosphere(overridingView = null) {
             }
         }
     } catch (e) {
-        console.warn("🛡️ MQA: Fallo en sincronización de atmósfera:", e);
+        console.warn("🛡️ MQA: Sincronización de matriz interrumpida:", e);
     } finally {
-        _isSyncing = false;
+        setTimeout(() => { window.__MQA_ATMOSPHERE_LOCKED__ = false; }, 10);
     }
 }
 
@@ -161,7 +162,7 @@ function hexToRgb(hex) {
 }
 
 export function updateAuraMood(view) {
-    syncNeuralAtmosphere(view);
+    syncAtmosphereMatrix(view);
     triggerHaptic(view === 'ejercicio' ? 'medium' : 'feather');
 }
 
@@ -227,11 +228,9 @@ let _neuralHeartbeat = null;
 
 export function initSomaticOrchestrator() {
     if (_neuralHeartbeat) return;
-
     _neuralHeartbeat = setInterval(() => {
         const isThinking = document.body.classList.contains('brain-thinking');
         const core = document.getElementById('liquid-core');
-
         if (isThinking) {
             triggerHaptic('heartbeat');
             if (core) core.classList.add('pulse-neural');
