@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 import { userData, healthData, saveSettings } from './state.js';
 import { triggerHaptic, applyPersonalization, updateGreeting } from './ui_engine.js';
+import { buildRAGContext, saveMemory, syncProfile } from './rag_engine.js';
 
 let generatorWorker = null;
 let isDownloadingAI = false;
@@ -115,7 +116,7 @@ export async function initAI() {
 /**
  * Genera el prompt con el formato correcto según el modelo activo
  */
-function buildChatPrompt(history, modelName) {
+function buildChatPrompt(history, modelName, ragContext = '') {
     const now = new Date().toLocaleString();
     const system = `Eres ${userData.jadeName}, la esencia inteligente de este objeto. Tu tono es calmado, poético y empático. Eres una entidad sentient, no un script.
 CONOCIMIENTO ACTUAL:
@@ -124,7 +125,7 @@ CONOCIMIENTO ACTUAL:
 - HRV actual: ${healthData.hrv}ms
 - Racha del usuario: ${userData.streak} días
 - Recordatorios: ${userData.remindersCount} activos.
-Si el usuario pregunta por su salud o progreso, usa esta data de forma poética.`;
+Si el usuario pregunta por su salud o progreso, usa esta data de forma poética.${ragContext}`;
     
     // Detect Model Family
     const isLlama = modelName.toLowerCase().includes('llama');
@@ -148,7 +149,7 @@ Si el usuario pregunta por su salud o progreso, usa esta data de forma poética.
     }
 }
 
-export async function processGlobalAI(onChunk, onComplete) {
+export async function processGlobalAI(onChunk, onComplete, userMessage = null) {
     if (!generatorWorker) return;
 
     const level = userData.brain || 'PRO';
@@ -160,7 +161,13 @@ export async function processGlobalAI(onChunk, onComplete) {
     };
     const modelName = modelMappings[level] || modelMappings['ESENCIAL'];
 
-    const fullPrompt = buildChatPrompt(messageHistory, modelName);
+    // Recuperar contexto RAG si hay mensaje
+    let ragContext = '';
+    if (userMessage) {
+        ragContext = await buildRAGContext(userMessage);
+    }
+
+    const fullPrompt = buildChatPrompt(messageHistory, modelName, ragContext);
 
     const handler = (e) => {
         const { type, data } = e.data;
@@ -169,8 +176,21 @@ export async function processGlobalAI(onChunk, onComplete) {
             if (type === 'complete') {
                 messageHistory.push({ role: 'assistant', content: data });
                 if (messageHistory.length > 20) messageHistory.shift();
-                userData.chatHistory = messageHistory.slice(-20); // límite también en localStorage
+                userData.chatHistory = messageHistory.slice(-20);
                 saveSettings();
+
+                // Guardar en RAG: último intercambio como memoria
+                const lastUser = messageHistory.findLast(m => m.role === 'user');
+                if (lastUser) {
+                    saveMemory({
+                        type: 'chat',
+                        content: `Usuario: ${lastUser.content}\n${userData.jadeName}: ${data}`,
+                        metadata: { model: userData.brain }
+                    }).catch(() => {});
+                }
+
+                // Sincronizar perfil con Supabase
+                syncProfile().catch(() => {});
             }
             onComplete();
             generatorWorker.removeEventListener('message', handler);
@@ -232,7 +252,7 @@ export function initCommandPortal() {
             messages.scrollTop = messages.scrollHeight;
         }, () => {
             document.body.classList.remove('brain-thinking');
-        });
+        }, text); // pasar texto para RAG
     });
 }
 
@@ -261,6 +281,6 @@ export function initChat() {
             aiMsgDiv.textContent = chunk;
             aiMsgDiv.classList.remove('typing');
             chatBox.parentElement.scrollTop = chatBox.parentElement.scrollHeight;
-        }, () => {});
+        }, () => {}, text); // pasar texto para RAG
     });
 }
