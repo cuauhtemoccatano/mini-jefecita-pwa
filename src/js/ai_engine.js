@@ -1,126 +1,89 @@
-// ---------------------------------------------------------
-// js/ai_engine.js - Cerebro y Portal Global (Contextual)
-// ---------------------------------------------------------
-import { userData, healthData, saveSettings } from './state.js';
+import { useStore } from './store/useStore.js';
 import { triggerHaptic, updateUIPersonalization, updateGreeting } from './ui_engine.js';
 import { buildRAGContext, saveMemory, syncProfile } from './rag_engine.js';
 
-// spells_engine se maneja vía eventos para desacoplar el core
-
-let generatorWorker = null;
-let isDownloadingAI = false;
-let messageHistory = []; 
-
 export function syncHistoryFromState() {
-    messageHistory = userData?.chatHistory || [];
+    // Sincronización automática vía bridge de Zustand
 }
 
-export function getWorker() { return generatorWorker; }
+export function getWorker() { 
+    return useStore.getState().worker; 
+}
 
 export async function initAI() {
-    if (isDownloadingAI) return;
-    if (generatorWorker) {
-        // Terminar worker anterior limpiamente
-        generatorWorker.terminate();
-        generatorWorker = null;
+    // initAI se orquestra centralizadamente en React o vía store
+    console.log("🧠 MQA: Neural Engine shared access requested.");
+}
+        
+// Exponer buildRAGContext globalmente para el hook useAI
+window.buildRAGContext = buildRAGContext;
+window.saveMemory = saveMemory;
+
+export async function processGlobalAI(onChunk, onComplete, userMessage = null) {
+    const state = useStore.getState();
+    const worker = state.worker;
+    const { userData } = state;
+
+    if (!worker) {
+        console.warn("⚠️ MQA: Intento de inferencia sin worker activo.");
+        return;
     }
 
-    const bgStatus = document.getElementById('ai-bg-status');
-    const bgProgress = document.getElementById('ai-bg-progress');
-    const bgDownloader = document.getElementById('ai-bg-downloader');
+    const level = userData.brain || 'PRO';
+    const modelMappings = {
+        'ULTRA':    'onnx-community/Llama-3.2-1B-Instruct',
+        'PRO':      'onnx-community/Qwen2.5-0.5B-Instruct',
+        'AVANZADO':  'onnx-community/Qwen2.5-0.5B-Instruct',
+        'ESENCIAL':  'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA'
+    };
+    const modelName = modelMappings[level] || modelMappings['PRO'];
 
-    try {
-        isDownloadingAI = true;
-        const level = userData.brain || 'PRO';
-        const modelMappings = {
-            'ULTRA':    'onnx-community/Llama-3.2-1B-Instruct',
-            'PRO':      'onnx-community/Qwen2.5-0.5B-Instruct',
-            'AVANZADO':  'onnx-community/Qwen2.5-0.5B-Instruct',
-            'ESENCIAL':  'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA'
-        };
-        const modelName = modelMappings[level] || modelMappings['ESENCIAL'];
-        
-        let device = 'wasm';
-        try {
-            if (typeof navigator !== 'undefined' && navigator.gpu) {
-                const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
-                if (adapter) device = 'webgpu';
-            }
-        } catch (_gpuErr) {
-            console.warn('⚠️ WebGPU no disponible, usando wasm.');
-            device = 'wasm';
-        }
-
-        const workerUrl = new URL('../ai_worker.js', import.meta.url);
-        generatorWorker = new Worker(workerUrl, { type: 'module' });
-        syncHistoryFromState();
-
-        // Mostrar UI de descarga
-        if (bgDownloader) {
-            bgDownloader.classList.remove('hidden');
-            if (bgStatus) bgStatus.textContent = `Sincronizando ${level} (${device.toUpperCase()})...`;
-            if (bgProgress) bgProgress.style.width = '0%';
-            
-            // Timeout de seguridad: Si en 15s no hay respuesta, ocultar para no bloquear UI
-            setTimeout(() => {
-                if (isDownloadingAI) {
-                    console.warn("🕒 MQA: Carga de IA lenta, continuando en background.");
-                    bgDownloader.classList.add('hidden');
-                }
-            }, 15000);
-        }
-        
-        generatorWorker.onmessage = (e) => {
-            const { type, data } = e.data;
-
-            // Todos los estados de progreso de Transformers.js
-            if (type === 'progress') {
-                const s = data.status;
-                if (s === 'initiate' && bgStatus) {
-                    bgStatus.textContent = `Iniciando ${data.name || level}...`;
-                } else if ((s === 'downloading' || s === 'progress') && bgProgress) {
-                    const pct = data.progress != null ? data.progress.toFixed(0) : 0;
-                    bgProgress.style.width = `${pct}%`;
-                    if (bgStatus) bgStatus.textContent = `Descargando modelo ${pct}%`;
-                } else if (s === 'done' && bgStatus) {
-                    bgStatus.textContent = 'Optimizando red neuronal...';
-                    if (bgProgress) bgProgress.style.width = '100%';
-                }
-            }
-
-            if (type === 'ready') {
-                document.body.classList.add('neural-bonded');
-                if (bgDownloader) {
-                    if (bgStatus) bgStatus.textContent = `${userData.jadeName} lista · ${level} · ${device.toUpperCase()}`;
-                    setTimeout(() => bgDownloader.classList.add('hidden'), 2500);
-                }
-                triggerHaptic('medium');
-                isDownloadingAI = false;
-            }
-
-            if (type === 'error') {
-                isDownloadingAI = false;
-                if (userData.brain !== 'ESENCIAL') {
-                    const fallback = 'ESENCIAL';
-                    userData.brain = fallback;
-                    saveSettings();
-                    if (bgStatus) bgStatus.textContent = `Error — bajando a modelo Esencial...`;
-                    if (bgProgress) bgProgress.style.width = '0%';
-                    setTimeout(() => initAI(), 2000);
-                } else {
-                    // Ya en esencial y sigue fallando
-                    if (bgStatus) bgStatus.textContent = 'Error al cargar modelo. Reintentando...';
-                    setTimeout(() => {
-                        if (bgDownloader) bgDownloader.classList.add('hidden');
-                    }, 3000);
-                }
-            }
-        };
-
-        generatorWorker.postMessage({ type: 'init', data: { modelName, device } });
-    } catch (e) {
-        isDownloadingAI = false;
+    // Recuperar contexto RAG si hay mensaje
+    let ragContext = '';
+    if (userMessage) {
+        ragContext = await buildRAGContext(userMessage);
     }
+
+    const fullPrompt = buildChatPrompt(userData.chatHistory, modelName, ragContext);
+    
+    state.setAIState({ isThinking: true });
+    document.body.classList.add('brain-thinking');
+    
+    const handler = (e) => {
+        const { type, data } = e.data;
+        if (type === 'chunk') onChunk(data);
+        if (type === 'complete' || type === 'error') {
+            if (type === 'complete') {
+                const newHistory = [...userData.chatHistory, 
+                  { role: 'assistant', content: data }
+                ].slice(-20);
+                state.setUserData({ chatHistory: newHistory });
+
+                // Guardar en RAG
+                const lastUser = newHistory.findLast(m => m.role === 'user');
+                if (lastUser) {
+                    saveMemory({
+                        type: 'chat',
+                        content: `Usuario: ${lastUser.content}\n${userData.jadeName}: ${data}`,
+                        metadata: { model: userData.brain }
+                    }).catch(() => {});
+                }
+                syncProfile().catch(() => {});
+            }
+            state.setAIState({ isThinking: false });
+            onComplete();
+            worker.removeEventListener('message', handler);
+        }
+    };
+    
+    worker.addEventListener('message', handler);
+    worker.postMessage({
+        type: 'generate',
+        data: {
+            fullPrompt,
+            settings: { max_new_tokens: 300, temperature: 0.7, repetition_penalty: 1.15 }
+        }
+    });
 }
 
 /**
@@ -236,7 +199,7 @@ export function initCommandPortal() {
         const active = portal.classList.toggle('active');
         core.classList.toggle('active');
         if (active) {
-            initAI(); 
+            useStore.getState().initAI(); 
             input.focus();
         }
     });

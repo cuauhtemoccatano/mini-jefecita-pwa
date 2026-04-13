@@ -19,11 +19,6 @@
         <div class="aura-blob aura-3"></div>
     </div>
 
-    <!-- Toast de Actualización -->
-    <div id="update-toast" class="update-toast hidden">
-        <span>✨ Mejoras listas</span>
-        <button id="btn-update-now">Actualizar</button>
-    </div>
     <div id="app">
         <!-- Barra de Descarga en Segundo Plano -->
         <div id="ai-bg-downloader" class="ai-bg-downloader hidden">
@@ -104,7 +99,13 @@
         </div>
     </div>
 
-    <!-- Scripts Maestros -->
-    <script type="module" src="/src/main.js"></script>
+    <!-- React Mount Root (Convergence v4.0.0) -->
+    <div id="mqa-react-root"></div>
+    <div id="pwa-island"></div>
+
+    <!-- Portales de Expansión (Legacy Bridge) -->
+    <div id="mqa-onboarding-portal" class="fixed inset-0 z-[9999] pointer-events-none"></div>
+
+    <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

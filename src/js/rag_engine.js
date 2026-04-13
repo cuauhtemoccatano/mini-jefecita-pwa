@@ -31,13 +31,11 @@ export async function saveMemory({ type, content, metadata = {} }) {
         const deviceId  = getDeviceId();
         const embedding = await embed(content);
         const encrypted = await encrypt(content);
-        const preview   = content.substring(0, 30) + (content.length > 30 ? '...' : '');
 
         await supabase.from('memories').insert({
             device_id:       deviceId,
             type,
             content:         encrypted,
-            content_preview: preview,
             embedding,
             metadata: {
                 ...metadata,

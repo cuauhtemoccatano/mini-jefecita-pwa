@@ -1,5 +1,3 @@
-import './assets/css/style.css';
-import './assets/css/awakening.css';
 import { 
     LayoutDashboard, 
     Activity, 
@@ -21,18 +19,19 @@ import {
     Zap,
     createIcons
 } from 'lucide';
-import { OnboardingCeremony } from './components/OnboardingCeremony.js';
-import { loadState, userData, saveSettings, healthData } from './js/state.js';
-import { initSomaticOrchestrator, renderAllViews, updateUIPersonalization, updateGreeting, initTabs, triggerHaptic, syncAtmosphereMatrix } from './js/ui_engine.js';
-import { initAI, initChat, initCommandPortal } from './js/ai_engine.js';
-import { initHealthSync, updateHealthUI } from './js/health_engine.js';
-import { initZenMode } from './js/santuario.js';
-import { syncAppVersion, initIdleManager, initConnectivityAwareness, initInstallManager, predictOptimalBrainTier } from './js/system.js';
-import { initCrypto } from './js/crypto_engine.js';
-import { syncProfile, restoreProfile, syncReminders, syncHealth, isSupabaseConfigured } from './js/rag_engine.js';
-import { initMagneticSpells } from './js/spells_engine.js';
+import { OnboardingCeremony } from '../components/OnboardingCeremony.js';
+import { loadState, userData, saveSettings, healthData } from './state.js';
+import { initSomaticOrchestrator, renderAllViews, updateUIPersonalization, updateGreeting, initTabs, syncAtmosphereMatrix } from './ui_engine.js';
+import { initAI, initChat, initCommandPortal } from './ai_engine.js';
+import { initHealthSync, updateHealthUI } from './health_engine.js';
+import { initZenMode } from './santuario.js';
+import { syncAppVersion, initIdleManager, initConnectivityAwareness, initInstallManager, predictOptimalBrainTier } from './system.js';
+import { initCrypto } from './crypto_engine.js';
+import { syncProfile, restoreProfile, syncReminders, syncHealth, isSupabaseConfigured } from './rag_engine.js';
+import { initMagneticSpells } from './spells_engine.js';
+// initPWAManager eliminado en v4.0.0 para consolidación en React
 
-async function initApp() {
+export async function initAppLegacy() {
     try {
         await initCrypto();
     } catch (e) {
@@ -50,8 +49,12 @@ async function initApp() {
     }
     
     if (!userData.onboarded) {
-        document.body.innerHTML = OnboardingCeremony.render();
-        OnboardingCeremony.init();
+        const portal = document.getElementById('mqa-onboarding-portal');
+        if (portal) {
+            portal.style.pointerEvents = 'auto'; // Habilitar interacción
+            portal.innerHTML = OnboardingCeremony.render();
+            OnboardingCeremony.init();
+        }
         return;
     }
 
@@ -82,7 +85,7 @@ async function initApp() {
         
         try {
             initSomaticOrchestrator();
-            initAI(); 
+            // initAI() se maneja ahora vía hook en React
         } catch (e) {
             const bgDownloader = document.getElementById('ai-bg-downloader');
             if (bgDownloader) bgDownloader.classList.add('hidden');
@@ -109,36 +112,16 @@ async function initApp() {
         sessionStorage.removeItem('mqa_refreshing');
 
     } catch (err) {
-        console.error("💥 Fallo en la matriz de inicio:", err);
+        console.error("💥 Fallo en la matriz de inicio legacy:", err);
     }
 }
 
 function initSettings() {
-    const modal = document.getElementById('settings-modal');
     document.getElementById('btn-settings')?.addEventListener('click', () => {
-        document.getElementById('set-name').value = userData.name;
-        document.getElementById('set-brain-level').value = userData.brain;
-        modal.style.display = 'flex';
+        if (window.mqa_toggleSettings) {
+            window.mqa_toggleSettings(true);
+        } else {
+            console.warn("⚛️ MQA: Bridge de React aún no sincronizado.");
+        }
     });
-    
-    document.getElementById('btn-close-settings')?.addEventListener('click', () => modal.style.display = 'none');
-    
-    document.getElementById('btn-save-settings')?.addEventListener('click', () => {
-        userData.name = document.getElementById('set-name').value;
-        userData.jadeName = document.getElementById('set-jade-name').value;
-        userData.auraPreset = document.getElementById('set-aura-preset').value;
-        userData.auraColor = document.getElementById('set-aura-hex').value;
-        userData.brain = document.getElementById('set-brain-level').value;
-        saveSettings();
-        modal.style.display = 'none';
-        updateUIPersonalization();
-        syncAtmosphereMatrix(); // Forzar actualización de aura
-        initAI(); 
-    });
-}
-
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
-} else {
-    initApp();
 }

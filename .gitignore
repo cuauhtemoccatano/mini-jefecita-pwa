@@ -6,3 +6,4 @@ dist/
 /build
 js/config.js
 .env*.local
+.node/

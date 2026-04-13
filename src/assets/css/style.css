@@ -1060,51 +1060,179 @@ input[type="number"]:focus {
 
 
 /* Toast de Actualización */
-.update-toast {
+/* PWA Toast (v3.0.0) - Liquid Glass Architecture */
+.pwa-toast {
     position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%) translateY(0);
-    background: rgba(0, 196, 180, 0.95);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255,255,255,0.2);
-    padding: 12px 24px;
-    border-radius: 100px;
-    z-index: 5000;
+    bottom: max(100px, calc(var(--safe-area-bottom) + 80px));
+    right: 24px;
+    z-index: 6000;
+    width: calc(100% - 48px);
+    max-width: 400px;
+    animation: pwaSlideUp 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.pwa-toast.hidden {
+    pointer-events: none;
+    animation: pwaFadeScale 0.4s ease-in forwards;
+}
+
+.pwa-toast-inner {
+    background: rgba(20, 20, 20, 0.85);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 28px;
+    padding: 24px;
+    box-shadow: 
+        0 30px 60px rgba(0, 0, 0, 0.5),
+        0 0 20px var(--aura-glow);
+    overflow: hidden;
+}
+
+.pwa-toast-header {
     display: flex;
     align-items: center;
-    gap: 15px;
-    box-shadow: 0 10px 30px rgba(0, 196, 180, 0.3);
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    gap: 16px;
 }
 
-.update-toast.hidden {
-    transform: translateX(-50%) translateY(-150%);
-    opacity: 0;
-    pointer-events: none;
+.pwa-toast-icon {
+    font-size: 24px;
+    animation: pwaIconOrbit 3s infinite linear;
 }
 
-.update-toast span {
-    font-size: 14px;
-    font-weight: 600;
+.pwa-toast-title-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.pwa-toast-title {
+    font-size: 15px;
+    font-weight: 700;
     color: white;
 }
 
-#btn-update-now {
-    background: white;
-    color: var(--primary);
-    border: none;
-    padding: 6px 16px;
-    border-radius: 50px;
+.pwa-toast-subtitle {
     font-size: 12px;
-    font-weight: 800;
-    cursor: pointer;
-    text-transform: uppercase;
+    color: var(--primary);
+    font-weight: 600;
+    opacity: 0.8;
 }
 
-#btn-update-now:hover {
-    transform: scale(1.05);
+.pwa-toast-close {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 24px;
+    padding: 4px;
+    cursor: pointer;
+    line-height: 1;
 }
+
+.pwa-changelog {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    animation: pwaExpand 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pwa-changelog-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    font-weight: 700;
+}
+
+.pwa-changelog ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.pwa-changelog li {
+    font-size: 13px;
+    line-height: 1.4;
+    color: rgba(255, 255, 255, 0.8);
+    position: relative;
+    padding-left: 18px;
+}
+
+.pwa-changelog li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    font-size: 10px;
+}
+
+.pwa-toast-actions {
+    margin-top: 24px;
+    display: flex;
+    gap: 12px;
+}
+
+.pwa-btn-update {
+    flex: 1;
+    background: var(--primary);
+    color: black;
+    border: none;
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px var(--aura-glow);
+}
+
+.pwa-btn-update:active { transform: scale(0.96); }
+
+.pwa-btn-dismiss {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 12px;
+    border-radius: 14px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+@keyframes pwaSlideUp {
+    from { transform: translateY(100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pwaFadeScale {
+    from { transform: scale(1); opacity: 1; }
+    to { transform: scale(0.9); opacity: 0; }
+}
+
+@keyframes pwaIconOrbit {
+    0% { transform: scale(1) rotate(0); }
+    50% { transform: scale(1.2) rotate(15deg); }
+    100% { transform: scale(1) rotate(0); }
+}
+
+@keyframes pwaExpand {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+    .pwa-toast {
+        right: 16px;
+        left: 16px;
+        width: auto;
+        bottom: calc(var(--safe-area-bottom) + 90px);
+    }
+}
+
 
 /* ============================================================
    ESTÁNDARES DE RESPONSIVIDAD MAESTROS (v2.3.0)

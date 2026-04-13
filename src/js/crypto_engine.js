@@ -32,10 +32,6 @@ export async function deriveKeyFromPassword(password, salt = null) {
         ['encrypt', 'decrypt']
     );
 
-    // Persistir para evitar re-derivación constante
-    const exported = await crypto.subtle.exportKey('raw', _cryptoKey);
-    localStorage.setItem(STORAGE_KEY, btoa(String.fromCharCode(...new Uint8Array(exported))));
-
     return _cryptoKey;
 }
 

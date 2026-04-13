@@ -6,33 +6,36 @@
  * Design Spell: Magnetic Core
  * Hace que los elementos marcados con .btn-zen-trigger tengan atracción magnética.
  */
+/**
+ * Design Spell: Magnetic Core (v4.0.0)
+ * Delegación de eventos para soporte dinámico de React.
+ */
 export function initMagneticSpells() {
-    const targets = document.querySelectorAll('.btn-zen-trigger, .btn-icon, .liquid-button');
-    
-    targets.forEach(btn => {
-        btn.addEventListener('mousemove', (e) => {
-            const rect = btn.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            
-            // Efecto magnético sutil (atracción hacia el cursor)
-            btn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
-            
-            // Brillo de aura dinámico si el botón tiene icono
-            const icon = btn.querySelector('i');
-            if (icon) {
-                icon.style.filter = `drop-shadow(0 0 10px var(--primary))`;
-            }
-        });
+    document.addEventListener('mousemove', (e) => {
+        const btn = e.target.closest('.btn-zen-trigger, .btn-icon, .liquid-button, .mqa-btn-magnetic');
+        if (!btn) return;
+
+        const rect = btn.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
         
-        btn.addEventListener('mouseleave', () => {
-            // Retorno suave a la posición original
-            btn.style.transform = `translate(0px, 0px)`;
-            const icon = btn.querySelector('i');
-            if (icon) {
-                icon.style.filter = `none`;
-            }
-        });
+        // Atracción magnética sutil
+        btn.style.transition = 'transform 0.1s ease-out';
+        btn.style.transform = `translate(${x * 0.25}px, ${y * 0.25}px)`;
+        
+        const icon = btn.querySelector('i, svg');
+        if (icon) icon.style.filter = `drop-shadow(0 0 10px var(--primary))`;
+    });
+
+    document.addEventListener('mouseout', (e) => {
+        const btn = e.target.closest('.btn-zen-trigger, .btn-icon, .liquid-button, .mqa-btn-magnetic');
+        if (!btn) return;
+        
+        btn.style.transition = 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)';
+        btn.style.transform = `translate(0px, 0px)`;
+        
+        const icon = btn.querySelector('i, svg');
+        if (icon) icon.style.filter = `none`;
     });
 }
 

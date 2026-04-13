@@ -29,20 +29,6 @@ export async function syncAppVersion() {
         const label = document.getElementById('app-version-label');
         if (label) label.textContent = `v${pkg.version}`;
         localStorage.setItem('app_version', pkg.version);
-
-        if ('serviceWorker' in navigator) {
-            const reg = await navigator.serviceWorker.register('./sw.js');
-            if (reg.waiting) document.getElementById('update-toast')?.classList.remove('hidden');
-            document.getElementById('btn-update-now')?.addEventListener('click', () => {
-                if (reg.waiting) reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-                else window.location.reload();
-            });
-            navigator.serviceWorker.addEventListener('controllerchange', () => {
-                if (sessionStorage.getItem('mqa_refreshing')) return;
-                sessionStorage.setItem('mqa_refreshing', 'true');
-                window.location.reload();
-            });
-        }
     } catch (e) {}
 }
 

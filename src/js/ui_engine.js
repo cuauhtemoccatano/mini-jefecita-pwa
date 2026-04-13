@@ -1,13 +1,10 @@
 import { createIcons, Sparkles, Settings, LayoutDashboard, Activity, Bell, BookOpen, MessageSquare, X, Send } from 'lucide';
 import { userData } from './state.js';
 import { healthData } from './state.js';
-import { HomeView } from '../components/HomeView.js';
-import { ChatView } from '../components/ChatView.js';
 import { ExerciseView } from '../components/ExerciseView.js';
 import { RemindersView } from '../components/RemindersView.js';
 import { JournalView } from '../components/JournalView.js';
 import { ZenView } from '../components/ZenView.js';
-import { SettingsModal } from '../components/SettingsModal.js';
 
 export function triggerHaptic(type = 'light') {
     try {
@@ -44,8 +41,9 @@ export function renderView(viewId, component, renderArg) {
 }
 
 export function renderAllViews() {
-    renderView('view-inicio', HomeView, userData);
-    renderView('settings-modal', SettingsModal, userData);
+    // view-inicio y settings-modal ahora son manejados por islas de React en v4.0.0
+    // renderView('view-inicio', HomeView, userData);
+    // renderView('settings-modal', SettingsModal, userData);
 }
 
 /**
@@ -197,7 +195,7 @@ export function initTabs() {
             }
 
             const viewComponentMap = {
-                'mensajes':  () => renderView('view-mensajes', ChatView, userData),
+                // 'mensajes':  () => renderView('view-mensajes', ChatView, userData), // Manejado por React Bridge v4
                 'ejercicio': () => renderView('view-ejercicio', ExerciseView),
                 'avisos':    () => renderView('view-avisos', RemindersView),
                 'diario':    () => renderView('view-diario', JournalView),
