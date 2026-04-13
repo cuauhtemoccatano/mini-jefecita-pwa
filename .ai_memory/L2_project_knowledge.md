@@ -20,3 +20,4 @@
 - **Sincronización a ráfagas**: El store de Zustand usa un suscriptor (`useStore.subscribe`) en la línea 161 que escribe en `localStorage` ante cualquier cambio. No llames a `saveSettings()` de `state.js` desde React; deja que el store maneje el ciclo de vida de persistencia.
 - **Detección de Mobile**: La app decide el layout (Sidebar vs Bottom-bar) puramente mediante Media Queries de CSS (`>=768px`). No intentes forzar layouts mediante JS sin consultar `style.css`.
 - **Onboarding Portal**: El portal de inicio (`#mqa-onboarding-portal`) tiene `pointer-events: none` por defecto en el HTML. El código legacy debe activarlo (`auto`) solo cuando la ceremonia sea necesaria.
+- **Límite de GitHub (100MB)**: El binario de Node (113MB) bloquea el push. **Nunca** rastrear archivos en `.node/`. El proyecto debe instalarse localmente en cada máquina tras el clonado inicial.
