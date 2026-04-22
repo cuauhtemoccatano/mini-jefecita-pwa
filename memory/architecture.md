@@ -5,20 +5,23 @@ Mini Jefecita v3.7.2 operates on a modern, Vite-powered architecture designed fo
 ## The Build System (Vite + Workbox)
 The application is orchestrated by **Vite**, utilizing **vite-plugin-pwa** with an `injectManifest` strategy. This allows for fine-grained control over the Service Worker while benefiting from modern bundling, dead-code elimination, and environmental variable injection.
 
-## The Master Orchestrator (`src/main.js`)
-The application entry point is a centralized orchestrator. It manages the lifecycle of specialized engines, performs the "Neural Handshake", and handles the **"Awakening Ceremony"** for untethered identities. It is native ESM and serves as the root of the dependency graph.
+## The Master Orchestrator (`src/main.jsx`)
+Entry point de React 19. Gestiona el montaje del árbol de componentes, la sintonización inicial del aura y la hidratación del estado global.
 
-## Core Engines (`src/js/`)
-1.  **State Engine (`state.js`)**: Single source of truth for global data, persistence, and reactive settings synchronization.
-2.  **AI Engine (`ai_engine.js`)**: Neural core that manages the Transformers.js background worker, model tiering, and the global Command Portal.
-3.  **UI Engine (`ui_engine.js`)**: Master renderer that orchestrates the dynamic injection of "Liquid Components". Includes the **Atmosphere Matrix** (renamed from Spectral Core) for autonomous aura synchronization with a global recursion guard.
-4.  **Health Engine (`health_engine.js`)**: Biometric synchronization layer for health data processing and trending.
-5.  **Santuario Engine (`santuario.js`)**: Immersive sub-system for Three.js 3D materiality using dynamic ESM imports.
-6.  **RAG Engine (`rag_engine.js`)**: Retrieval Augmented Generation layer integrated with the **Supabase SDK** for semantic memory persistence and cloud synchronization.
-7.  **System Engine (`system.js`)**: Environmental awareness layer (Hardware profiling, PWA lifecycle, and Atmospheric connectivity).
+## Core Engines / Logic (`src/js/`)
+1.  **State Logic (`store/useStore.js`)**: Zustand store para persistencia y reactividad.
+2.  **Neural Link (`hooks/useAI.js`)**: Gestión del worker de Transformers.js y generación.
+3.  **Biometric Core (`hooks/useHealth.js`)**: Sincronización de salud y HRV.
+4.  **Santuario 3D (`santuario.js`)**: Sub-sistema inmersivo de Three.js.
+5.  **RAG Engine (`rag_engine.js`)**: Persistencia semántica vía Supabase.
+6.  **Security Layer (`hooks/useAuth.js`)**: Blindaje biométrico v4.1.1.
 
-## UI Paradigm: Liquid Components (`src/components/`)
-All views are isolated ES modules that are imported by the UI Engine. This structure prevents monolithic DOM bloat and allows for efficient chunking during the build process.
+## UI Paradigm: Neural Components (`src/components/`)
+La interfaz es 100% Reactiva. Cada vista es un componente funcional (.jsx) que:
+- Gestiona su propio estado local y transiciones.
+- Se suscribe al Store global (Zustand) para datos de usuario y aura.
+- Utiliza **Lucide-React** para iconografía vectorizada.
+- Implementa micro-interacciones dinámicas en `App.jsx`.
 
 ## Environment & Security
 - **Strict Isolation**: Uses `COOP` (same-origin) and `COEP` (require-corp) headers for WebGPU support.

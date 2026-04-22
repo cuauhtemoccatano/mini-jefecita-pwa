@@ -2,15 +2,14 @@
 
 Mini Jefecita's visual language is built on the principles of "Industrial Glass" and "Neural Flow," mirroring the aesthetic elite standards of SmartScales 2.
 
-## Liquid Components Pattern
-UI views are not static HTML. They are dynamic functional modules that:
-- Live in `js/components/`.
-- Export a `render()` function returning template strings.
+## Neural Components Pattern
+Las vistas no son HTML estático, sino componentes funcionales React (.jsx) que:
+- Viven en `src/components/`.
+- Utilizan **Aura Hooks** para sintonizar el color basado en biometría.
 - **Spectral Core**: Algoritmo que sintetiza el aura basada en el latido biológico (HRV) y el ciclo circadiano.
-- **Side-Rail Topology**: Navegación lateral obligatoria para iPad y Desktop (ancho > 768px) para optimizar el espacio espacial.
-- **Safe-Area Compliance**: Respeto mandatorio de las zonas de exclusión física del OS (notch/home-bar) mediante constantes CSS `env`.
-- **ProMax Structural Symmetry**: Uso de rejillas de columnas fijas (`repeat(2, 1fr)`) en elementos críticos de estadísticas para evitar deformaciones asimétricas.
-- Export an `init()` function for post-render event binding and Lucide icon creation.
+- **Side-Rail Topology**: Navegación lateral obligatoria para iPad y Desktop (ancho > 768px).
+- **Safe-Area Compliance**: Respeto mandatorio de las zonas de exclusión física (notch/home-bar).
+- **ProMax Structural Symmetry**: Uso de rejillas de columnas fijas (`repeat(2, 1fr)`) en estadísticas.
 
 ## Iconographic Standard: Pure Lucide
 To maintain a professional, corporate-grade finish:
