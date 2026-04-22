@@ -20,6 +20,7 @@ export const useStore = create(
         energy: 0,
         hrv: 50,
       },
+      activeView: 'inicio',
       
       // Estado volátil (No persistido)
       aiState: {
@@ -35,10 +36,28 @@ export const useStore = create(
       setUserData: (data) => set((state) => ({ 
         userData: { ...state.userData, ...data } 
       })),
-      
-      setHealthData: (data) => set((state) => ({ 
-        healthData: { ...state.healthData, ...data } 
-      })),
+
+      setView: (view) => set({ activeView: view }),
+
+      setHealthData: (data) => {
+        set((state) => {
+          const newData = { ...state.healthData, ...data };
+          // analyzeHealthTrends simple logic could go here or in a component
+          return { healthData: newData };
+        });
+      },
+
+      syncHealthFromParams: () => {
+        const params = new URLSearchParams(window.location.search);
+        const steps = params.get('steps');
+        const hrv = params.get('hrv');
+        if (steps || hrv) {
+          const update = {};
+          if (steps) update.steps = parseInt(steps);
+          if (hrv) update.hrv = parseInt(hrv);
+          useStore.getState().setHealthData(update);
+        }
+      },
       
       // Acciones Neurales (Centralizadas)
       setAIState: (data) => set((state) => ({

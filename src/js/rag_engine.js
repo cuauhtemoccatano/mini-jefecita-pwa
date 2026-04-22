@@ -7,7 +7,7 @@ import { supabase } from './supabase.js';
 import { isSupabaseConfigured } from '../lib/env.js';
 import { embed } from './embedder.js';
 import { encrypt, decrypt } from './crypto_engine.js';
-import { userData } from './state.js';
+import { useStore } from './store/useStore.js';
 
 export { isSupabaseConfigured };
 
@@ -40,7 +40,7 @@ export async function saveMemory({ type, content, metadata = {} }) {
             metadata: {
                 ...metadata,
                 timestamp: new Date().toISOString(),
-                brain: userData?.brain
+                brain: useStore.getState().userData?.brain
             }
         });
     } catch (e) {
@@ -111,6 +111,7 @@ export async function buildRAGContext(userMessage) {
 // Guardar perfil de usuario en Supabase
 // ---------------------------------------------------------
 export async function syncProfile() {
+    const { userData } = useStore.getState();
     if (!isSupabaseConfigured() || !userData) return;
 
     try {

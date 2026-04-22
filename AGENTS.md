@@ -1,4 +1,4 @@
-# 🤖 Mini Jefecita: Agent Protocol (v3.1.0)
+# 🤖 Mini Jefecita: Agent Protocol (v4.1.0)
 
 Este documento define las reglas de operación de cumplimiento obligatorio para los agentes de IA en el ecosistema "Mini Jefecita".
 
@@ -18,7 +18,7 @@ Este documento define las reglas de operación de cumplimiento obligatorio para 
 - **🚀 browser_subagent**: Validación QA en entorno local.
 - **🤖 vercel-ai-sdk-expert**: Implementación de IA estructurada.
 
-## 📐 Estándares de Plataforma (v3.1.0)
+## 📐 Estándares de Plataforma (v4.1.0)
 - **Engine**: Transformers.js v3 + WebGPU (Aceleración Neuronal).
 - **Multi-Layout**:
   - **Mac/Tablets (>=768px)**: Diseño de barra lateral (Sidebar).
@@ -40,4 +40,4 @@ Este documento define las reglas de operación de cumplimiento obligatorio para 
 4. **Cero Suposiciones**: Siguiendo `verification-before-completion`, no se acepta un "creo que funciona". Se requiere evidencia visual o de consola.
 
 ---
-*Última actualización: 27-03-2026 | Versión: v3.1.0 (Hardware Accelerated Edition)*
+*Última actualización: 22-04-2026 | Versión: v4.1.0 (Hardware Accelerated Edition)*
