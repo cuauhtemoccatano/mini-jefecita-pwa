@@ -12,7 +12,7 @@ import { useStore } from './store/useStore.js';
 export { isSupabaseConfigured };
 
 // device_id único y persistente por dispositivo
-function getDeviceId() {
+export function getDeviceId() {
     let id = localStorage.getItem('mqa_device_id');
     if (!id) {
         id = crypto.randomUUID();
