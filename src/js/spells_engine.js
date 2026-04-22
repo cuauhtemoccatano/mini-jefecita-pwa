@@ -12,7 +12,7 @@
  */
 export function initMagneticSpells() {
     document.addEventListener('mousemove', (e) => {
-        const btn = e.target.closest('.btn-zen-trigger, .btn-icon, .liquid-button, .mqa-btn-magnetic');
+        const btn = e.target.closest('.btn-zen-trigger, .btn-icon, .liquid-button, .mqa-btn-magnetic, .btn-ritual, .tab-item');
         if (!btn) return;
 
         const rect = btn.getBoundingClientRect();
@@ -28,7 +28,7 @@ export function initMagneticSpells() {
     });
 
     document.addEventListener('mouseout', (e) => {
-        const btn = e.target.closest('.btn-zen-trigger, .btn-icon, .liquid-button, .mqa-btn-magnetic');
+        const btn = e.target.closest('.btn-zen-trigger, .btn-icon, .liquid-button, .mqa-btn-magnetic, .btn-ritual, .tab-item');
         if (!btn) return;
         
         btn.style.transition = 'transform 0.5s cubic-bezier(0.23, 1, 0.32, 1)';
@@ -47,6 +47,7 @@ export function castPulseSpell() {
     const core = document.getElementById('liquid-core');
     if (!core) return;
 
+    core.classList.remove('pulse-neural');
+    void core.offsetWidth; // Trigger reflow for animation restart
     core.classList.add('pulse-neural');
-    // La duración y el loop se gestionan vía CSS para estabilidad total
 }

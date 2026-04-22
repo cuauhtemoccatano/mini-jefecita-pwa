@@ -11,34 +11,38 @@ import HomeView from './components/HomeView';
 import ChatView from './components/ChatView';
 import PwaToast from './components/PwaToast';
 
-// Views placeholders - to be converted
-import ExerciseView from './components/ExerciseView.jsx';
-import RemindersView from './components/RemindersView.jsx';
-import JournalView from './components/JournalView.jsx';
-import ZenView from './components/ZenView.jsx';
-import OnboardingCeremony from './components/OnboardingCeremony.jsx';
+import { initMagneticSpells, castPulseSpell } from './js/spells_engine';
 
 /**
  * App (v4.1.0) - Neural React Edition
  * Orquestador maestro del 100% de la interfaz.
  */
 export default function App() {
-  const { userData, activeView, setView, initAI } = useStore();
+  const { userData, activeView, setView, initAI, aiState } = useStore();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPortalOpen, setIsPortalOpen] = useState(false);
+
+  // Spell Initialization (One-time)
+  useEffect(() => {
+    initMagneticSpells();
+  }, []);
+
+  // Neural Activity Observer (Visual & Haptic)
+  useEffect(() => {
+    if (aiState.isThinking) {
+      document.body.classList.add('brain-thinking');
+      castPulseSpell();
+      // UX Favor: immediate pulse instead of interval
+      if (window.navigator?.vibrate) window.navigator.vibrate([20, 50, 10]);
+    } else {
+      document.body.classList.remove('brain-thinking');
+    }
+  }, [aiState.isThinking]);
 
   useEffect(() => {
     // Inicializar IA bajo demanda o por estado
     if (userData.onboarded) {
       initAI();
-      
-      // Heartbeat somático legacy bridge (opcional)
-      const interval = setInterval(() => {
-        if (document.body.classList.contains('brain-thinking')) {
-          if (window.navigator?.vibrate) window.navigator.vibrate([15, 100, 10]);
-        }
-      }, 1500);
-      return () => clearInterval(interval);
     }
   }, [userData.onboarded]);
 

@@ -110,6 +110,10 @@ export function useAI() {
         prompt += `<|im_start|>user\n${userMessage}<|im_end|>\n<|im_start|>assistant\n`;
     }
 
+    // Acceder a setAIState del store
+    const { setAIState } = useStore.getState();
+    setAIState({ isThinking: true });
+
     const handler = (e) => {
       const { type, data } = e.data;
       
@@ -119,12 +123,14 @@ export function useAI() {
       
       if (type === 'complete') {
         setIsGenerating(false);
+        setAIState({ isThinking: false }); // Reset global state
         if (onComplete) onComplete(data);
         workerRef.current.removeEventListener('message', handler);
       }
       
       if (type === 'error') {
         setIsGenerating(false);
+        setAIState({ isThinking: false }); // Reset global state
         workerRef.current.removeEventListener('message', handler);
       }
     };
