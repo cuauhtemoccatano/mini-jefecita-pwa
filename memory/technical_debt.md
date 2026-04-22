@@ -12,4 +12,5 @@
 ## Deuda Resuelta (Hitos)
 - [x] **2026-04-22**: Eliminación total del acoplamiento DOM/ID mediante React Component Architecture.
 - [x] **2026-04-22**: Resolución de la carencia de tests en lógica crítica (Criptografía).
+- [x] **2026-04-22**: Purga iconográfica emoji y resolución de deuda de contraste APCA (UI/UX ProMax).
 - [x] **2026-04-12**: Purga de estilos monolíticos en favor de Tailwind v4 semántico.

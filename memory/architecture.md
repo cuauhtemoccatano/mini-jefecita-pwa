@@ -1,6 +1,6 @@
-# System Architecture: Neural Modular Orchestration (v3.7.2)
+# System Architecture: Neural Modular Orchestration (v4.1.2)
 
-Mini Jefecita v3.7.2 operates on a modern, Vite-powered architecture designed for industrial scalability, high-fidelity performance, and professional-grade PWA deployment.
+Mini Jefecita v4.1.2 operates on a modern, React 19 + Vite-powered architecture designed for industrial scalability, high-fidelity performance, and professional-grade PWA deployment.
 
 ## The Build System (Vite + Workbox)
 The application is orchestrated by **Vite**, utilizing **vite-plugin-pwa** with an `injectManifest` strategy. This allows for fine-grained control over the Service Worker while benefiting from modern bundling, dead-code elimination, and environmental variable injection.

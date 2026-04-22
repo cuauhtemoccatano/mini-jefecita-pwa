@@ -48,7 +48,7 @@ export default function JournalView() {
         </div>
         <div className="text-center space-y-2">
           <h2 className="text-xl font-bold text-white tracking-tight">Diario Bloqueado</h2>
-          <p className="text-xs text-neutral-500 font-medium px-8">Usa FaceID o TouchID para acceder a tus pensamientos.</p>
+          <p className="text-xs text-neutral-400 font-medium px-8">Usa FaceID o TouchID para acceder a tus pensamientos.</p>
         </div>
         <button 
           onClick={handleAuth}
@@ -67,7 +67,7 @@ export default function JournalView() {
         <h1 className="text-2xl font-bold text-white flex items-center gap-3">
           Cámara Secreta <BookOpen className="text-primary" size={24} />
         </h1>
-        <p className="text-xs text-neutral-500 font-bold uppercase tracking-widest pl-1">Tus trazos de consciencia</p>
+        <p className="text-xs text-neutral-400 font-bold uppercase tracking-widest pl-1">Tus trazos de consciencia</p>
       </header>
 
       <div className="bg-white/5 backdrop-blur-[20px] border border-white/10 rounded-[32px] p-6 shadow-xl relative overflow-hidden group">
@@ -98,7 +98,7 @@ export default function JournalView() {
                   <span className="text-[10px] font-bold text-primary uppercase tracking-widest bg-primary/10 px-3 py-1 rounded-full">
                     {new Date(e.date).toLocaleDateString('es-MX', { weekday: 'short', day: 'numeric', month: 'short' })}
                   </span>
-                  <span className="text-[10px] font-bold text-neutral-500 uppercase">
+                  <span className="text-[10px] font-bold text-neutral-400 uppercase">
                     {new Date(e.date).toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
@@ -109,7 +109,7 @@ export default function JournalView() {
             ))
           ) : (
             <div className="text-center py-12">
-              <p className="text-sm text-neutral-500 font-medium">Tu historia comienza aquí.</p>
+              <p className="text-sm text-neutral-400 font-medium">Tu historia comienza aquí.</p>
             </div>
           )}
         </div>

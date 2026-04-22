@@ -7,10 +7,16 @@ import Header from './components/Header';
 import TabBar from './components/TabBar';
 import CommandPortal from './components/CommandPortal';
 import SettingsModal from './components/SettingsModal';
-import HomeView from './components/HomeView';
-import ChatView from './components/ChatView';
 import PwaToast from './components/PwaToast';
+import OnboardingCeremony from './components/OnboardingCeremony';
+import HomeView from './components/HomeView';
+import ExerciseView from './components/ExerciseView';
+import RemindersView from './components/RemindersView';
+import JournalView from './components/JournalView';
+import ChatView from './components/ChatView';
+import ZenView from './components/ZenView';
 
+import { Sparkles, Bot } from 'lucide-react';
 import { initMagneticSpells, castPulseSpell } from './js/spells_engine';
 
 /**
@@ -67,7 +73,7 @@ export default function App() {
   };
 
   return (
-    <div id="app" className="flex flex-col h-[100dvh] overflow-hidden">
+    <div id="app" className="flex flex-col h-[100dvh] overflow-hidden animate-in fade-in zoom-in-95 duration-1000 ease-out-expo">
       <PwaToast />
       <Aura />
       
@@ -83,9 +89,10 @@ export default function App() {
       <div 
         id="liquid-core" 
         className="liquid-button"
+        onPointerDown={() => castPulseSpell()}
         onClick={() => setIsPortalOpen(true)}
       >
-        <span className="relative z-10">✨</span>
+        <Sparkles size={24} className="relative z-10 text-black" fill="currentColor" />
       </div>
 
       <CommandPortal 

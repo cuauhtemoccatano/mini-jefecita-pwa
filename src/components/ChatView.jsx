@@ -63,13 +63,13 @@ export default function ChatView() {
           <h1 className="text-xl font-bold text-white flex items-center gap-2">
             {userData.jadeName} <Bot size={20} className="text-primary" />
           </h1>
-          <p className="text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em]">
+          <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-[0.2em]">
             {isGenerating ? "Procesando Conciencia..." : isReady ? "Enlace Establecido" : status || "Sincronizando..."}
           </p>
         </div>
         <button 
             onClick={handleClear}
-            className="p-3 bg-white/5 text-neutral-500 hover:text-red-400 hover:bg-white/10 rounded-2xl transition-all"
+            className="p-3 bg-white/5 text-neutral-400 hover:text-red-400 hover:bg-white/10 rounded-2xl transition-all"
             title="Borrar Memoria"
         >
           <Trash2 size={18} />
