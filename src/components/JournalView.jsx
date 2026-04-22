@@ -1,74 +1,19 @@
-import React, { useState, useEffect } from 'react';
-import { BookOpen, Lock, Save, Trash2 } from 'lucide-react';
-import { useStore } from '../js/store/useStore';
-import { saveMemory } from '../js/rag_engine.js';
+import { useAuth } from '../js/hooks/useAuth';
 
 /**
- * JournalView (v4.0.0) - React Edition
+ * JournalView (v4.1.0) - Neural React Edition
  * Diario secreto con protección biométrica (WebAuthn).
  */
 export default function JournalView() {
-  const [isLocked, setIsLocked] = useState(true);
+  const { isLocked, isAuthenticating, authenticate } = useAuth();
   const [entries, setEntries] = useState([]);
   const [input, setInput] = useState('');
-  const [isAuthenticating, setIsAuthenticating] = useState(false);
 
   useEffect(() => {
-    // Auto-trigger biometry if credential exists
-    if (localStorage.getItem('mqa_journal_cred_id')) {
-      handleAuth();
-    }
-  }, []);
-
-  const handleAuth = async () => {
-    if (!window.PublicKeyCredential) {
-      setIsLocked(false);
+    if (!isLocked) {
       setEntries(loadStoredEntries());
-      return;
     }
-
-    try {
-      setIsAuthenticating(true);
-      const challenge = new Uint8Array(32);
-      window.crypto.getRandomValues(challenge);
-      const credIdBase64 = localStorage.getItem('mqa_journal_cred_id');
-
-      if (!credIdBase64) {
-        // Register biometric
-        const credential = await navigator.credentials.create({
-          publicKey: {
-            rp: { name: 'Mini Jefecita', id: window.location.hostname },
-            user: { id: new Uint8Array([1, 2, 3, 4]), name: 'jade_user', displayName: 'Usuario' },
-            challenge,
-            pubKeyCredParams: [{ type: 'public-key', alg: -7 }],
-            authenticatorSelection: { authenticatorAttachment: 'platform', userVerification: 'required' }
-          }
-        });
-        if (credential) {
-          const id64 = btoa(String.fromCharCode(...new Uint8Array(credential.rawId)));
-          localStorage.setItem('mqa_journal_cred_id', id64);
-        }
-      } else {
-        // Authenticate
-        const rawId = Uint8Array.from(atob(credIdBase64), c => c.charCodeAt(0));
-        await navigator.credentials.get({
-          publicKey: {
-            challenge,
-            allowCredentials: [{ id: rawId, type: 'public-key' }],
-            userVerification: 'required'
-          }
-        });
-      }
-
-      setIsLocked(false);
-      setEntries(loadStoredEntries());
-      if (window.navigator?.vibrate) window.navigator.vibrate(10);
-    } catch (err) {
-      console.error('🔐 Auth error:', err);
-    } finally {
-      setIsAuthenticating(false);
-    }
-  };
+  }, [isLocked]);
 
   const loadStoredEntries = () => {
     try {

@@ -59,5 +59,10 @@ export default defineConfig({
         assetFileNames: 'assets/[name]-[hash].[ext]'
       }
     }
+  },
+  test: {
+    globals: true,
+    environment: 'node',
+    setupFiles: ['./src/__tests__/setup.js'],
   }
 });

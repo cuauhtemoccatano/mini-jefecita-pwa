@@ -9,6 +9,11 @@ const STORAGE_KEY = 'mqa_crypto_key';
 
 let _cryptoKey = null;
 
+// Exportado solo para testing
+export function resetCryptoInternal() {
+    _cryptoKey = null;
+}
+
 // ---------------------------------------------------------
 // Derivar llave desde password (PBKDF2) para recuperación
 // ---------------------------------------------------------
@@ -49,7 +54,7 @@ export async function initCrypto(password = null) {
                 'raw', raw, { name: ALGO }, false, ['encrypt', 'decrypt']
             );
         } catch (e) {
-            console.error('🔐 MQA: Llave corrupta en almacenamiento.');
+            console.error('MQA: Llave corrupta en almacenamiento.');
             localStorage.removeItem(STORAGE_KEY);
         }
     } 
@@ -72,7 +77,7 @@ export async function initCrypto(password = null) {
 }
 
 // ---------------------------------------------------------
-// Encriptar texto → base64
+// Encriptar texto -> base64
 // ---------------------------------------------------------
 export async function encrypt(plaintext) {
     const key = await initCrypto();
@@ -92,7 +97,7 @@ export async function encrypt(plaintext) {
 }
 
 // ---------------------------------------------------------
-// Desencriptar base64 → texto
+// Desencriptar base64 -> texto
 // ---------------------------------------------------------
 export async function decrypt(base64) {
     try {
@@ -107,23 +112,7 @@ export async function decrypt(base64) {
 
         return new TextDecoder().decode(decrypted);
     } catch (e) {
-        console.warn('🔐 MQA: Error desencriptando — dato corrupto o llave incorrecta');
+        console.warn('MQA: Error desencriptando - dato corrupto o llave incorrecta');
         return null;
     }
-}
-
-// ---------------------------------------------------------
-// Encriptar objeto JSON
-// ---------------------------------------------------------
-export async function encryptJSON(obj) {
-    return encrypt(JSON.stringify(obj));
-}
-
-// ---------------------------------------------------------
-// Desencriptar a objeto JSON
-// ---------------------------------------------------------
-export async function decryptJSON(base64) {
-    const text = await decrypt(base64);
-    if (!text) return null;
-    try { return JSON.parse(text); } catch { return null; }
 }

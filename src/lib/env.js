@@ -8,5 +8,13 @@ export const ENV = {
     SUPABASE_KEY:  import.meta.env?.VITE_SUPABASE_ANON_KEY || '',
 };
 
-export const isSupabaseConfigured = () =>
-    !!ENV.SUPABASE_URL && !!ENV.SUPABASE_KEY;
+let _warned = false;
+
+export const isSupabaseConfigured = () => {
+    const isOk = !!ENV.SUPABASE_URL && !!ENV.SUPABASE_KEY;
+    if (!isOk && !_warned) {
+        console.warn('⚠️ MQA: Central Intelligence (Supabase) not configured. Cloud sync and persistent RAG will be unavailable.');
+        _warned = true;
+    }
+    return isOk;
+};
