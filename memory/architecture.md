@@ -1,21 +1,25 @@
-# System Architecture: Neural Modular Orchestration
+# System Architecture: Neural Modular Orchestration (v3.7.2)
 
-Mini Jefecita v3.3.0 operates on a fragmented, engine-based architecture designed for industrial scalability and high-fidelity performance.
+Mini Jefecita v3.7.2 operates on a modern, Vite-powered architecture designed for industrial scalability, high-fidelity performance, and professional-grade PWA deployment.
 
-## The Master Orchestrator (`app.js`)
-The application entry point is a lightweight orchestrator that manages the lifecycle of specialized engines. It performs the "Neural Handshake" and triggers the **"Awakening Ceremony"** (v3.4.0) for untethered identities.
+## The Build System (Vite + Workbox)
+The application is orchestrated by **Vite**, utilizing **vite-plugin-pwa** with an `injectManifest` strategy. This allows for fine-grained control over the Service Worker while benefiting from modern bundling, dead-code elimination, and environmental variable injection.
 
-## Core Engines (`js/`)
+## The Master Orchestrator (`src/main.js`)
+The application entry point is a centralized orchestrator. It manages the lifecycle of specialized engines, performs the "Neural Handshake", and handles the **"Awakening Ceremony"** for untethered identities. It is native ESM and serves as the root of the dependency graph.
+
+## Core Engines (`src/js/`)
 1.  **State Engine (`state.js`)**: Single source of truth for global data, persistence, and reactive settings synchronization.
-2.  **AI Engine (`ai_engine.js`)**: Neural core that manages the Transformers.js background worker, model tiering (ULTRA, PRO, AVANZADO, ESENCIAL), and the global Command Portal.
-3.  **UI Engine (`ui_engine.js`)**: Master renderer that orchestrates the dynamic injection of "Liquid Components". Includes the **Spectral Core**, an autonomous algorithm that synchronizes the application aura with circadian rhythms and biometric data.
-    - **Spectral Core**: Sub-motor de la UI que define la atmósfera sistémica.
-    - **Lazy Neural Activation**: Protocolo de carga retardada para el cerebro de IA. Protege la RAM cargando modelos solo bajo demanda de interacción.
-    - **Persistent Lifecycle Guard**: Uso de `sessionStorage` para gestionar el estado de recarga del Service Worker y prevenir bucles infinitos en iOS.
+2.  **AI Engine (`ai_engine.js`)**: Neural core that manages the Transformers.js background worker, model tiering, and the global Command Portal.
+3.  **UI Engine (`ui_engine.js`)**: Master renderer that orchestrates the dynamic injection of "Liquid Components". Includes the **Atmosphere Matrix** (renamed from Spectral Core) for autonomous aura synchronization with a global recursion guard.
 4.  **Health Engine (`health_engine.js`)**: Biometric synchronization layer for health data processing and trending.
-5.  **Santuario Engine (`santuario.js`)**: Immersive sub-system for Three.js 3D materiality and neural-acoustic synthesis.
-6.  **System Engine (`system.js`)**: Environmental awareness layer (Hardware profiling, PWA lifecycle, and Atmospheric connectivity).
-7.  **Identity Vault**: Built into the State Engine, it manages the persistent "Baptized" identity and cross-session conversational memory.
+5.  **Santuario Engine (`santuario.js`)**: Immersive sub-system for Three.js 3D materiality using dynamic ESM imports.
+6.  **RAG Engine (`rag_engine.js`)**: Retrieval Augmented Generation layer integrated with the **Supabase SDK** for semantic memory persistence and cloud synchronization.
+7.  **System Engine (`system.js`)**: Environmental awareness layer (Hardware profiling, PWA lifecycle, and Atmospheric connectivity).
 
-## UI Paradigm: Liquid Components
-All views are isolated ES modules (`js/components/`) that are "painted" onto the DOM at runtime. This allows for isolated lifecycle management and prevents monolithic DOM bloat.
+## UI Paradigm: Liquid Components (`src/components/`)
+All views are isolated ES modules that are imported by the UI Engine. This structure prevents monolithic DOM bloat and allows for efficient chunking during the build process.
+
+## Environment & Security
+- **Strict Isolation**: Uses `COOP` (same-origin) and `COEP` (require-corp) headers for WebGPU support.
+- **Environment Management**: Centralized in `src/lib/env.js`, leveraging Vite's `import.meta.env` for secure credential handling.

@@ -1,5 +1,9 @@
 node_modules/
 .DS_Store
 .env
+dist/
 .vercel
 /build
+js/config.js
+.env*.local
+.node/

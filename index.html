@@ -4,100 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Mini Jefecita</title>
-    <link rel="stylesheet" href="style.css?v=3.6.0">
-    <link rel="stylesheet" href="css/awakening.css?v=3.6.0">
-    <link rel="manifest" href="manifest.json">
+    <link rel="manifest" href="/manifest.json">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/lucide@latest"></script>
     <meta name="theme-color" content="#00C4B4">
-    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="/icons/icon-192.png">
 </head>
-<body>
-    <!-- Aura Sentiente (Atmósfera Dinámica) -->
-    <div id="aura-system" class="aura-container">
-        <div class="aura-blob aura-1"></div>
-        <div class="aura-blob aura-2"></div>
-        <div class="aura-blob aura-3"></div>
-    </div>
-
-    <!-- Toast de Actualización -->
-    <div id="update-toast" class="update-toast hidden">
-        <span>✨ Mejoras listas (v3.6.0)</span>
-        <button id="btn-update-now">Actualizar</button>
-    </div>
-    <div id="app">
-        <!-- Barra de Descarga en Segundo Plano -->
-        <div id="ai-bg-downloader" class="ai-bg-downloader hidden">
-            <div class="bg-progress-container">
-                <div id="ai-bg-progress" class="bg-progress-bar"></div>
-            </div>
-            <span id="ai-bg-status">Sincronizando consciencia...</span>
-        </div>
-
-        <!-- Main Content (Portales de Vista) -->
-        <main id="content">
-            <div id="care-suggestion" class="care-card hidden"></div>
-            <section id="view-inicio" class="view active"></section>
-            <section id="view-ejercicio" class="view"></section>
-            <section id="view-avisos" class="view"></section>
-            <section id="view-diario" class="view"></section>
-            <section id="view-mensajes" class="view"></section>
-            <section id="view-zen" class="view view-zen-immersive"></section>
-        </main>
-
-        <!-- Modales Globales -->
-        <div id="settings-modal" class="modal-overlay" style="display: none;"></div>
-
-        <!-- Tab Bar -->
-        <nav id="tab-bar">
-            <button class="tab-item active" data-view="inicio">
-                <i class="icon" data-lucide="layout-dashboard"></i>
-                <span class="label">Inicio</span>
-            </button>
-            <button class="tab-item" data-view="ejercicio">
-                <i class="icon" data-lucide="activity"></i>
-                <span class="label">Salud</span>
-            </button>
-            <button class="tab-item" data-view="avisos">
-                <i class="icon" data-lucide="bell"></i>
-                <span class="label">Avisos</span>
-            </button>
-            <button class="tab-item" data-view="diario">
-                <i class="icon" data-lucide="book-open"></i>
-                <span class="label">Diario</span>
-            </button>
-            <button class="tab-item" data-view="mensajes">
-                <i class="icon" data-lucide="message-square"></i>
-                <span class="label">Conversar</span>
-            </button>
-        </nav>
-    </div>
-
-    <!-- UI Global: El Núcleo de Jade (Convergence) -->
-    <div id="liquid-core" class="liquid-button">
-        <i data-lucide="sparkles"></i>
-    </div>
-
-    <!-- UI Global: Portal de Comando -->
-    <div id="command-portal" class="view overlay-portal">
-        <div class="portal-header">
-            <span class="portal-title">Comando Neuronal</span>
-            <button id="btn-close-portal" class="icon-btn"><i data-lucide="x"></i></button>
-        </div>
-        <div id="portal-messages" class="portal-content">
-            <div class="message ai">Jade estoy lista. ¿En qué puedo guiarte?</div>
-        </div>
-        <div class="portal-input-area">
-            <input type="text" id="portal-input" placeholder="Comando rápido..." />
-            <button id="btn-portal-send" class="icon-btn primary"><i data-lucide="send"></i></button>
-        </div>
-    </div>
-
-    <!-- Scripts Maestros -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="mqa_audit.js?v=3.6.0"></script>
-    <script type="module" src="app.js?v=3.6.0"></script>
-</body>
+  <body>
+    <div id="mqa-react-root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

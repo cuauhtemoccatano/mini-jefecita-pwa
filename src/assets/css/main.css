@@ -1,0 +1,21 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: var(--primary);
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-text-main: var(--text);
+  --color-text-dim: var(--text-secondary);
+  
+  --font-sans: 'Outfit', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+  
+  --shadow-aura: 0 0 20px var(--aura-glow);
+  --blur-glass: 30px;
+}
+
+/* Base resets or additions if needed */
+@layer base {
+  body {
+    @apply antialiased;
+  }
+}

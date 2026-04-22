@@ -1,0 +1,10 @@
+{
+  "version": "3.7.2",
+  "notes": [
+    "Memoria semántica con RAG — Jade recuerda tus conversaciones",
+    "Encriptación AES-GCM — tus datos protegidos antes de salir del dispositivo",
+    "Sincronización con Supabase — tus datos sobreviven si Safari borra el cache",
+    "WebGPU activo en iOS 26 — inferencia más rápida",
+    "Recordatorios inteligentes con parser de fecha y hora natural"
+  ]
+}

@@ -1,6 +1,6 @@
 # Hoja de Ruta Estratégica (Roadmap)
 
-La evolución de Jade se divide en fases de madurez técnica y sensorial. Actualmente operando en **v3.5.1 (Spatial Edition)**.
+La evolución de Jade se divide en fases de madurez técnica y sensorial. Actualmente operando en **v4.0.0 (Neural React Edition)**.
 
 ## Historial de Evolución (Logros)
 
@@ -69,10 +69,29 @@ La evolución de Jade se divide en fases de madurez técnica y sensorial. Actual
 - [x] **Adaptive Contrast**: Lógica APCA/WCAG para legibilidad dinámica de tipografía.
 - [x] **Privacy Shield (FaceID)**: Bloqueo biométrico obligatorio cada vez que se accede al diario.
 - [x] **Neural Context Fix**: Reparación de referencias cruzadas (`healthData`) en el motor de diálogo.
+- [x] **Vite Migration**: Transformación total a arquitectura basada en bundler (Vite + Workbox).
+- [x] **Integrity Audit**: Auditoría de integridad post-migración (Supabase Headers, Local AI, Security Logs).
+- [x] **Data Resilience**: Implementación de Master Password (PBKDF2) para recuperación de desastres.
+- [x] **UI/UX ProMax Refinement**: Fix de apilamiento de vistas, Glassmorphism de 30px y optimización de transiciones.
+- [x] **Simetría y Navegación Inteligente**: Corrección del *stats-grid* y arquitectura de Encabezado Global Contextual (v3.7.1).
+- [x] **Estabilización Técnica v3.7.1**: Fix de `bgDownloader`, flujo de crypto permisivo y migración total a Lucide ESM.
+### Fase 16: Neural React (v4.0.0) [COMPLETADA]
+- [x] **Infraestructura Moderna**: Integración de React 19 + Tailwind v4 + Vite.
+- [x] **Estado Maestro (Zustand)**: Persistencia y sincronización bidireccional con lógica legacy.
+- [x] **Island Componentization**: Migración de Toasts, Modales y Vistas de Dashboard/Chat.
+- [x] **Inversión de Control**: Punto de entrada oficial en `main.jsx` con ViewPortals.
+- [x] **Neural Stability**: Consolidación de hooks `useAI` y `useHealth`.
+
+### Fase 17: Estabilización "Neural React" (v4.0.0) [COMPLETADA]
+- [x] **Consolidación de Estado**: Centralización del worker neural en Zustand.
+- [x] **PWA Guardian**: Unificación del ciclo de vida de actualización en React.
+- [x] **Secure Nucleus**: Eliminación de persistencia de llaves y limpieza de leaks en RAG.
+- [x] **Portal Resilience**: Desacoplamiento del onboarding del DOM principal.
+- [x] **Sensory Bridge**: Delegación de eventos para micro-interacciones dinámicas.
 
 ## Próximas Misiones (Visión v3.7+)
 
-### Fase 16: Orquestación Bio-Feedback
+### Fase 18: Orquestación Bio-Feedback
 - [ ] **Haptic Synesthesia**: Lenguaje de vibraciones Taptic Engine (latidos ai).
 - [ ] **Neural Acoustics**: Paisajes sonoros generativos basados en HRV.
 - [ ] **Rhythms Prediction**: Anticipación de estados de fatiga.
