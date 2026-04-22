@@ -21,3 +21,4 @@
 - **Detección de Mobile**: La app decide el layout (Sidebar vs Bottom-bar) puramente mediante Media Queries de CSS (`>=768px`). No intentes forzar layouts mediante JS sin consultar `style.css`.
 - **Onboarding Portal**: El portal de inicio (`#mqa-onboarding-portal`) tiene `pointer-events: none` por defecto en el HTML. El código legacy debe activarlo (`auto`) solo cuando la ceremonia sea necesaria.
 - **Límite de GitHub (100MB)**: El binario de Node (113MB) bloquea el push. **Nunca** rastrear archivos en `.node/`. El proyecto debe instalarse localmente en cada máquina tras el clonado inicial.
+- **Inteligencia Estructural (CRG)**: El proyecto utiliza `code-review-graph` para análisis de impacto. Antes de cambios críticos, ejecutar `uvx code-review-graph detect-changes` para evaluar el radio de impacto en el grafo de dependencias.
