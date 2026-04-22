@@ -13,6 +13,19 @@ export default function PwaToast() {
   } = useRegisterSW({
     onRegistered(r) {
       console.log('✨ MQA: PWA Guardián activo.');
+      if (r) {
+        // Forzar chequeo cada hora
+        setInterval(() => {
+          r.update();
+        }, 60 * 60 * 1000);
+
+        // Forzar chequeo al volver a la app (Safari / Mobile Fix)
+        document.addEventListener('visibilitychange', () => {
+          if (document.visibilityState === 'visible') {
+            r.update();
+          }
+        });
+      }
     },
     onRegisterError(error) {
       console.error('❌ MQA: Fallo en el Guardián PWA:', error);
