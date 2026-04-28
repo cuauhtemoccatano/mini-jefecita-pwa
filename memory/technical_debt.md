@@ -1,7 +1,7 @@
 # Memoria Persistente: Deuda Técnica (Technical Debt)
 
 ## Áreas de Vigilancia (Alpha Stable)
-- **Latencia de Inferencia**: Aunque la inferencia es local, los modelos 'ULTRA' pueden causar bloqueos en dispositivos con poca RAM.
+- **Indeferencia de Latencia**: Optimizada mediante Singleton Worker. Eliminado riesgo de OOM en Safari.
 - **Cobertura RAG**: Se requiere expandir la suite de Vitest para automatizar fallos de recuperación semántica en `rag_engine.js`.
 
 ## Objetivos de Calidad Próximos

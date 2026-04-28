@@ -89,6 +89,13 @@ La evolución de Jade se divide en fases de madurez técnica y sensorial. Actual
 - [x] **Portal Resilience**: Desacoplamiento del onboarding del DOM principal.
 - [x] **Sensory Bridge**: Delegación de eventos para micro-interacciones dinámicas.
 
+### Fase 18: Blindaje v4.1.3 (Infrastructure Recovery) [COMPLETADA]
+- [x] **Neural Singleton**: Eliminación de fugas de memoria en Workers de Safari.
+- [x] **Manifest Harmony**: Resolución de conflictos PWA y Standalone mode.
+- [x] **Omni-Assistant**: Integración de IA en CommandPortal y HomeView.
+- [x] **Branding Restoration**: Nuevo logo premium y favicon funcional.
+
+
 ### Fase 18: Blindaje v4.1.0 (Zero-Debt Security) [COMPLETADA]
 - [x] **Vitest Foundation**: 100% cobertura en motor de criptografía.
 - [x] **Biometric Decoupling**: Migración de WebAuthn al hook soberano `useAuth`.
