@@ -17,30 +17,7 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg,webmanifest}'],
         maximumFileSizeToCacheInBytes: 5 * 1024 * 1024 // 5MB para pesos ligeros
       },
-      manifest: {
-        name: 'Mini Jefecita',
-        short_name: 'Mini Jefecita',
-        description: 'Sentient Personal Assistant PWA',
-        theme_color: '#00C4B4',
-        background_color: '#0A0A0A',
-        start_url: '.',
-        display: 'standalone',
-        scope: '/',
-        icons: [
-          {
-            src: 'icons/icon-192.png',
-            sizes: '192x192',
-            type: 'image/png',
-            purpose: 'any maskable'
-          },
-          {
-            src: 'icons/icon-512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'any maskable'
-          }
-        ]
-      }
+      manifest: false
     })
   ],
   optimizeDeps: {
