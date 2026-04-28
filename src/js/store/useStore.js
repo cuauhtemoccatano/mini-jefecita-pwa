@@ -26,6 +26,7 @@ export const useStore = create(
       aiState: {
         isReady: false,
         isThinking: false,
+        isGenerating: false,
         progress: 0,
         status: 'Inactiva',
         error: null,

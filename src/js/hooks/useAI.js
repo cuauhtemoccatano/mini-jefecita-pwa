@@ -1,80 +1,25 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { useStore } from '../store/useStore';
 
 /**
- * Hook de IA: Neural Link (v4.0.1)
- * Gestiona la instancia del worker neuronal y la generación de respuestas.
+ * Hook de IA: Neural Link (v4.1.3)
+ * Delega toda la lógica de estado al store global (`useStore`)
+ * para evitar fugas de memoria y duplicados en iOS/Safari.
  */
 export function useAI() {
-  const { userData } = useStore();
-  const [isReady, setIsReady] = useState(false);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [status, setStatus] = useState('Inactiva');
-  const workerRef = useRef(null);
-
-  // Inicialización del Motor Neural
-  const initAI = useCallback(async () => {
-    // Evitar múltiples inicializaciones
-    if (workerRef.current || isReady) return;
-
-    setStatus('Sincronizando...');
-    
-    try {
-      const level = userData.brain || 'PRO';
-      const modelMappings = {
-        'ULTRA':    'onnx-community/Llama-3.2-1B-Instruct',
-        'PRO':      'onnx-community/Qwen2.5-0.5B-Instruct',
-        'AVANZADO':  'onnx-community/Qwen2.5-0.5B-Instruct',
-        'ESENCIAL':  'onnx-community/SmolLM2-135M-Instruct-ONNX-MHA'
-      };
-      const modelName = modelMappings[level] || modelMappings['PRO'];
-
-      // Detección de Aceleración por Hardware (WebGPU)
-      let device = 'wasm';
-      try {
-        if (typeof navigator !== 'undefined' && navigator.gpu) {
-          const adapter = await navigator.gpu.requestAdapter({ powerPreference: 'high-performance' });
-          if (adapter) device = 'webgpu';
-        }
-      } catch (e) {
-        console.warn('⚠️ MQA: WebGPU no detectado, usando WASM de respaldo.');
-      }
-
-      const workerUrl = new URL('../../ai_worker.js', import.meta.url);
-      const worker = new Worker(workerUrl, { type: 'module' });
-      workerRef.current = worker;
-
-      worker.onmessage = (e) => {
-        const { type, data } = e.data;
-
-        if (type === 'progress') {
-          setStatus(`${data.status === 'initiate' ? 'Iniciando' : 'Descargando'} ${level}...`);
-        }
-
-        if (type === 'ready') {
-          setIsReady(true);
-          setStatus(`${userData.jadeName} lista · ${level} · ${device.toUpperCase()}`);
-        }
-
-        if (type === 'error') {
-          setIsReady(false);
-          setStatus('Error de conexión neuronal');
-          console.error('💥 MQA: Neural Worker Error:', data);
-        }
-      };
-
-      worker.postMessage({ type: 'init', data: { modelName, device } });
-    } catch (err) {
-      setStatus('Fallo Crítico');
-      console.error('💥 MQA: Critical AI Load Failure:', err);
-    }
-  }, [userData.brain, userData.jadeName, isReady]);
+  const { 
+    userData, 
+    worker, 
+    aiState, 
+    initAI, 
+    setAIState 
+  } = useStore();
 
   // Generación Transmisión Neural
   const generate = useCallback(async (userMessage, onChunk, onComplete) => {
-    if (!workerRef.current || !isReady) return;
+    if (!worker || !aiState.isReady) return;
 
-    setIsGenerating(true);
+    setAIState({ isThinking: true, isGenerating: true });
 
     // Recuperar contexto RAG si está disponible
     let ragContext = '';
@@ -110,10 +55,6 @@ export function useAI() {
         prompt += `<|im_start|>user\n${userMessage}<|im_end|>\n<|im_start|>assistant\n`;
     }
 
-    // Acceder a setAIState del store
-    const { setAIState } = useStore.getState();
-    setAIState({ isThinking: true });
-
     const handler = (e) => {
       const { type, data } = e.data;
       
@@ -122,38 +63,33 @@ export function useAI() {
       }
       
       if (type === 'complete') {
-        setIsGenerating(false);
-        setAIState({ isThinking: false }); // Reset global state
+        setAIState({ isThinking: false, isGenerating: false });
         if (onComplete) onComplete(data);
-        workerRef.current.removeEventListener('message', handler);
+        worker.removeEventListener('message', handler);
       }
       
       if (type === 'error') {
-        setIsGenerating(false);
-        setAIState({ isThinking: false }); // Reset global state
-        workerRef.current.removeEventListener('message', handler);
+        setAIState({ isThinking: false, isGenerating: false });
+        worker.removeEventListener('message', handler);
       }
     };
 
-    workerRef.current.addEventListener('message', handler);
-    workerRef.current.postMessage({
+    worker.addEventListener('message', handler);
+    worker.postMessage({
       type: 'generate',
       data: {
         fullPrompt: prompt,
         settings: { max_new_tokens: 300, temperature: 0.7 }
       }
     });
-  }, [userData, isReady]);
 
-  // Cleanup: Terminación del Worker al desmontar
-  useEffect(() => {
-    return () => {
-      if (workerRef.current) {
-        workerRef.current.terminate();
-        workerRef.current = null;
-      }
-    };
-  }, []);
+  }, [userData, aiState.isReady, worker, setAIState]);
 
-  return { isReady, isGenerating, status, initAI, generate };
+  return { 
+    isReady: aiState.isReady, 
+    isGenerating: aiState.isGenerating, 
+    status: aiState.status, 
+    initAI, 
+    generate 
+  };
 }
