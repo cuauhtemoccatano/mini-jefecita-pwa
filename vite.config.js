@@ -23,7 +23,7 @@ export default defineConfig({
         description: 'Sentient Personal Assistant PWA',
         theme_color: '#00C4B4',
         background_color: '#0A0A0A',
-        start_url: '/',
+        start_url: '.',
         display: 'standalone',
         scope: '/',
         icons: [
