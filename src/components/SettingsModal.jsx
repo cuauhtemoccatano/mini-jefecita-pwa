@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Palette, Brain, X, Check } from 'lucide-react';
+import { Palette, Brain, X, Check, RefreshCw } from 'lucide-react';
 import { useStore } from '../js/store/useStore';
 
 /**
@@ -22,6 +22,36 @@ export default function SettingsModal({ isOpen, onClose }) {
     // Disparar sincronización visual legacy (si es necesario)
     if (window.syncAtmosphereMatrix) {
         window.syncAtmosphereMatrix();
+    }
+  };
+
+  const handleHardReset = async () => {
+    const confirmed = window.confirm('¿Forzar actualización? Se limpiará el caché y se reiniciará la app para asegurar la última versión.');
+    if (!confirmed) return;
+
+    try {
+      // 1. Unregister all service workers
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        for (const registration of registrations) {
+          await registration.unregister();
+        }
+      }
+
+      // 2. Delete all caches
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map(key => caches.delete(key)));
+      }
+
+      // 3. Clear session storage (to reset update guard)
+      sessionStorage.clear();
+
+      // 4. Final force reload
+      window.location.href = window.location.origin + '?v=' + Date.now();
+    } catch (error) {
+      console.error('Error durante el reset forzado:', error);
+      window.location.reload();
     }
   };
 
@@ -131,6 +161,23 @@ export default function SettingsModal({ isOpen, onClose }) {
                 <Palette size={14} />
               </div>
             </div>
+          </div>
+
+          {/* Infrastructure / Maintenance */}
+          <div className="pt-4 border-t border-white/5 space-y-4">
+            <label className="flex items-center gap-2 text-[10px] font-bold text-neutral-500 uppercase tracking-[0.2em] px-1">
+              Infraestructura & Mantenimiento
+            </label>
+            <button
+              onClick={handleHardReset}
+              className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 py-4 rounded-2xl text-neutral-400 hover:text-red-400 transition-all group"
+            >
+              <RefreshCw size={18} className="group-active:rotate-180 transition-transform duration-500" />
+              <span className="text-sm font-bold">Forzar Actualización Crítica</span>
+            </button>
+            <p className="text-[10px] text-neutral-600 text-center px-4 leading-relaxed">
+              Usa esto si la app no refleja cambios recientes. Limpia el caché profundo de Safari.
+            </p>
           </div>
         </div>
 
