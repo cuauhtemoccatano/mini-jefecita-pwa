@@ -7,6 +7,17 @@ import { ExpirationPlugin } from 'workbox-expiration';
 cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 
+// 1.5. Estrategia NetworkFirst para el Root (Evitar pantallas negras por caché stale)
+registerRoute(
+  ({ url }) => url.pathname === '/' || url.pathname === '/index.html',
+  new NetworkFirst({
+    cacheName: 'root-page',
+    plugins: [
+      new ExpirationPlugin({ maxEntries: 1 }),
+    ],
+  })
+);
+
 // 2. Caché de Fuentes (Google Fonts)
 registerRoute(
   ({ url }) => url.origin === 'https://fonts.googleapis.com' || url.origin === 'https://fonts.gstatic.com',

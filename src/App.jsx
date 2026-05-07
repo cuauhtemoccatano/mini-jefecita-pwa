@@ -74,7 +74,7 @@ export default function App() {
   };
 
   return (
-    <div id="app" className="flex flex-col h-[100dvh] overflow-hidden animate-in fade-in zoom-in-95 duration-1000 ease-out-expo">
+    <div id="app" className="flex flex-col h-[100dvh] overflow-hidden animate-awakening">
       <PwaToast />
       <Aura />
       

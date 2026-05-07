@@ -62,6 +62,15 @@ body {
     animation-name: zoomIn95;
 }
 
+.animate-awakening {
+    animation: awakening 1.2s var(--bezier-promax) forwards;
+}
+
+@keyframes awakening {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+}
+
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -209,6 +218,8 @@ body::after {
     display: flex;
     flex-direction: column;
     overflow: hidden;
+    background-color: var(--background);
+    opacity: 1 !important; /* Fallback manual */
 }
 
 

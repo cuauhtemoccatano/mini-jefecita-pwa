@@ -8,3 +8,4 @@ js/config.js
 .env*.local
 .node/
 .code-review-graph/
+memory/git_guide.md
