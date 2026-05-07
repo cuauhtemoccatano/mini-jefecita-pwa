@@ -1,33 +1,53 @@
-import { precacheAndRoute } from 'workbox-precaching';
+import { precacheAndRoute, cleanupOutdatedCaches } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-import { NetworkFirst } from 'workbox-strategies';
+import { StaleWhileRevalidate, CacheFirst, NetworkFirst } from 'workbox-strategies';
+import { ExpirationPlugin } from 'workbox-expiration';
 
-// Inyección automática del manifiesto de build de Vite (Precaching estricto)
-// Workbox se encargará del 'cache first' y la actualización de estos assets automáticamente.
+// 1. Limpieza y Precaching
+cleanupOutdatedCaches();
 precacheAndRoute(self.__WB_MANIFEST);
 
-// 1. EXCLUSIÓN CRÍTICA: Transformers.js / HuggingFace
-// No debemos cachear los pesos de los modelos aquí, Transformers.js tiene su propio motor de indexedDB cache.
+// 2. Caché de Fuentes (Google Fonts)
 registerRoute(
-  ({ url }) => url.host === 'huggingface.co' || url.host === 'cdn.jsdelivr.net',
-  new NetworkFirst({
-     cacheName: 'external-cdn-bypass',
+  ({ url }) => url.origin === 'https://fonts.googleapis.com' || url.origin === 'https://fonts.gstatic.com',
+  new CacheFirst({
+    cacheName: 'google-fonts',
+    plugins: [
+      new ExpirationPlugin({ maxEntries: 20, maxAgeSeconds: 365 * 24 * 60 * 60 }),
+    ],
   })
 );
 
-// 2. Control de Ciclo de Vida: Evita bloqueos en iOS Safari al actualizar
+// 3. Caché de Modelos y Pesos (HuggingFace / CDNs)
+// Transformers.js usa indexedDB, pero cacheamos las peticiones para redundancia
+registerRoute(
+  ({ url }) => url.host === 'huggingface.co' || url.host === 'cdn.jsdelivr.net' || url.host === 'cdnjs.cloudflare.com',
+  new CacheFirst({
+    cacheName: 'neural-weights',
+    plugins: [
+      new ExpirationPlugin({
+        maxEntries: 50,
+        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 días
+      }),
+    ],
+  })
+);
+
+// 4. Estrategia por defecto para Assets locales no precacheados
+registerRoute(
+  ({ request }) => request.destination === 'script' || request.destination === 'style' || request.destination === 'image',
+  new StaleWhileRevalidate({
+    cacheName: 'static-resources',
+  })
+);
+
+// 5. Ciclo de Vida Safari Fix
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });
 
-self.addEventListener('install', () => {
-  // Evitamos self.skipWaiting() automático para cumplir con the Freeze List. Se invoca vía UI toast (SKIP_WAITING).
-  console.log('[ServiceWorker] Instalacion detectada. Esperando skipWaiting comando.');
-});
-
 self.addEventListener('activate', (event) => {
-  // Asegurar que el nuevo Service Worker tome control de toda la web app y páginas abiertas en iOS
   event.waitUntil(self.clients.claim());
 });

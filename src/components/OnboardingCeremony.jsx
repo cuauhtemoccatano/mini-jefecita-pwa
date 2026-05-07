@@ -82,7 +82,7 @@ export default function OnboardingCeremony() {
     <div className={`void-overlay ${isFinishing ? 'bg-white transition-colors duration-1000' : ''}`}>
       <div className="spectral-container">
         <motion.div 
-          className="core-active" 
+          id="spectral-core" 
           animate={{
             scale: step === 0 ? 1 : step === 1 ? 1.2 : step === 2 ? 1.5 : isFinishing ? 50 : 1.8,
             filter: step > 1 ? 'blur(20px) brightness(1.5)' : 'blur(0px) brightness(1)',
@@ -90,7 +90,7 @@ export default function OnboardingCeremony() {
           }}
           transition={{ duration: 1.5 }}
         />
-        <div className="ritual-glow" style={{ opacity: step > 0 ? 1 : 0 }}></div>
+        <div id="ritual-glow" style={{ opacity: step > 0 ? 1 : 0 }}></div>
       </div>
 
       <div className="ceremony-content">

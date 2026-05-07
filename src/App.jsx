@@ -24,6 +24,7 @@ import { initMagneticSpells, castPulseSpell } from './js/spells_engine';
  * Orquestador maestro del 100% de la interfaz.
  */
 export default function App() {
+  console.log('🚀 MQA: App Mounting...');
   const { userData, activeView, setView, initAI, aiState } = useStore();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isPortalOpen, setIsPortalOpen] = useState(false);

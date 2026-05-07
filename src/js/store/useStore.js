@@ -19,6 +19,9 @@ export const useStore = create(
         steps: 0,
         energy: 0,
         hrv: 50,
+        heartRate: 70,
+        sleep: 8,
+        cycleDay: null,
       },
       activeView: 'inicio',
       
@@ -51,12 +54,20 @@ export const useStore = create(
       syncHealthFromParams: () => {
         const params = new URLSearchParams(window.location.search);
         const steps = params.get('steps');
-        const hrv = params.get('hrv');
-        if (steps || hrv) {
+        const sleep = params.get('sleep');
+        const cycleDay = params.get('cycleDay');
+
+        if (steps || hrv || heartRate || energy || sleep || cycleDay) {
           const update = {};
           if (steps) update.steps = parseInt(steps);
           if (hrv) update.hrv = parseInt(hrv);
+          if (heartRate) update.heartRate = parseInt(heartRate);
+          if (energy) update.energy = parseInt(energy);
+          if (sleep) update.sleep = parseFloat(sleep);
+          if (cycleDay) update.cycleDay = parseInt(cycleDay);
+          
           useStore.getState().setHealthData(update);
+          console.log('✨ MQA: Biometría sincronizada vía Atajo Apple.');
         }
       },
       
@@ -71,10 +82,21 @@ export const useStore = create(
         const state = get();
         if (state.aiState.isReady || state.worker) return;
 
-        state.setAIState({ status: 'Sincronizando...', error: null });
+        state.setAIState({ status: 'Escaneando hardware...', error: null });
 
         try {
-          const level = state.userData.brain || 'PRO';
+          // 1. Detección Inteligente de Hardware
+          let level = state.userData.brain;
+          const ua = navigator.userAgent;
+          const isMobile = /iPhone|iPad|iPod/i.test(ua);
+          const isMac = /Macintosh/i.test(ua) && !isMobile;
+
+          if (level === 'AUTO' || !level) {
+            if (isMac) level = 'ULTRA'; // Mac M1/M2/M3
+            else if (isMobile && ua.includes('iPad')) level = 'PRO'; // iPad
+            else level = 'ESENCIAL'; // iPhone (Económico en batería)
+          }
+
           const modelMappings = {
             'ULTRA':    'onnx-community/Llama-3.2-1B-Instruct',
             'PRO':      'onnx-community/Qwen2.5-0.5B-Instruct',
@@ -83,6 +105,7 @@ export const useStore = create(
           };
           const modelName = modelMappings[level] || modelMappings['PRO'];
 
+          // 2. Verificación de WebGPU (Hardware Acceleration)
           let device = 'wasm';
           try {
             if (typeof navigator !== 'undefined' && navigator.gpu) {
@@ -96,11 +119,11 @@ export const useStore = create(
           workerInstance.onmessage = (e) => {
             const { type, data } = e.data;
             if (type === 'progress') {
-              get().setAIState({ status: `Descargando ${level}...`, progress: data.progress || 0 });
+              get().setAIState({ status: `Sincronizando ${level}...`, progress: data.progress || 0 });
             }
             if (type === 'ready') {
               get().setAIState({ isReady: true, status: 'Conexión Establecida', progress: 100 });
-              console.log(`✨ MQA: Neural Bonded [${level}] via ${device.toUpperCase()}`);
+              console.log(`✨ MQA: Neural Bonded [${level}] via ${device.toUpperCase()} on ${isMac ? 'Mac' : 'iOS'}`);
             }
             if (type === 'error') {
               get().setAIState({ error: data, status: 'Error de Vínculo', isReady: false });
